@@ -20,7 +20,10 @@ func init() {
 	http.HandleFunc("/users/logout", logout)
 	http.HandleFunc("/users/get", getUser)
 	http.HandleFunc("/users/edit", addUser)
-	http.HandleFunc("/users/all",allUsers)
+
+
+	http.HandleFunc("/users/listForm",allUsers)
+	http.HandleFunc("/users/newForm",newUser)
 
 	http.HandleFunc("/users/init", initUsers)
 
@@ -32,8 +35,8 @@ func init() {
 var listTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
 	"appengine/users/tmpl/list.html"))
 
-//var newTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
-//	"appengine/tests/tmpl/new.html"))
+var newTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
+	"appengine/users/tmpl/new.html"))
 
 
 
@@ -139,6 +142,27 @@ func allUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 
+func newUser(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+
+	if err:=CheckPerm(w,r,OP_ADMIN); err!=nil{
+		return
+	}
+
+	user,err:=GetCurrentUser(c)
+	if err!=nil{
+		app.ServeError(c,w,err)
+		return
+	}
+
+	tc := make(map[string]interface{})
+	tc["User"] = user
+
+	if err := newTmpl.Execute(w, tc); err != nil {
+		app.ServeError(c,w,err)
+		return
+	}
+}
 
 
 
