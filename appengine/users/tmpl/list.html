@@ -1,0 +1,67 @@
+{{define "content"}}
+<h1>Gestión de usuarios y roles</h1>
+
+<div class="row col-md-12">
+  <form>
+    <div class="form-group  col-md-4">
+      <label>Email</label>
+      <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email de usuario">
+    </div>
+
+    <div class="form-group col-md-4">
+      <label>Rol</label>
+      <select class="form-control" id="role">
+	<option>Administrador</option>
+	<option>Profesor</option>
+	<option>Estudiante</option>
+      </select>
+    </div>
+
+    <div class="form-group col-md-4">
+      <button type="submit" class="btn btn-default">Asignar</button>
+    </div>
+  </form>
+</div>
+
+<div class="row col-md-4">
+  <h2>Administradores</h2>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <ul>
+      {{range .Admins}}
+	<li>{{.Mail}}</li>
+      {{end}}
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<div class="row col-md-4">
+  <h2>Profesores</h2>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <ul>
+      {{range .Teachers}}
+	<li>{{.Mail}}</li>
+      {{end}}
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<div class="row col-md-4">
+  <h2>Estudiantes</h2>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <ul>
+      {{range .Students}}
+	<li>{{.Mail}}</li>
+      {{end}}
+      </ul>
+    </div>
+  </div>
+</div>
+
+{{end}}

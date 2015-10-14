@@ -1,0 +1,47 @@
+{{define "content"}}
+
+
+
+<div class="row col-md-8 col-md-offset-2">
+  <h2>Nuevo examen</h2>
+  <hr>
+  <form>
+    <div class="row col-md-3>
+    <div class="form-group">
+      <label >Título</label>
+      <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Título del examen">
+    </div>
+    </div>
+    <div class="form-group">
+      <label >Rol</label>
+      <select class="form-control" id="role">
+	<option>Administrador</option>
+	<option>Profesor</option>
+	<option>Estudiante</option>
+      </select>
+   
+    </div>
+
+    <div class="checkbox">
+      <label>
+	<input type="checkbox">Autocorrección
+      </label>
+    </div>
+
+    <div class="checkbox">
+      <label>
+	<input type="checkbox">Mostrar calificación
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="exampleInputFile">Importar archivo</label>
+      <input type="file" id="exampleInputFile">
+      <!-- <p class="help-block">Example block-level help text here.</p> -->
+    </div>
+
+    <hr>
+    <button type="submit" class="btn btn-default">Enviar</button>
+  </form>
+</div>
+{{end}}
