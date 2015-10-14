@@ -97,6 +97,12 @@ func addUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, err=GetUserByMail(c,nu.Mail)
+	if err==nil{
+		app.ServeError(c,w,errors.New("User duplicated"))
+		return
+	}
+
 	key := datastore.NewKey(c, "users", "", 0, nil)
 	key, err = datastore.Put(c, key, &nu)
 	if err!=nil{
