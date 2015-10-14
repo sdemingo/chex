@@ -30,12 +30,12 @@ type NUser struct{
 	Id int64     `datastore:"-"`  // ignored by datastore
 	Mail string  
 	Name string
-	Role byte	
+	Role int8    `json:",string"`
 }
 
 
-func IsAllowed(userPerm byte, opMask byte)(bool){
-	return opMask == userPerm & opMask
+func IsAllowed(userPerm int8, opMask byte)(bool){
+	return opMask == byte(userPerm) & opMask
 }
 
 

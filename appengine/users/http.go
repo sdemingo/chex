@@ -18,12 +18,13 @@ import (
 
 func init() {
 	http.HandleFunc("/users/logout", logout)
+
+
 	http.HandleFunc("/users/get", getUser)
 	http.HandleFunc("/users/edit", addUser)
 
-
-	http.HandleFunc("/users/listForm",allUsers)
-	http.HandleFunc("/users/newForm",newUser)
+	http.HandleFunc("/users/listForm",allUsersForm)
+	http.HandleFunc("/users/newForm",newUserForm)
 
 	http.HandleFunc("/users/init", initUsers)
 
@@ -98,6 +99,11 @@ func addUser(w http.ResponseWriter, r *http.Request) {
 
 	key := datastore.NewKey(c, "users", "", 0, nil)
 	key, err = datastore.Put(c, key, &nu)
+	if err!=nil{
+		app.ServeError(c,w,err)
+		return
+	}
+	
 	nu.Id = key.IntID()
 
 	jbody,err:=json.Marshal(nu)
@@ -111,7 +117,10 @@ func addUser(w http.ResponseWriter, r *http.Request) {
 
 
 
-func allUsers(w http.ResponseWriter, r *http.Request) {
+
+
+
+func allUsersForm(w http.ResponseWriter, r *http.Request) {
 
 	c := appengine.NewContext(r)
 
@@ -142,7 +151,7 @@ func allUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func newUser(w http.ResponseWriter, r *http.Request) {
+func newUserForm(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 
 	if err:=CheckPerm(w,r,OP_ADMIN); err!=nil{
@@ -163,6 +172,8 @@ func newUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+
 
 
 
