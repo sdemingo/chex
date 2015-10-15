@@ -24,6 +24,10 @@ function chexInit(){
 
 
 
+
+
+
+
 function showInfoMessage(selector, text) {
    var alert = $(selector).css("visibility", "visible").addClass("alert-success").text(text)
    window.setTimeout(function() { $(selector).removeClass("alert-success").css("visibility", "hidden") }, 1500)

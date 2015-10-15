@@ -14,11 +14,12 @@ import (
 	"appengine/datastore"
 )
 
+
+
 // Routes
 
 func init() {
 	http.HandleFunc("/users/logout", logout)
-
 	http.HandleFunc("/users/get", getUser)
 	http.HandleFunc("/users/new", addUser)
 
@@ -68,7 +69,6 @@ func getUser (w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// return the user updated or created
 	fmt.Fprintf(w, "%s", string(jbody[:len(jbody)]))
 }
 
@@ -96,7 +96,7 @@ func addUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err=GetUserByMail(c,nu.Mail)
+	_, err = GetUserByMail(c,nu.Mail)
 	if err==nil{
 		app.ServeError(c,w,errors.New("User duplicated"))
 		return

@@ -4,8 +4,15 @@ package app
 import (
 	"net/http"
 	"appengine"
+	"encoding/json"
+	"fmt"
 
 )
+
+
+type ErrorResponse struct{
+	Error string
+}
 
 
 func init() {
@@ -14,8 +21,10 @@ func init() {
 
 
 func ServeError(c appengine.Context, w http.ResponseWriter, err error) {
-	http.Error(w, err.Error(), http.StatusInternalServerError)
 	c.Errorf("%v", err)
+	er := &ErrorResponse{err.Error()}
+	js,err:=json.Marshal(er)
+	fmt.Fprintf(w, "%s", string(js[:len(js)]))
 }
 
 
