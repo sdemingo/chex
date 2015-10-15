@@ -19,14 +19,12 @@ import (
 func init() {
 	http.HandleFunc("/users/logout", logout)
 
-
 	http.HandleFunc("/users/get", getUser)
-	http.HandleFunc("/users/edit", addUser)
+	http.HandleFunc("/users/new", addUser)
 
 	http.HandleFunc("/users/listForm",allUsersForm)
 	http.HandleFunc("/users/newForm",newUserForm)
 
-	http.HandleFunc("/users/init", initUsers)
 
 }
 
@@ -70,6 +68,7 @@ func getUser (w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// return the user updated or created
 	fmt.Fprintf(w, "%s", string(jbody[:len(jbody)]))
 }
 
@@ -258,54 +257,6 @@ func CheckPerm(w http.ResponseWriter, r *http.Request, op byte)(error) {
 	// Si es admin puede cualquier cosa
 	return nil
 }
-
-
-
-
-
-
-/***************************************************************************/
-
-/*******                     Debug!!!!                               *******/  
-
-/***************************************************************************/
-
-
-
-func initUsers(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-
-	nu:=new(NUser)
-	nu.Mail="admin@chex"
-	nu.Name="Administrador"
-	nu.Role=ROLE_ADMIN
-
-	key := datastore.NewKey(c, "users", "", 0, nil)
-	key, _ = datastore.Put(c, key, nu)
-	nu.Id = key.IntID()
-
-	nu=new(NUser)
-	nu.Mail="teacher@chex"
-	nu.Name="Profesor"
-	nu.Role=ROLE_TEACHER
-
-	key = datastore.NewKey(c, "users", "", 0, nil)
-	key, _ = datastore.Put(c, key, nu)
-	nu.Id = key.IntID()
-
-
-	nu=new(NUser)
-	nu.Mail="student@chex"
-	nu.Name="Estudiante"
-	nu.Role=ROLE_STUDENT
-
-	key = datastore.NewKey(c, "users", "", 0, nil)
-	key, _ = datastore.Put(c, key, nu)
-	nu.Id = key.IntID()
-
-}
-
-
 
 
 
