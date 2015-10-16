@@ -47,6 +47,11 @@ func AppError(wr WrapperRequest, w http.ResponseWriter, err error) {
 }
 
 
+func AppWarning(wr WrapperRequest, msg string) {
+	wr.C.Infof("%s", msg)
+}
+
+
 
 func AppLogout (w http.ResponseWriter, r *http.Request) {
 	wr:=NewWrapperRequest(r)
