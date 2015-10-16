@@ -3,15 +3,12 @@ package users
 import (
 	"fmt"
 	"net/http"
-	"app"
 	"errors"
-	"encoding/json"
+	//"encoding/json"
 	//"strconv"
 	"html/template"
 
-	"appengine"
-	"appengine/user"
-	"appengine/datastore"
+	"app"
 )
 
 
@@ -19,12 +16,13 @@ import (
 // Routes
 
 func init() {
-	http.HandleFunc("/users/logout", logout)
-	http.HandleFunc("/users/get", getUser)
-	http.HandleFunc("/users/new", addUser)
+	http.HandleFunc("/users/logout", app.AppLogout)
+	http.HandleFunc("/users/get", getOneUser)
+	http.HandleFunc("/users/list", getListUsers)
+	/*http.HandleFunc("/users/add", addUser)
+	http.HandleFunc("/users/new", newUserForm)
+	http.HandleFunc("/users/list",allUsersForm)*/
 
-	http.HandleFunc("/users/listForm",allUsersForm)
-	http.HandleFunc("/users/newForm",newUserForm)
 
 
 }
@@ -38,42 +36,82 @@ var listTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
 var newTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
 	"appengine/users/tmpl/new.html"))
 
+var viewTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
+	"appengine/users/tmpl/view.html"))
 
 
 
-func getUser (w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-	CheckPerm(w,r,OP_VIEW)
+func getOneUser (w http.ResponseWriter, r *http.Request) {
+	wr:=app.NewWrapperRequest(r)
+	CheckPerm(w,wr,OP_VIEW)
 
-	r.ParseForm()
+	wr.R.ParseForm()
 
-	var nu NUser
-	var err error
-
-	if r.Form["id"]!=nil{
-		nu,err=GetUserById(c,r.Form["id"][0])
+	nus,err:=Get(wr,wr.R.Form)
+	if len(nus)==0 || err!=nil{
+		app.AppError(wr,w,errors.New("Usuario no encontrado"))
+		return
 	}
 
-	if r.Form["mail"]!=nil{
-		nu,err=GetUserById(c,r.Form["mail"][0])
-	}
-
+	user,err:=GetCurrentUser(wr)
 	if err!=nil{
-		app.ServeError(c,w,err)
+		app.AppError(wr,w,err)
+		return
+	}
+	
+	tc := make(map[string]interface{})
+	tc["User"] = user
+	tc["Content"] = nus[0]
+
+	if err := viewTmpl.Execute(w, tc); err != nil {
+		app.AppError(wr,w,err)
+		return
+	}
+}
+
+
+func getListUsers (w http.ResponseWriter, r *http.Request) {
+	wr:=app.NewWrapperRequest(r)
+	if err:=CheckPerm(w,wr,OP_ADMIN); err!=nil{
 		return
 	}
 
-	jbody,err:=json.Marshal(nu)
-	if err != nil {
-		app.ServeError(c,w,err)
+	user,err:=GetCurrentUser(wr)
+	if err!=nil{
+		app.AppError(wr,w,err)
 		return
 	}
 
-	fmt.Fprintf(w, "%s", string(jbody[:len(jbody)]))
+	filters:=make(map[string][]string)
+	filters["Role"]=[]string{fmt.Sprintf("%d",ROLE_ADMIN)}
+	admins,err:=Get(wr,filters)
+
+	filters["Role"]=[]string{fmt.Sprintf("%d",ROLE_TEACHER)}
+	teachers,err:=Get(wr,filters)
+
+	filters["Role"]=[]string{fmt.Sprintf("%d",ROLE_STUDENT)}
+	students,err:=Get(wr,filters)
+/*
+	admins,err:=GetUsersByRole(wr,fmt.Sprintf("%d",ROLE_ADMIN))
+	teachers,err:=GetUsersByRole(wr,fmt.Sprintf("%d",ROLE_TEACHER))
+	students,err:=GetUsersByRole(wr,fmt.Sprintf("%d",ROLE_STUDENT))
+*/
+
+	tc := make(map[string]interface{})
+	tc["User"] = user
+	tc["Admins"] = admins
+	tc["Teachers"] = teachers
+	tc["Students"] = students
+
+	if err := listTmpl.Execute(w, tc); err != nil {
+		app.AppError(wr,w,err)
+		return
+	}
 }
 
 
 
+/*
 func addUser(w http.ResponseWriter, r *http.Request) {
 	var err error
 
@@ -181,72 +219,39 @@ func newUserForm(w http.ResponseWriter, r *http.Request) {
 
 
 
-
-func logout (w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-	u := user.Current(c)
-
-	if u == nil {
-		RedirectUserLogin(w,r)
-		return
-	}
-
-	url, err := user.LogoutURL(c, r.URL.String())
-	if err != nil {
-		app.ServeError(c,w,err)
-		return
-	}
-	w.Header().Set("Location", url)
-	w.WriteHeader(http.StatusFound)
-}
+*/
 
 
 
 
 
-func RedirectUserLogin(w http.ResponseWriter, r *http.Request){
-	c := appengine.NewContext(r)
-	url, err := user.LoginURL(c, r.URL.String())
-	if err != nil {
-		app.ServeError(c,w,err)
-		return
-	}
-	w.Header().Set("Location", url)
-	w.WriteHeader(http.StatusFound)
-}
 
 
+func CheckPerm(w http.ResponseWriter, wr app.WrapperRequest, op byte)(error) {
 
-
-
-func CheckPerm(w http.ResponseWriter, r *http.Request, op byte)(error) {
-
-	c := appengine.NewContext(r)
-	u := user.Current(c)
-
-	if u == nil {
-		c.Infof("Not user session founded to check perm")
-		RedirectUserLogin(w,r)
+	if wr.U == nil {
+		wr.C.Infof("Not user session founded to check perm")
+		app.RedirectUserLogin(w,wr.R)
 		return errors.New("user not exits")
 	}
 
-	if (!user.IsAdmin(c)){
+	if (!wr.IsAdminRequest()){
 		// Si no es admin, deberiamos buscarlo en nuestra base
 		// de datos de usuarios permitidos y comprobar si 
 		// con su rol puede hacer dicha operación
 		// De esa busqueda calculamos la variable perm y la comparamos
 		// con op
 
-		nu,err:=GetCurrentUser(c)
+		nu,err:=GetCurrentUser(wr)
 		if err!=nil{
-			RedirectUserLogin(w,r)
+			app.RedirectUserLogin(w,wr.R)
 			return err
 		}
 
 		if !IsAllowed(nu.Role,op){
-			c.Infof("Perm:"+fmt.Sprintf("%b",nu.Role)+" "+fmt.Sprintf("%b",op))
-	                c.Infof("User "+nu.Mail+" failed allowed access")
-			RedirectUserLogin(w,r)
+			wr.C.Infof("Perm:"+fmt.Sprintf("%b",nu.Role)+" "+fmt.Sprintf("%b",op))
+	                wr.C.Infof("User "+nu.Mail+" failed allowed access")
+			app.RedirectUserLogin(w,wr.R)
 			return err
 		}
 

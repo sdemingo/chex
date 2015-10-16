@@ -4,10 +4,8 @@ import (
 	//"fmt"
 	"net/http"
 	"html/template"
+
 	"app"
-	//"errors"
-	
-	"appengine"
 	"appengine/users"  //my users
 )
 
@@ -17,7 +15,7 @@ import (
 
 func init() {
 	http.HandleFunc("/test/all", getAllTest)
-	http.HandleFunc("/test/new", newTest)
+	//http.HandleFunc("/test/new", newTest)
 }
 
 
@@ -37,15 +35,15 @@ var newTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
 // Handlers
 
 func getAllTest (w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
+	wr:=app.NewWrapperRequest(r)
 
-	nu,err:=users.GetCurrentUser(c)
+	nu,err:=users.GetCurrentUser(wr)
 	if err!=nil{
-		users.RedirectUserLogin(w,r)
+		app.RedirectUserLogin(w,r)
 		return
 	}
 	
-	if err:=users.CheckPerm(w,r,users.OP_VIEW); err!=nil{
+	if err:=users.CheckPerm(w,wr,users.OP_VIEW); err!=nil{
 		return
 	}
 
@@ -69,13 +67,13 @@ func getAllTest (w http.ResponseWriter, r *http.Request) {
 	tc["Content"] = tests
 
 	if err := listTmpl.Execute(w, tc); err != nil {
-		app.ServeError(c,w,err)
+		app.AppError(wr,w,err)
 		return
 	}
 }
 
 
-
+/*
 func newTest (w http.ResponseWriter, r *http.Request) {
 	
 	c := appengine.NewContext(r)
@@ -103,7 +101,7 @@ func newTest (w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
+*/
 
 
 
