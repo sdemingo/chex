@@ -3,6 +3,7 @@ package users
 import (
 	"errors"
 	"strconv"
+	"fmt"
 
 	"app"
 	"appengine/datastore"
@@ -75,6 +76,10 @@ func (n NUser) IsStudent()(bool){
 	return n.Role == ROLE_STUDENT || n.Role == ROLE_ADMIN || n.Role == ROLE_TEACHER
 }
 
+func (n NUser) GetEmail()(string){
+	return n.Mail
+}
+
 
 func (n NUser) IsValid()(err error){
 
@@ -87,6 +92,30 @@ func (n NUser) IsValid()(err error){
 	}
 
 	return
+}
+
+
+
+
+
+func (n NUser) CheckPerm(wr app.WrapperRequest, op byte)(error) {
+
+	if (!n.IsAdmin()){
+		// Si no es admin, deberiamos buscarlo en nuestra base
+		// de datos de usuarios permitidos y comprobar si 
+		// con su rol puede hacer dicha operación
+		// De esa busqueda calculamos la variable perm y la comparamos
+		// con op
+
+		if !IsAllowed(n.Role,op){
+			app.AppWarning(wr,"Perm:"+fmt.Sprintf("%b",n.Role)+" "+fmt.Sprintf("%b",op))
+	                app.AppWarning(wr,"User "+n.Mail+" failed allowed access")
+			return errors.New("Operation not allowed")
+		}
+	}
+
+	// Si es admin puede cualquier cosa
+	return nil
 }
 
 
@@ -130,9 +159,11 @@ func GetCurrentUser(wr app.WrapperRequest)(NUser, error){
 
 
 
+/*
 
+             Private functions
 
-
+*/
 
 
 

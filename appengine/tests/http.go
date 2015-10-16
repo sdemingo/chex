@@ -1,15 +1,13 @@
 package tests
 
 import (
-	//"fmt"
 	"net/http"
 	"html/template"
 
 	"app"
-	"appengine/users"  //my users
+	"appengine/users" 
 )
 
-// http://stackoverflow.com/questions/9573644/go-appengine-how-to-structure-templates-for-application
 
 // Routes
 
@@ -36,16 +34,18 @@ var newTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
 
 func getAllTest (w http.ResponseWriter, r *http.Request) {
 	wr:=app.NewWrapperRequest(r)
-
-	nu,err:=users.GetCurrentUser(wr)
+	user,err:=users.GetCurrentUser(wr)
 	if err!=nil{
-		app.RedirectUserLogin(w,r)
+		app.RedirectUserLogin(w,wr.R)
 		return
 	}
-	
-	if err:=users.CheckPerm(w,wr,users.OP_VIEW); err!=nil{
+
+	err=user.CheckPerm(wr, users.OP_VIEW)
+	if err!=nil{
+		app.AppError(wr,w,err)
 		return
 	}
+
 
 	// MOcks:
 	tests := make([]Test,10)
@@ -63,7 +63,7 @@ func getAllTest (w http.ResponseWriter, r *http.Request) {
 	
 
 	tc := make(map[string]interface{})
-	tc["User"] = nu
+	tc["User"] = user
 	tc["Content"] = tests
 
 	if err := listTmpl.Execute(w, tc); err != nil {

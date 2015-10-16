@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"errors"
-	//"encoding/json"
-	//"strconv"
 	"html/template"
 
 	"app"
@@ -43,21 +41,26 @@ var viewTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
 
 func getOneUser (w http.ResponseWriter, r *http.Request) {
 	wr:=app.NewWrapperRequest(r)
-	CheckPerm(w,wr,OP_VIEW)
+	user,err:=GetCurrentUser(wr)
+	if err!=nil{
+		app.RedirectUserLogin(w,wr.R)
+		return
+	}
+	err=user.CheckPerm(wr, OP_ADMIN)
+	if err!=nil{
+		app.AppError(wr,w,err)
+		return
+	}
+
 
 	wr.R.ParseForm()
-
 	nus,err:=Get(wr,wr.R.Form)
 	if len(nus)==0 || err!=nil{
 		app.AppError(wr,w,errors.New("Usuario no encontrado"))
 		return
 	}
 
-	user,err:=GetCurrentUser(wr)
-	if err!=nil{
-		app.AppError(wr,w,err)
-		return
-	}
+
 	
 	tc := make(map[string]interface{})
 	tc["User"] = user
@@ -72,15 +75,17 @@ func getOneUser (w http.ResponseWriter, r *http.Request) {
 
 func getListUsers (w http.ResponseWriter, r *http.Request) {
 	wr:=app.NewWrapperRequest(r)
-	if err:=CheckPerm(w,wr,OP_ADMIN); err!=nil{
+	user,err:=GetCurrentUser(wr)
+	if err!=nil{
+		app.RedirectUserLogin(w,wr.R)
 		return
 	}
-
-	user,err:=GetCurrentUser(wr)
+	err=user.CheckPerm(wr, OP_ADMIN)
 	if err!=nil{
 		app.AppError(wr,w,err)
 		return
 	}
+
 
 	filters:=make(map[string][]string)
 	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_ADMIN)}
@@ -92,11 +97,6 @@ func getListUsers (w http.ResponseWriter, r *http.Request) {
 	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_STUDENT)}
 	students,err:=Get(wr,filters)
 
-/*
-	admins,err:=GetUsersByRole(wr,fmt.Sprintf("%d",ROLE_ADMIN))
-	teachers,err:=GetUsersByRole(wr,fmt.Sprintf("%d",ROLE_TEACHER))
-	students,err:=GetUsersByRole(wr,fmt.Sprintf("%d",ROLE_STUDENT))
-*/
 
 	tc := make(map[string]interface{})
 	tc["User"] = user
@@ -222,47 +222,6 @@ func newUserForm(w http.ResponseWriter, r *http.Request) {
 
 */
 
-
-
-
-
-
-
-func CheckPerm(w http.ResponseWriter, wr app.WrapperRequest, op byte)(error) {
-
-	if wr.U == nil {
-		wr.C.Infof("Not user session founded to check perm")
-		app.RedirectUserLogin(w,wr.R)
-		return errors.New("user not exits")
-	}
-
-	if (!wr.IsAdminRequest()){
-		// Si no es admin, deberiamos buscarlo en nuestra base
-		// de datos de usuarios permitidos y comprobar si 
-		// con su rol puede hacer dicha operación
-		// De esa busqueda calculamos la variable perm y la comparamos
-		// con op
-
-		nu,err:=GetCurrentUser(wr)
-		if err!=nil{
-			app.RedirectUserLogin(w,wr.R)
-			return err
-		}
-
-		if !IsAllowed(nu.Role,op){
-			wr.C.Infof("Perm:"+fmt.Sprintf("%b",nu.Role)+" "+fmt.Sprintf("%b",op))
-	                wr.C.Infof("User "+nu.Mail+" failed allowed access")
-			app.RedirectUserLogin(w,wr.R)
-			return err
-		}
-
-		//RedirectUserLogin(w,r)
-		//return errors.New("user has not perm for the operation")
-	}
-
-	// Si es admin puede cualquier cosa
-	return nil
-}
 
 
 

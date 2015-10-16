@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"appengine"
 	"appengine/user"
-	"encoding/json"
-	"fmt"
+	//"encoding/json"
+	"html/template"
+	//"fmt"
 )
 
 
@@ -23,6 +24,7 @@ type WrapperRequest struct{
 }
 
 
+
 func NewWrapperRequest(r *http.Request) (WrapperRequest) {
 	c:=appengine.NewContext(r)
 	return WrapperRequest{r, c, user.Current(c)}
@@ -34,6 +36,9 @@ func (wr WrapperRequest) IsAdminRequest()(bool){
 
 
 
+
+
+
 func init() {
 	http.HandleFunc("/", root)
 }
@@ -41,9 +46,12 @@ func init() {
 
 func AppError(wr WrapperRequest, w http.ResponseWriter, err error) {
 	wr.C.Errorf("%v", err)
-	er := &ErrorResponse{err.Error()}
-	js,err:=json.Marshal(er)
-	fmt.Fprintf(w, "%s", string(js[:len(js)]))
+
+	errorTmpl := template.Must(template.ParseFiles("app/tmpl/error.html"))
+	if err := errorTmpl.Execute(w, err.Error()); err != nil {
+		wr.C.Errorf("%v", err)
+		return
+	}
 }
 
 
@@ -58,7 +66,7 @@ func AppLogout (w http.ResponseWriter, r *http.Request) {
 
 	url, err := user.LogoutURL(wr.C, wr.R.URL.String())
 	if err != nil {
-		AppError(wr,w,err)
+		RedirectUserLogin(w,wr.R)
 		return
 	}
 	w.Header().Set("Location", url)
