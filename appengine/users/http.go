@@ -83,14 +83,15 @@ func getListUsers (w http.ResponseWriter, r *http.Request) {
 	}
 
 	filters:=make(map[string][]string)
-	filters["Role"]=[]string{fmt.Sprintf("%d",ROLE_ADMIN)}
+	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_ADMIN)}
 	admins,err:=Get(wr,filters)
 
-	filters["Role"]=[]string{fmt.Sprintf("%d",ROLE_TEACHER)}
+	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_TEACHER)}
 	teachers,err:=Get(wr,filters)
 
-	filters["Role"]=[]string{fmt.Sprintf("%d",ROLE_STUDENT)}
+	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_STUDENT)}
 	students,err:=Get(wr,filters)
+
 /*
 	admins,err:=GetUsersByRole(wr,fmt.Sprintf("%d",ROLE_ADMIN))
 	teachers,err:=GetUsersByRole(wr,fmt.Sprintf("%d",ROLE_TEACHER))

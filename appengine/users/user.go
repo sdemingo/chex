@@ -40,21 +40,21 @@ func IsAllowed(userPerm int8, opMask byte)(bool){
 
 
 func Get(wr app.WrapperRequest,filters map[string][]string)(nus []NUser,err error){
-	if wr.R.Form["id"]!=nil{
+	if filters["id"]!=nil{
 		nu,err:=getUserById(wr,filters["id"][0])
 		nus:=make([]NUser,1)
 		nus[0]=nu
 		return nus,err
 	}
 
-	if wr.R.Form["mail"]!=nil{
+	if filters["mail"]!=nil{
 		nu,err:=getUserById(wr,filters["mail"][0])
 		nus:=make([]NUser,1)
 		nus[0]=nu
 		return nus,err
 	}
 
-	if wr.R.Form["role"]!=nil{
+	if filters["role"]!=nil{
 		nus,err:=getUsersByRole(wr,filters["role"][0])
 		return nus,err
 	}
