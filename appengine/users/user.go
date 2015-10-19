@@ -5,7 +5,7 @@ import (
 	"strconv"
 	//"fmt"
 
-	"users"
+	"app/users"
 	"appengine/srv"
 	"appengine/datastore"
 )

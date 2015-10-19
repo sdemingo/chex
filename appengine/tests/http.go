@@ -3,7 +3,7 @@ package tests
 import (
 	"errors"
 
-	"users" 
+	"app/users" 
 	"appengine/srv" 
 )
 
