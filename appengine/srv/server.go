@@ -10,7 +10,8 @@ import (
 
 	"appengine"
 	"appengine/user"
-	"appengine/users"
+	//"appengine/users"
+	"users"
 	"appengine/datastore"
 )
 

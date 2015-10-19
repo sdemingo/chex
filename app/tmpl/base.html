@@ -46,7 +46,7 @@
 	      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Opciones <span class="caret"></span></a>
 	      <ul class="dropdown-menu">
                 {{ if .User.IsAdmin }}
-		<li><a href="/users/list">Usuarios</a></li>
+		<li><a href="/users/all">Usuarios</a></li>
                 {{end}}
 		{{ if .User.IsTeacher }}
 		<li><a href="/test/new">Crear Examen</a></li>

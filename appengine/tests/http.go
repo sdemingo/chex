@@ -3,7 +3,7 @@ package tests
 import (
 	"errors"
 
-	"appengine/users" 
+	"users" 
 	"appengine/srv" 
 )
 
@@ -23,7 +23,7 @@ func GetAll (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
 
 	err:=srv.CheckPerm(wr, users.OP_VIEW)
 	if err!=nil{
-		return listTmpl, errors.New("Operation not allowed")
+		return listTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
 
