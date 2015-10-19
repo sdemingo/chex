@@ -46,10 +46,25 @@ func GetAll (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
 
 
 
+func GetOne (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
 
+	err:=srv.CheckPerm(wr, users.OP_ADMIN)
+	if err!=nil{
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
 
+	
+	wr.R.ParseForm()
+	nus,err:=getUsers(wr,wr.R.Form)
+	if len(nus)==0 || err!=nil{
+		return viewTmpl,errors.New("Usuario no encontrado")
 
+	}
 
+	tc["Content"] = nus[0]
+
+	return viewTmpl,nil
+}
 
 
 

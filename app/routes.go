@@ -20,6 +20,10 @@ func init() {
 		srv.AppHandler(w,r,users.GetAll)
 	})
 
+	http.HandleFunc("/users/get", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w,r,users.GetOne)
+	})
+
 	http.HandleFunc("/logout", srv.AppLogout)
 }
 

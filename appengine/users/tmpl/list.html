@@ -17,7 +17,7 @@
       <div class="panel-body">
 	<ul>
       {{range .Admins}}
-	  <li>{{.Mail}}</li>
+	  <li><a href="/users/get?id={{.Id}}">{{.Mail}}</a></li>
       {{end}}
 	</ul>
       </div>
@@ -31,7 +31,7 @@
       <div class="panel-body">
 	<ul>
       {{range .Teachers}}
-	  <li>{{.Mail}}</li>
+	  <li><a href="/users/get?id={{.Id}}">{{.Mail}}</a></li>
       {{end}}
 	</ul>
       </div>
@@ -45,7 +45,7 @@
       <div class="panel-body">
 	<ul>
       {{range .Students}}
-	  <li>{{.Mail}}</li>
+	  <li><a href="/users/get?id={{.Id}}">{{.Mail}}</a></li>
       {{end}}
 	</ul>
       </div>
