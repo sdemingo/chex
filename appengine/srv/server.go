@@ -3,19 +3,23 @@ package srv
 import (
 	"net/http"
 
-	//"encoding/json"
+	"encoding/json"
 	"html/template"
 	"fmt"
 	"errors"
+	"strings"
 
 	"appengine"
 	"appengine/user"
-	//"appengine/users"
 	"app/users"
+
 	"appengine/datastore"
 )
 
 
+const(
+	JSON_ACCEPT_HEADER="application/json"
+)
 
 
 type ErrorResponse struct{
@@ -29,6 +33,7 @@ type WrapperRequest struct{
 	C appengine.Context
 	U *user.User
 	NU *users.NUser
+	JsonResponse bool
 }
 
 
@@ -37,7 +42,7 @@ type WrapperHandler func(wr WrapperRequest, tc map[string]interface{}) (string, 
 
 func NewWrapperRequest(r *http.Request) (WrapperRequest) {
 	c:=appengine.NewContext(r)
-	return WrapperRequest{r, c, user.Current(c),nil}
+	return WrapperRequest{r, c, user.Current(c),nil,false}
 }
 
 func (wr WrapperRequest) IsAdminRequest()(bool){
@@ -55,21 +60,37 @@ func AppHandler(w http.ResponseWriter, r *http.Request, whandler WrapperHandler)
 		return
 	}
 
+	rformat:=r.Header.Get("Accept")
+	wr.JsonResponse = (strings.Index(rformat,JSON_ACCEPT_HEADER)>=0)
+
+	// Perform the Handler
 	rdata := make(map[string]interface{})
 	rdata["User"] = wr.NU
 	tmplName,err:=whandler(wr, rdata)
-
 	if err!=nil{
 		AppError(wr,w,err)
 		return
 	}
 
-	tmpl:= template.Must(template.ParseFiles("app/tmpl/base.html",
+
+	if wr.JsonResponse {
+		// Json Response
+		jbody,err:=json.Marshal(rdata["Content"])
+		if err != nil {
+			AppError(wr,w,err)
+			return
+		}
+		fmt.Fprintf(w, "%s", string(jbody[:len(jbody)]))
+
+	}else{
+		// HTML Response
+		tmpl:= template.Must(template.ParseFiles("app/tmpl/base.html",
 		tmplName))
 
-	if err := tmpl.Execute(w, rdata); err != nil {
-		AppError(wr,w,err)
-		return
+		if err := tmpl.Execute(w, rdata); err != nil {
+			AppError(wr,w,err)
+			return
+		}
 	}
 
 }
@@ -79,10 +100,21 @@ func AppHandler(w http.ResponseWriter, r *http.Request, whandler WrapperHandler)
 func AppError(wr WrapperRequest, w http.ResponseWriter, err error) {
 	wr.C.Errorf("%v", err)
 
-	errorTmpl := template.Must(template.ParseFiles("app/tmpl/error.html"))
-	if err := errorTmpl.Execute(w, err.Error()); err != nil {
-		wr.C.Errorf("%v", err)
-		return
+	if wr.JsonResponse{
+		// Json Response
+		jbody,err:=json.Marshal(ErrorResponse{err.Error()})
+		if err != nil {
+			wr.C.Errorf("%v", err)
+			return
+		}
+		fmt.Fprintf(w, "%s", string(jbody[:len(jbody)]))
+	}else{
+		// HTML Response
+		errorTmpl := template.Must(template.ParseFiles("app/tmpl/error.html"))
+		if err := errorTmpl.Execute(w, err.Error()); err != nil {
+			wr.C.Errorf("%v", err)
+			return
+		}
 	}
 }
 

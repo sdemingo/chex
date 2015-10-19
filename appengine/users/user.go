@@ -23,7 +23,7 @@ func getUsers(wr srv.WrapperRequest, filters map[string][]string)(nus []users.NU
 	}
 
 	if filters["mail"]!=nil{
-		nu,err:=getUserById(wr,filters["mail"][0])
+		nu,err:=getUserByMail(wr,filters["mail"][0])
 		nus:=make([]users.NUser,1)
 		nus[0]=nu
 		return nus,err
@@ -37,6 +37,28 @@ func getUsers(wr srv.WrapperRequest, filters map[string][]string)(nus []users.NU
 	return
 }
 
+
+func putUser(wr srv.WrapperRequest, nu users.NUser)(error){
+
+	if err := nu.IsValid(); err!=nil{
+		return err
+	}
+
+	_,err:=getUserByMail(wr,nu.Mail)
+	if err==nil{
+		return errors.New("Usuario duplicado")
+	}
+
+	key := datastore.NewKey(wr.C, "users", "", 0, nil)
+	key, err = datastore.Put(wr.C, key, &nu)
+	if err!=nil{
+		return err
+	}
+	
+	nu.Id = key.IntID()
+
+	return nil
+}
 
 
 

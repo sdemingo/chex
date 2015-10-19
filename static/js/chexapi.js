@@ -17,7 +17,7 @@ function responseHandler(data,success,error){
 
 function addUser(u,success,error){
     $.ajax({
-	url:DOMAIN+'/users/new',
+	url:DOMAIN+'/users/add',
 	type: 'post',
 	dataType: 'json',
 	data: JSON.stringify(u),
