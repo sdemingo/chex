@@ -2,9 +2,11 @@ package users
 
 
 import (
-	//"errors"
+	"errors"
+	"fmt"
 
-	//"appengine/srv" 
+	"users"
+	"appengine/srv" 
 )
 
 
@@ -16,24 +18,24 @@ var newTmpl  = "appengine/users/tmpl/new.html"
 var viewTmpl = "appengine/users/tmpl/view.html"
 
 
-/*
+
 func GetAll (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
 
 	err:=srv.CheckPerm(wr, users.OP_ADMIN)
 	if err!=nil{
-		return listTmpl, errors.New("Operation not allowed")
+		return listTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
 
 	filters:=make(map[string][]string)
-	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_ADMIN)}
-	admins,err:=Get(wr,filters)
+	filters["role"]=[]string{fmt.Sprintf("%d",users.ROLE_ADMIN)}
+	admins,err:=getUsers(wr,filters)
 
-	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_TEACHER)}
-	teachers,err:=Get(wr,filters)
+	filters["role"]=[]string{fmt.Sprintf("%d",users.ROLE_TEACHER)}
+	teachers,err:=getUsers(wr,filters)
 
-	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_STUDENT)}
-	students,err:=Get(wr,filters)
+	filters["role"]=[]string{fmt.Sprintf("%d",users.ROLE_STUDENT)}
+	students,err:=getUsers(wr,filters)
 
 	tc["Admins"] = admins
 	tc["Teachers"] = teachers
@@ -42,7 +44,7 @@ func GetAll (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
 	return listTmpl,nil
 }
 
-*/
+
 
 
 
