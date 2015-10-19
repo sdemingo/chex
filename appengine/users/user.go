@@ -3,9 +3,9 @@ package users
 import (
 	"errors"
 	"strconv"
-	"fmt"
+	//"fmt"
 
-	"app"
+	"appengine"
 	"appengine/datastore"
 )
 
@@ -40,23 +40,23 @@ func IsAllowed(userPerm int8, opMask byte)(bool){
 }
 
 
-func Get(wr app.WrapperRequest,filters map[string][]string)(nus []NUser,err error){
+func Get(c appengine.Context, filters map[string][]string)(nus []NUser,err error){
 	if filters["id"]!=nil{
-		nu,err:=getUserById(wr,filters["id"][0])
+		nu,err:=getUserById(c,filters["id"][0])
 		nus:=make([]NUser,1)
 		nus[0]=nu
 		return nus,err
 	}
 
 	if filters["mail"]!=nil{
-		nu,err:=getUserById(wr,filters["mail"][0])
+		nu,err:=getUserById(c,filters["mail"][0])
 		nus:=make([]NUser,1)
 		nus[0]=nu
 		return nus,err
 	}
 
 	if filters["role"]!=nil{
-		nus,err:=getUsersByRole(wr,filters["role"][0])
+		nus,err:=getUsersByRole(c,filters["role"][0])
 		return nus,err
 	}
 
@@ -98,83 +98,18 @@ func (n NUser) IsValid()(err error){
 
 
 
-func (n NUser) CheckPerm(wr app.WrapperRequest, op byte)(error) {
-
-	if (!n.IsAdmin()){
-		// Si no es admin, deberiamos buscarlo en nuestra base
-		// de datos de usuarios permitidos y comprobar si 
-		// con su rol puede hacer dicha operación
-		// De esa busqueda calculamos la variable perm y la comparamos
-		// con op
-
-		if !IsAllowed(n.Role,op){
-			app.AppWarning(wr,"Perm:"+fmt.Sprintf("%b",n.Role)+" "+fmt.Sprintf("%b",op))
-	                app.AppWarning(wr,"User "+n.Mail+" failed allowed access")
-			return errors.New("Operation not allowed")
-		}
-	}
-
-	// Si es admin puede cualquier cosa
-	return nil
-}
-
-
-
-func GetCurrentUser(wr app.WrapperRequest)(NUser, error){
-
-	// Busco información del usuario de sesión
-
-	var nu NUser
-	u := wr.U
-	if u==nil{
-		return nu,errors.New("No user session founded")
-	}
-
-	q := datastore.NewQuery("users").Filter("Mail =",u.Email)
-	var nusers []NUser
-	keys,_:= q.GetAll(wr.C, &nusers)
-	
-	if (len(nusers)<=0){
-		// El usuario de sesión no esta en el datastore
-		// Usamos el admin de la app aunque no este en el datastore
-		if wr.IsAdminRequest(){
-			nu = NUser{-1,u.Email,"Administrador",ROLE_ADMIN}
-		}else{
-			return nu, errors.New("No user id found")
-		}
-	}else{
-		nu=nusers[0]
-		nu.Id=keys[0].IntID()
-	}
-	return nu,nil
-}
 
 
 
 
 
-
-
-
-
-
-
-/*
-
-             Private functions
-
-*/
-
-
-
-
-func getUserByMail(wr app.WrapperRequest, email string)(NUser, error){
+func getUserByMail(c appengine.Context, email string)(NUser, error){
 	var nus []NUser
 	var nu NUser
 	
 	q := datastore.NewQuery("users").Filter("Mail =", email)
 
-	keys, err := q.GetAll(wr.C, &nus)
+	keys, err := q.GetAll(c, &nus)
 	if (len(keys)==0) || err!=nil{
 		return nu, errors.New("User not found. Bad mail")
 	}
@@ -185,7 +120,7 @@ func getUserByMail(wr app.WrapperRequest, email string)(NUser, error){
 }
 
 
-func getUserById(wr app.WrapperRequest, s_id string)(NUser, error){
+func getUserById(c appengine.Context, s_id string)(NUser, error){
 
 	var nu NUser
 
@@ -195,8 +130,8 @@ func getUserById(wr app.WrapperRequest, s_id string)(NUser, error){
 	}
 
 	if id!=0{
-		k := datastore.NewKey(wr.C, "users", "", id, nil)
-		datastore.Get(wr.C, k, &nu)
+		k := datastore.NewKey(c, "users", "", id, nil)
+		datastore.Get(c, k, &nu)
 	}else{
 		return nu, errors.New("User not found. Bad ID")
 	}
@@ -205,7 +140,7 @@ func getUserById(wr app.WrapperRequest, s_id string)(NUser, error){
 }
 
 
-func getUsersByRole(wr app.WrapperRequest, s_role string)([]NUser, error){
+func getUsersByRole(c appengine.Context, s_role string)([]NUser, error){
 	var nus []NUser
 
 	role,err:=strconv.ParseInt(s_role,10,64)
@@ -215,7 +150,7 @@ func getUsersByRole(wr app.WrapperRequest, s_role string)([]NUser, error){
 	
 	q := datastore.NewQuery("users").Filter("Role =", role)
 
-	keys, err := q.GetAll(wr.C, &nus)
+	keys, err := q.GetAll(c, &nus)
 	if (len(keys)==0) || err!=nil{
 		return nus, errors.New("User not found. Bad role")
 	}
@@ -227,5 +162,4 @@ func getUsersByRole(wr app.WrapperRequest, s_role string)([]NUser, error){
 	return nus,nil
 
 }
-
 

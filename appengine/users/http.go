@@ -1,5 +1,6 @@
 package users
 
+
 import (
 	"fmt"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 )
 
 
+/*
 
 // Routes
 
@@ -17,25 +19,16 @@ func init() {
 	http.HandleFunc("/users/logout", app.AppLogout)
 	http.HandleFunc("/users/get", getOneUser)
 	http.HandleFunc("/users/list", getListUsers)
-	/*http.HandleFunc("/users/add", addUser)
-	http.HandleFunc("/users/new", newUserForm)
-	http.HandleFunc("/users/list",allUsersForm)*/
-
-
-
 }
+
+*/
 
 
 // Templates
 
-var listTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
-	"appengine/users/tmpl/list.html"))
-
-var newTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
-	"appengine/users/tmpl/new.html"))
-
-var viewTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
-	"appengine/users/tmpl/view.html"))
+var listTmpl = "appengine/users/tmpl/list.html"
+var newTmpl  = "appengine/users/tmpl/new.html"
+var viewTmpl = "appengine/users/tmpl/view.html"
 
 
 
@@ -109,6 +102,24 @@ func getListUsers (w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

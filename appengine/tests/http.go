@@ -1,49 +1,29 @@
 package tests
 
 import (
-	"net/http"
-	"html/template"
+	"errors"
 
-	"app"
 	"appengine/users" 
+	"appengine/srv" 
 )
-
-
-// Routes
-
-func init() {
-	http.HandleFunc("/test/all", getAllTest)
-	//http.HandleFunc("/test/new", newTest)
-}
-
 
 
 
 
 // Templates
 
-var listTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
-	"appengine/tests/tmpl/list.html"))
-
-var newTmpl = template.Must(template.ParseFiles("app/tmpl/base.html",
-	"appengine/tests/tmpl/new.html"))
+var listTmpl = "appengine/tests/tmpl/list.html"
+var newTmpl  = "appengine/tests/tmpl/new.html"
 
 
 
 // Handlers
 
-func getAllTest (w http.ResponseWriter, r *http.Request) {
-	wr:=app.NewWrapperRequest(r)
-	user,err:=users.GetCurrentUser(wr)
-	if err!=nil{
-		app.RedirectUserLogin(w,wr.R)
-		return
-	}
+func GetAll (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
 
-	err=user.CheckPerm(wr, users.OP_VIEW)
+	err:=srv.CheckPerm(wr, users.OP_VIEW)
 	if err!=nil{
-		app.AppError(wr,w,err)
-		return
+		return listTmpl, errors.New("Operation not allowed")
 	}
 
 
@@ -61,15 +41,9 @@ func getAllTest (w http.ResponseWriter, r *http.Request) {
 	tests[3].Title="Test de prueba4"
 	tests[3].Author="Sergio de Mingo"
 	
-
-	tc := make(map[string]interface{})
-	tc["User"] = user
 	tc["Content"] = tests
 
-	if err := listTmpl.Execute(w, tc); err != nil {
-		app.AppError(wr,w,err)
-		return
-	}
+	return listTmpl, nil
 }
 
 
