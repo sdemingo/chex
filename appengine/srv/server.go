@@ -94,7 +94,6 @@ func AppWarning(wr WrapperRequest, msg string) {
 
 func AppLogout (w http.ResponseWriter, r *http.Request) {
 	wr:=NewWrapperRequest(r)
-
 	RedirectUserLogin(w,wr.R)
 }
 

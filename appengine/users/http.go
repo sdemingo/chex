@@ -2,26 +2,11 @@ package users
 
 
 import (
-	"fmt"
-	"net/http"
-	"errors"
-	"html/template"
+	//"errors"
 
-	"app"
+	//"appengine/srv" 
 )
 
-
-/*
-
-// Routes
-
-func init() {
-	http.HandleFunc("/users/logout", app.AppLogout)
-	http.HandleFunc("/users/get", getOneUser)
-	http.HandleFunc("/users/list", getListUsers)
-}
-
-*/
 
 
 // Templates
@@ -31,7 +16,42 @@ var newTmpl  = "appengine/users/tmpl/new.html"
 var viewTmpl = "appengine/users/tmpl/view.html"
 
 
+/*
+func GetAll (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
 
+	err:=srv.CheckPerm(wr, users.OP_ADMIN)
+	if err!=nil{
+		return listTmpl, errors.New("Operation not allowed")
+	}
+
+
+	filters:=make(map[string][]string)
+	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_ADMIN)}
+	admins,err:=Get(wr,filters)
+
+	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_TEACHER)}
+	teachers,err:=Get(wr,filters)
+
+	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_STUDENT)}
+	students,err:=Get(wr,filters)
+
+	tc["Admins"] = admins
+	tc["Teachers"] = teachers
+	tc["Students"] = students
+
+	return listTmpl,nil
+}
+
+*/
+
+
+
+
+
+
+
+
+/*
 func getOneUser (w http.ResponseWriter, r *http.Request) {
 	wr:=app.NewWrapperRequest(r)
 	user,err:=GetCurrentUser(wr)
@@ -65,59 +85,7 @@ func getOneUser (w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-func getListUsers (w http.ResponseWriter, r *http.Request) {
-	wr:=app.NewWrapperRequest(r)
-	user,err:=GetCurrentUser(wr)
-	if err!=nil{
-		app.RedirectUserLogin(w,wr.R)
-		return
-	}
-	err=user.CheckPerm(wr, OP_ADMIN)
-	if err!=nil{
-		app.AppError(wr,w,err)
-		return
-	}
-
-
-	filters:=make(map[string][]string)
-	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_ADMIN)}
-	admins,err:=Get(wr,filters)
-
-	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_TEACHER)}
-	teachers,err:=Get(wr,filters)
-
-	filters["role"]=[]string{fmt.Sprintf("%d",ROLE_STUDENT)}
-	students,err:=Get(wr,filters)
-
-
-	tc := make(map[string]interface{})
-	tc["User"] = user
-	tc["Admins"] = admins
-	tc["Teachers"] = teachers
-	tc["Students"] = students
-
-	if err := listTmpl.Execute(w, tc); err != nil {
-		app.AppError(wr,w,err)
-		return
-	}
-}
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -1,4 +1,4 @@
-package mux
+package app
 
 
 import (
@@ -14,5 +14,7 @@ func init() {
 	http.HandleFunc("/test/all", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w,r,tests.GetAll)
 	})
+
+	http.HandleFunc("/logout", srv.AppLogout)
 }
 
