@@ -97,7 +97,7 @@ func getUsersByRole(wr srv.WrapperRequest, s_role string)([]users.NUser, error){
 	}
 
 	for i:=0;i<len(nus);i++{
-		nus[i].Id=keys[0].IntID()
+		nus[i].Id=keys[i].IntID()
 	}
 
 	return nus,nil
