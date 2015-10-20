@@ -27,6 +27,7 @@ type NUser struct{
 	Mail string  
 	Name string
 	Role int8    `json:",string"`
+	Tags []string
 }
 
 
@@ -35,6 +36,10 @@ func IsAllowed(userPerm int8, opMask byte)(bool){
 	return opMask == byte(userPerm) & opMask
 }
 
+func New(mail string, name string, role int8)(NUser) {
+	nu := NUser{-1,mail,name,role,make([]string,10)}
+	return nu
+}
 
 
 func (n  NUser) IsAdmin()(bool){

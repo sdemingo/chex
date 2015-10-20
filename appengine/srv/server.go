@@ -163,7 +163,7 @@ func GetCurrentUser(wr *WrapperRequest)(error){
 		// El usuario de sesión no esta en el datastore
 		// Usamos el admin de la app aunque no este en el datastore
 		if wr.IsAdminRequest(){
-			nu = users.NUser{-1,u.Email,"Administrador",users.ROLE_ADMIN}
+			nu = users.New(u.Email,"Administrador",users.ROLE_ADMIN)
 		}else{
 			return errors.New("No user id found")
 		}
