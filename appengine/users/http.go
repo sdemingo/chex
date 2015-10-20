@@ -15,7 +15,7 @@ import (
 // Templates
 
 var listTmpl = "appengine/users/tmpl/list.html"
-var newTmpl  = "appengine/users/tmpl/new.html"
+var newTmpl  = "appengine/users/tmpl/edit.html"
 var viewTmpl = "appengine/users/tmpl/view.html"
 
 
@@ -54,12 +54,10 @@ func GetOne (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
 		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
-	
 	wr.R.ParseForm()
 	nus,err:=getUsers(wr,wr.R.Form)
 	if len(nus)==0 || err!=nil{
 		return viewTmpl,errors.New("Usuario no encontrado")
-
 	}
 
 	tc["Content"] = nus[0]
@@ -72,6 +70,50 @@ func New (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
 	return newTmpl,nil
 }
 
+
+func Edit (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
+	
+	err:=srv.CheckPerm(wr, users.OP_ADMIN)
+	if err!=nil{
+		return newTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	wr.R.ParseForm()
+	nus,err:=getUsers(wr,wr.R.Form)
+	if len(nus)==0 || err!=nil{
+		return viewTmpl,errors.New("Usuario no encontrado")
+	}
+
+	tc["Content"] = nus[0]
+
+	return newTmpl,nil
+}
+
+
+func Update(wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
+
+	err:=srv.CheckPerm(wr, users.OP_ADMIN)
+	if err!=nil{
+		return "", errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	var nu users.NUser 
+
+	decoder := json.NewDecoder(wr.R.Body)
+	err = decoder.Decode(&nu)
+	if err != nil {
+		return "",err
+	}
+
+	err = updateUser(wr,nu)
+	if err != nil {
+		return "",err
+	}
+	
+	tc["Content"] = nu
+
+	return "",nil
+}
 
 
 func Add (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
@@ -91,7 +133,8 @@ func Add (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
 	err = putUser(wr,nu)
 	if err != nil {
 		return "",err
-	}	
+	}
+	
 	tc["Content"] = nu
 
 	return "",nil

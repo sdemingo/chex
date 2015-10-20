@@ -3,7 +3,7 @@ package users
 import (
 	"errors"
 	"strconv"
-	//"fmt"
+	"fmt"
 
 	"app/users"
 	"appengine/srv"
@@ -61,6 +61,28 @@ func putUser(wr srv.WrapperRequest, nu users.NUser)(error){
 }
 
 
+func updateUser(wr srv.WrapperRequest, nu users.NUser)(error){
+
+	if err := nu.IsValid(); err!=nil{
+		return err
+	}
+
+	old,err:=getUserById(wr,fmt.Sprintf("%d",nu.Id))
+	if err!=nil{
+		return errors.New("Usuario no encontrado")
+	}
+
+	nu.Mail=old.Mail
+	key := datastore.NewKey(wr.C, "users", "", old.Id, nil)
+	key, err = datastore.Put(wr.C, key, &nu)
+	if err!=nil{
+		return err
+	}
+	
+	return nil
+}
+
+
 
 
 
@@ -98,6 +120,8 @@ func getUserById(wr srv.WrapperRequest, s_id string)(users.NUser, error){
 	}else{
 		return nu, errors.New("User not found. Bad ID")
 	}
+
+	nu.Id =  id
 
 	return nu,nil
 }

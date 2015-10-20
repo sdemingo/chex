@@ -30,3 +30,19 @@ function addUser(u,success,error){
     });
 }
 
+
+function editUser(u,success,error){
+    $.ajax({
+	url:DOMAIN+'/users/update',
+	type: 'post',
+	dataType: 'json',
+	data: JSON.stringify(u),
+	success: function(data){
+	    responseHandler(data,success,error)
+	},
+	error: function(data){
+            console.log("Server Internal Error:"+data);
+        }
+    });
+}
+

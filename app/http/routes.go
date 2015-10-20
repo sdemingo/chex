@@ -29,6 +29,12 @@ func init() {
 	http.HandleFunc("/users/add", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w,r,users.Add)
 	})
+	http.HandleFunc("/users/edit", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w,r,users.Edit)
+	})
+	http.HandleFunc("/users/update", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w,r,users.Update)
+	})
 
 
 	http.HandleFunc("/logout", srv.AppLogout)

@@ -2,6 +2,7 @@ package users
 
 import(
 	"errors"
+	"strings"
 )
 
 const (
@@ -23,7 +24,7 @@ const (
 
 
 type NUser struct{
-	Id int64     `datastore:"-"`  // ignored by datastore
+	Id int64     `json:",string" datastore:"-"`
 	Mail string  
 	Name string
 	Role int8    `json:",string"`
@@ -47,15 +48,19 @@ func (n  NUser) IsAdmin()(bool){
 }
 
 func (n  NUser) IsTeacher()(bool){
-	return n.Role == ROLE_TEACHER || n.Role == ROLE_ADMIN
+	return n.Role == ROLE_TEACHER 
 }
 
 func (n  NUser) IsStudent()(bool){
-	return n.Role == ROLE_STUDENT || n.Role == ROLE_ADMIN || n.Role == ROLE_TEACHER
+	return n.Role == ROLE_STUDENT
 }
 
 func (n  NUser) GetEmail()(string){
 	return n.Mail
+}
+
+func (n NUser) GetStringTags()(string){
+	return strings.Join(n.Tags,",")
 }
 
 
