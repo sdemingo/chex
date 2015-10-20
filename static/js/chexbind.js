@@ -2,9 +2,7 @@
 
 function chexInit(){
 
-    // New Users
-
-    $("#userEditForm #userNewSubmit").click(function(){
+    function readUserEdited(){
 	var u = $("#userEditForm").serializeObject()
 	u.Tags = u.Tags.split(",").map(function(e){
 	    return e.trim()
@@ -20,39 +18,40 @@ function chexInit(){
 	    showErrorMessage("#userEditAlert","Existen campos sin información")
 	    return
 	}
+	return u
+    }
 
+
+
+
+
+    // New Users
+
+    $("#userEditForm #userNewSubmit").click(function(){
+	var u = readUserEdited()
+	if (!u) {
+	    return
+	}
 	addUser(u,function(){
 	    showInfoMessage("#userEditAlert","Usuario creado con éxito")
 	    $("#userEditForm").each(function(){
 		this.reset();
 	    })
-	},function(){
-	    showErrorMessage("#userEditAlert","Error al crear usuario")
-	})
+		},function(){
+		    showErrorMessage("#userEditAlert","Error al crear usuario")
+		})
     })
 
 
 
 
-   // Edit Users
+    // Edit Users
 
     $("#userEditForm #userUpdateSubmit").click(function(){
-	var u = $("#userEditForm").serializeObject()
-	u.Tags = u.Tags.split(",").map(function(e){
-	    return e.trim()
-	})
-	u.Tags.clean("")
-
-	if (/\s+/.test(u.Tags.join())){
-	    showErrorMessage("#userEditAlert","Las etiquetas no pueden contener espacios")
+	var u = readUserEdited()
+	if (!u){
 	    return
 	}
-	
-	if ((u.username=="") || (u.email=="")){
-	    showErrorMessage("#userEditAlert","Existen campos sin información")
-	    return
-	}
-
 	editUser(u,function(){
 	    showInfoMessage("#userEditAlert","Usuario editado con éxito")
 	},function(){
