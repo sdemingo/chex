@@ -3,13 +3,13 @@ package tests
 
 
 
-type Test struct{
+type Question struct{
 	Id int64           `json:",string" datastore:"-"`
 	AuthorId uint64    `json:",string"`
+	SolutionId uint64  `json:",string"`
 
-	Title string
-	Description string
-	Questions []Question
+	Text string
+	Hint string
+	Options []string
 	Tags []string
 }
-
