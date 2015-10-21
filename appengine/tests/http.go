@@ -26,23 +26,6 @@ func GetAll (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
 		return listTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
-
-	// MOcks:
-	tests := make([]Test,10)
-	tests[0].Title="Test de prueba1"
-	tests[0].Author="Sergio de Mingo"
-
-	tests[1].Title="Test de prueba2"
-	tests[1].Author="Sergio de Mingo"
-
-	tests[2].Title="Test de prueba3"
-	tests[2].Author="Sergio de Mingo"
-
-	tests[3].Title="Test de prueba4"
-	tests[3].Author="Sergio de Mingo"
-	
-	tc["Content"] = tests
-
 	return listTmpl, nil
 }
 
