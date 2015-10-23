@@ -1,23 +1,40 @@
 package http
 
-
 import (
+	"app/users"
+	"appengine/srv"
+	"errors"
 	"net/http"
 )
-
-
-
 
 func init() {
 	http.HandleFunc("/", root)
 }
 
-
-
 func root(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w,r,"/test/all",http.StatusMovedPermanently)
+	http.Redirect(w, r, "/welcome", http.StatusMovedPermanently)
 }
 
+var adminTmpl = "app/tmpl/adminWelcome.html"
+var studentTmpl = "app/tmpl/studentWelcome.html"
+var teacherTmpl = "app/tmpl/teacherWelcome.html"
 
+func Welcome(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
+	err := srv.CheckPerm(wr, users.OP_VIEW)
+	if err != nil {
+		return "", errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
 
+	// añadir más información a tc
+
+	if wr.NU.IsAdmin() {
+		return adminTmpl, nil
+	}
+
+	if wr.NU.IsTeacher() {
+		return teacherTmpl, nil
+	}
+
+	return studentTmpl, nil
+}
