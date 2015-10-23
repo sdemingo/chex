@@ -1,142 +1,151 @@
 package users
 
-
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"encoding/json"
 
 	"app/users"
-	"appengine/srv" 
+	"appengine/srv"
 )
-
-
 
 // Templates
 
 var listTmpl = "appengine/users/tmpl/list.html"
-var newTmpl  = "appengine/users/tmpl/edit.html"
+var newTmpl = "appengine/users/tmpl/edit.html"
 var viewTmpl = "appengine/users/tmpl/view.html"
+var infoTmpl = "appengine/users/tmpl/info.html"
 
+func GetAll(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
-
-func GetAll (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
-
-	err:=srv.CheckPerm(wr, users.OP_ADMIN)
-	if err!=nil{
+	err := srv.CheckPerm(wr, users.OP_ADMIN)
+	if err != nil {
 		return listTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
+	filters := make(map[string][]string)
+	filters["role"] = []string{fmt.Sprintf("%d", users.ROLE_ADMIN)}
+	admins, err := getUsers(wr, filters)
 
-	filters:=make(map[string][]string)
-	filters["role"]=[]string{fmt.Sprintf("%d",users.ROLE_ADMIN)}
-	admins,err:=getUsers(wr,filters)
+	filters["role"] = []string{fmt.Sprintf("%d", users.ROLE_TEACHER)}
+	teachers, err := getUsers(wr, filters)
 
-	filters["role"]=[]string{fmt.Sprintf("%d",users.ROLE_TEACHER)}
-	teachers,err:=getUsers(wr,filters)
-
-	filters["role"]=[]string{fmt.Sprintf("%d",users.ROLE_STUDENT)}
-	students,err:=getUsers(wr,filters)
+	filters["role"] = []string{fmt.Sprintf("%d", users.ROLE_STUDENT)}
+	students, err := getUsers(wr, filters)
 
 	tc["Admins"] = admins
 	tc["Teachers"] = teachers
 	tc["Students"] = students
 
-	return listTmpl,nil
+	return listTmpl, nil
 }
 
+func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
-
-func GetOne (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
-
-	err:=srv.CheckPerm(wr, users.OP_ADMIN)
-	if err!=nil{
+	err := srv.CheckPerm(wr, users.OP_ADMIN)
+	if err != nil {
 		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
 	wr.R.ParseForm()
-	nus,err:=getUsers(wr,wr.R.Form)
-	if len(nus)==0 || err!=nil{
-		return viewTmpl,errors.New("Usuario no encontrado")
+	nus, err := getUsers(wr, wr.R.Form)
+	if len(nus) == 0 || err != nil {
+		return viewTmpl, errors.New("Usuario no encontrado")
 	}
 
 	tc["Content"] = nus[0]
 
-	return viewTmpl,nil
+	return viewTmpl, nil
 }
 
-
-func New (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
-	return newTmpl,nil
+func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	return newTmpl, nil
 }
 
+func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
-func Edit (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
-	
-	err:=srv.CheckPerm(wr, users.OP_ADMIN)
-	if err!=nil{
+	err := srv.CheckPerm(wr, users.OP_ADMIN)
+	if err != nil {
 		return newTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
 	wr.R.ParseForm()
-	nus,err:=getUsers(wr,wr.R.Form)
-	if len(nus)==0 || err!=nil{
-		return viewTmpl,errors.New("Usuario no encontrado")
+	nus, err := getUsers(wr, wr.R.Form)
+	if len(nus) == 0 || err != nil {
+		return viewTmpl, errors.New("Usuario no encontrado")
 	}
 
 	tc["Content"] = nus[0]
 
-	return newTmpl,nil
+	return newTmpl, nil
 }
 
+func Delete(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	err := srv.CheckPerm(wr, users.OP_ADMIN)
+	if err != nil {
+		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
 
-func Update(wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
+	wr.R.ParseForm()
+	nus, err := getUsers(wr, wr.R.Form)
+	if len(nus) == 0 || err != nil {
+		return infoTmpl, errors.New("Usuario no encontrado")
+	}
+	err = deleteUser(wr, nus[0])
+	if err != nil {
+		return infoTmpl, errors.New("Usuario no encontrado")
+	}
 
-	err:=srv.CheckPerm(wr, users.OP_ADMIN)
-	if err!=nil{
+	tc["Content"] = "Usuario borrado con éxito"
+
+	return infoTmpl, nil
+}
+
+func Update(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+
+	err := srv.CheckPerm(wr, users.OP_ADMIN)
+	if err != nil {
 		return "", errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
-	var nu users.NUser 
+	var nu users.NUser
 
 	decoder := json.NewDecoder(wr.R.Body)
 	err = decoder.Decode(&nu)
 	if err != nil {
-		return "",err
+		return "", err
 	}
 
-	err = updateUser(wr,nu)
+	err = updateUser(wr, nu)
 	if err != nil {
-		return "",err
+		return "", err
 	}
-	
+
 	tc["Content"] = nu
 
-	return "",nil
+	return "", nil
 }
 
-
-func Add (wr srv.WrapperRequest, tc map[string]interface{}) (string, error){
-	err:=srv.CheckPerm(wr, users.OP_ADMIN)
-	if err!=nil{
+func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	err := srv.CheckPerm(wr, users.OP_ADMIN)
+	if err != nil {
 		return "", errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
-	var nu users.NUser 
+	var nu users.NUser
 
 	decoder := json.NewDecoder(wr.R.Body)
 	err = decoder.Decode(&nu)
 	if err != nil {
-		return "",err
+		return "", err
 	}
 
-	err = putUser(wr,nu)
+	err = putUser(wr, nu)
 	if err != nil {
-		return "",err
+		return "", err
 	}
-	
+
 	tc["Content"] = nu
 
-	return "",nil
+	return "", nil
 }
-
