@@ -10,12 +10,12 @@ function chexInit(){
 	u.Tags.clean("")
 
 	if (/\s+/.test(u.Tags.join())){
-	    showErrorMessage("#userEditAlert","Las etiquetas no pueden contener espacios")
+	    showErrorMessage("Las etiquetas no pueden contener espacios")
 	    return
 	}
 	
-	if ((u.username=="") || (u.email=="")){
-	    showErrorMessage("#userEditAlert","Existen campos sin información")
+	if ((u.Name=="") || (u.Maill=="")){
+	    showErrorMessage("Existen campos sin información")
 	    return
 	}
 	return u
@@ -33,12 +33,11 @@ function chexInit(){
 	    return
 	}
 	addUser(u,function(){
-	    showInfoMessage("#userEditAlert","Usuario creado con éxito")
-	    $("#userEditForm").each(function(){
-		this.reset();
-	    })
-		},function(){
-		    showErrorMessage("#userEditAlert","Error al crear usuario")
+	    showInfoMessage("Usuario creado con éxito")
+	    $("#userEditForm").each(function(){this.reset()})
+		}
+		,function(){
+		    showErrorMessage("Error al crear usuario")
 		})
     })
 
@@ -53,14 +52,11 @@ function chexInit(){
 	    return
 	}
 	editUser(u,function(){
-	    showInfoMessage("#userEditAlert","Usuario editado con éxito")
+	    showInfoMessage("Usuario editado con éxito")
 	},function(){
-	    showErrorMessage("#userEditAlert","Error al editar usuario")
+	    showErrorMessage("Error al editar usuario")
 	})
     })
-
-
-
 
     $(".alert").css("visibility", "hidden");
 }
@@ -73,14 +69,14 @@ function chexInit(){
 
 
 
-function showInfoMessage(selector, text) {
-    var alert = $(selector).css("visibility", "visible").addClass("alert-success").text(text)
-    window.setTimeout(function() { $(selector).removeClass("alert-success").css("visibility", "hidden") }, 1500)
+function showInfoMessage(text) {
+    var alert = $("#infoPanel").css("visibility", "visible").addClass("alert-success").text(text)
+    window.setTimeout(function() { $("#infoPanel").removeClass("alert-success").css("visibility", "hidden") }, 1500)
 }
 
-function showErrorMessage(selector, text) {
-    var alert = $(selector).css("visibility", "visible").addClass("alert-danger").text(text)
-    window.setTimeout(function() { $(selector).removeClass("alert-danger").css("visibility", "hidden") }, 1500)
+function showErrorMessage(text) {
+    var alert = $("#infoPanel").css("visibility", "visible").addClass("alert-danger").text(text)
+    window.setTimeout(function() { $("#infoPanel").removeClass("alert-danger").css("visibility", "hidden") }, 1500)
 }
 
 
