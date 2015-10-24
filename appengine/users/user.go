@@ -30,7 +30,37 @@ func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []users.N
 		return nus, err
 	}
 
+	if filters["tags"] != nil {
+		nus, err := getUsersByTags(wr, filters["tags"])
+		return nus, err
+	}
+
 	return
+}
+
+func getAllTags(wr srv.WrapperRequest) (tags []string, err error) {
+	var nus []users.NUser
+	found := make(map[string]int)
+
+	q := datastore.NewQuery("users").Order("Tags")
+
+	_, err = q.GetAll(wr.C, &nus)
+	if err != nil {
+		return tags, errors.New("User tags not found")
+	}
+
+	for i := 0; i < len(nus); i++ {
+		if len(nus[i].Tags) > 0 {
+			for j := 0; j < len(nus[i].Tags); j++ {
+				if _, ok := found[nus[i].Tags[j]]; !ok {
+					found[nus[i].Tags[j]] = 0
+					tags = append(tags, nus[i].Tags[j])
+				}
+			}
+		}
+	}
+
+	return tags, err
 }
 
 func putUser(wr srv.WrapperRequest, nu users.NUser) error {
@@ -141,5 +171,21 @@ func getUsersByRole(wr srv.WrapperRequest, s_role string) ([]users.NUser, error)
 	}
 
 	return nus, nil
+}
 
+func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]users.NUser, error) {
+	var nus []users.NUser
+
+	q := datastore.NewQuery("users").Filter("Tags =", tags)
+
+	keys, err := q.GetAll(wr.C, &nus)
+	if (len(keys) == 0) || err != nil {
+		return nus, errors.New("User not found. Bad tags")
+	}
+
+	for i := 0; i < len(nus); i++ {
+		nus[i].Id = keys[i].IntID()
+	}
+
+	return nus, nil
 }

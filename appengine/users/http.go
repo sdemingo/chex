@@ -16,6 +16,7 @@ var newTmpl = "appengine/users/tmpl/edit.html"
 var viewTmpl = "appengine/users/tmpl/view.html"
 var infoTmpl = "appengine/users/tmpl/info.html"
 
+// it would be deprecated!
 func GetAll(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	err := srv.CheckPerm(wr, users.OP_ADMIN)
@@ -40,6 +41,23 @@ func GetAll(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	return listTmpl, nil
 }
 
+func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	err := srv.CheckPerm(wr, users.OP_ADMIN)
+	if err != nil {
+		return listTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	wr.R.ParseForm()
+	nus, err := getUsers(wr, wr.R.Form)
+	if err != nil {
+		return listTmpl, errors.New("Usuarios no encontrado")
+	}
+
+	tc["Content"] = nus
+
+	return listTmpl, nil
+}
+
 func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	err := srv.CheckPerm(wr, users.OP_ADMIN)
@@ -56,6 +74,22 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	tc["Content"] = nus[0]
 
 	return viewTmpl, nil
+}
+
+func GetTags(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	err := srv.CheckPerm(wr, users.OP_VIEW)
+	if err != nil {
+		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	tags, err := getAllTags(wr)
+	if err != nil {
+		return infoTmpl, errors.New("Etiquetas no encontradas")
+	}
+
+	tc["Content"] = tags
+
+	return infoTmpl, nil
 }
 
 func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {

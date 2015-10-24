@@ -1,55 +1,26 @@
 {{define "content"}}
 
-<div class="form-group col-md-12">
-  <div class="row col-md-12 ">
-    <ul class="nav nav-pills text-right">
-      <li role="presentation" class="active"><a href="/users/all">Listar</a></li>
-      <li role="presentation" ><a href="/users/new">Crear</a></li>
-    </ul>
-  </div>
-</div>
-
 <div class="panel col-md-12">
 
-  <div class="row col-md-3">
-    <h2>Administradores</h2>
-    <div class="panel panel-default">
-      <div class="panel-body">
-	<ul>
-      {{range .Admins}}
-	  <li><a href="/users/get?id={{.Id}}">{{.Mail}}</a></li>
-      {{end}}
-	</ul>
-      </div>
+  <div class="form-group col-md-6 col-md-offset-3">
+    <form id="userListForm" method="post">
+      <input type="text" class="form-control" name="Name" placeholder="..." value="Búsqueda">
+      <a href="#" class="label label-default">Etiqueta 2</a>
+      <a href="#" class="label label-default">Etiqueta 2</a>
+      <a href="#" class="label label-default">Etiqueta 2</a>
+      <a href="#" class="label label-default">Etiqueta 2</a>
+      <a href="#" class="label label-default">Etiqueta 2</a>
+      <a href="#" class="label label-default">Etiqueta 2</a>
+      <a href="#" class="label label-default">Etiqueta 2</a>
+      <a href="#" class="label label-default">Etiqueta 2</a>
+      <a href="#" class="label label-default">Etiqueta 2</a>
+      <a href="#" class="label label-default">Etiqueta 2</a>
+    </form>
+
+    <div class="panel col-md-6 col-md-offset-3">
     </div>
   </div>
 
-
-  <div class="row col-md-3 col-md-offset-1">
-    <h2>Profesores</h2>
-    <div class="panel panel-default">
-      <div class="panel-body">
-	<ul>
-      {{range .Teachers}}
-	  <li><a href="/users/get?id={{.Id}}">{{.Mail}}</a></li>
-      {{end}}
-	</ul>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="row col-md-3 col-md-offset-1 ">
-    <h2>Estudiantes</h2>
-    <div class="panel panel-default">
-      <div class="panel-body">
-	<ul>
-      {{range .Students}}
-	  <li><a href="/users/get?id={{.Id}}">{{.Mail}}</a></li>
-      {{end}}
-	</ul>
-      </div>
-    </div>
-  </div>
+  
 </div>
 {{end}}

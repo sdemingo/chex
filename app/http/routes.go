@@ -42,5 +42,8 @@ func init() {
 	http.HandleFunc("/users/delete", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, users.Delete)
 	})
+	http.HandleFunc("/users/tags", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, users.GetTags)
+	})
 
 }
