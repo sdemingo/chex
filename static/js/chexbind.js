@@ -23,8 +23,6 @@ function chexInit(){
 
 
 
-
-
     // New Users
 
     $("#userEditForm #userNewSubmit").click(function(){
@@ -57,6 +55,42 @@ function chexInit(){
 	    showErrorMessage("Error al editar usuario")
 	})
     })
+
+
+    // List Users
+    function loadListLabels(selector){
+	getTags(function(data){
+	    $.each(data,function(i,e){
+		$(selector).append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
+	    })
+		})
+    }
+/*
+    loadListLabels("#usersTags")
+    $("#usersTags").on("click","*",function(e){
+	$(this).toggleClass("label-primary")
+    })
+    $("#usersTags").on("click",function(e){
+	tags=[]
+	$("#usersTags").find(".label-primary").each(function(){
+	    tags.push($(this).html())
+	})
+	    
+	    if (tags.length>0){
+		console.log("Hago el ajax con : "+tags)
+		console.log(JSON.stringify(tags))
+		getUsers(tags,function(data){
+		    if (data){
+			console.log("encontrados "+data.length)
+		    }else{
+			console.log("no encontro usuarios")
+		    }
+		})
+	    }
+    })
+*/
+    
+
 
     $(".alert").css("visibility", "hidden");
 }

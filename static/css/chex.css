@@ -1,6 +1,7 @@
 
 
 .label{
-    display:inline-block;
-    margin:5px 0 0 0;
+    display:block;
+    float:left;
+    margin:1px;
 }

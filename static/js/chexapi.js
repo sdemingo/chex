@@ -46,3 +46,32 @@ function editUser(u,success,error){
     });
 }
 
+
+function getTags(success,error){
+    $.ajax({
+	url:DOMAIN+'/users/tags',
+	type: 'get',
+	dataType: 'json',
+	success: function(data){
+	    responseHandler(data,success,error)
+	},
+	error: function(data){
+            console.log("Server Internal Error:"+data);
+        }
+    });
+}
+
+function getUsers(filt,success,error){
+    $.ajax({
+	url:DOMAIN+'/users/list',
+	type: 'get',
+	dataType: 'json',
+	data: {tags:filt.join(",")},
+	success: function(data){
+	    responseHandler(data,success,error)
+	},
+	error: function(data){
+            console.log("Server Internal Error:"+data);
+        }
+    });
+}

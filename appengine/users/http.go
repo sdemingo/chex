@@ -50,7 +50,7 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	wr.R.ParseForm()
 	nus, err := getUsers(wr, wr.R.Form)
 	if err != nil {
-		return listTmpl, errors.New("Usuarios no encontrado")
+		return listTmpl, err
 	}
 
 	tc["Content"] = nus

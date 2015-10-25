@@ -11,6 +11,7 @@ import (
 )
 
 func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []users.NUser, err error) {
+
 	if filters["id"] != nil {
 		nu, err := getUserById(wr, filters["id"][0])
 		nus := make([]users.NUser, 1)
@@ -79,9 +80,16 @@ func putUser(wr srv.WrapperRequest, nu users.NUser) error {
 	if err != nil {
 		return err
 	}
-
 	nu.Id = key.IntID()
 
+	// Store the user-tags relations
+	for _, tag := range nu.Tags {
+		tkey := datastore.NewKey(wr.C, "users-tags", "", 0, nil)
+		_, err = datastore.Put(wr.C, tkey, tag)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -180,6 +188,7 @@ func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]users.NUser, error)
 
 	keys, err := q.GetAll(wr.C, &nus)
 	if (len(keys) == 0) || err != nil {
+		srv.AppWarning(wr, fmt.Sprintf("%s", err))
 		return nus, errors.New("User not found. Bad tags")
 	}
 
