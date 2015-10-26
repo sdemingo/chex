@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"appengine/srv"
+	"appengine/tags"
 	"appengine/tests"
 	"appengine/users"
 )
@@ -22,7 +23,7 @@ func init() {
 
 	// Users routes
 	http.HandleFunc("/users/all", func(w http.ResponseWriter, r *http.Request) {
-		srv.AppHandler(w, r, users.GetAll)
+		srv.AppHandler(w, r, users.GetAll) // deprecated
 	})
 	http.HandleFunc("/users/get", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, users.GetOne)
@@ -45,8 +46,16 @@ func init() {
 	http.HandleFunc("/users/delete", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, users.Delete)
 	})
-	http.HandleFunc("/users/tags", func(w http.ResponseWriter, r *http.Request) {
-		srv.AppHandler(w, r, users.GetTags)
+
+	// Tags
+	http.HandleFunc("/tags/get", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, tags.GetAll)
+	})
+	http.HandleFunc("/tags/add", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, tags.Add)
+	})
+	http.HandleFunc("/tags/delete", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, tags.Delete)
 	})
 
 }

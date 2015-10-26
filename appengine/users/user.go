@@ -10,6 +10,12 @@ import (
 	"appengine/srv"
 )
 
+type UserTag struct {
+	Id     int64 `json:",string" datastore:"-"`
+	UserId int64
+	TagId  int64
+}
+
 func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []users.NUser, err error) {
 
 	if filters["id"] != nil {
@@ -39,31 +45,6 @@ func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []users.N
 	return
 }
 
-func getAllTags(wr srv.WrapperRequest) (tags []string, err error) {
-	var nus []users.NUser
-	found := make(map[string]int)
-
-	q := datastore.NewQuery("users").Order("Tags")
-
-	_, err = q.GetAll(wr.C, &nus)
-	if err != nil {
-		return tags, errors.New("User tags not found")
-	}
-
-	for i := 0; i < len(nus); i++ {
-		if len(nus[i].Tags) > 0 {
-			for j := 0; j < len(nus[i].Tags); j++ {
-				if _, ok := found[nus[i].Tags[j]]; !ok {
-					found[nus[i].Tags[j]] = 0
-					tags = append(tags, nus[i].Tags[j])
-				}
-			}
-		}
-	}
-
-	return tags, err
-}
-
 func putUser(wr srv.WrapperRequest, nu users.NUser) error {
 
 	if err := nu.IsValid(); err != nil {
@@ -82,14 +63,19 @@ func putUser(wr srv.WrapperRequest, nu users.NUser) error {
 	}
 	nu.Id = key.IntID()
 
-	// Store the user-tags relations
-	for _, tag := range nu.Tags {
-		tkey := datastore.NewKey(wr.C, "users-tags", "", 0, nil)
-		_, err = datastore.Put(wr.C, tkey, tag)
-		if err != nil {
-			return err
-		}
-	}
+	// Check the tags names in the Tag Entity
+	// Add a UserTags entry for each tag for this user
+
+	/*
+
+		// Store the user-tags relations
+		for _, tag := range nu.Tags {
+			tkey := datastore.NewKey(wr.C, "users-tags", "", 0, nil)
+			_, err = datastore.Put(wr.C, tkey, tag)
+			if err != nil {
+				return err
+			}
+		}*/
 	return nil
 }
 
