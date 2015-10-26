@@ -115,6 +115,7 @@ func getUserByMail(wr srv.WrapperRequest, email string) (users.NUser, error) {
 	}
 	nu = nus[0]
 	nu.Id = keys[0].IntID()
+	nu.Tags, _ = getUserTags(wr, nu)
 
 	return nu, nil
 }
@@ -136,6 +137,7 @@ func getUserById(wr srv.WrapperRequest, s_id string) (users.NUser, error) {
 	}
 
 	nu.Id = id
+	nu.Tags, _ = getUserTags(wr, nu)
 
 	return nu, nil
 }
@@ -157,6 +159,7 @@ func getUsersByRole(wr srv.WrapperRequest, s_role string) ([]users.NUser, error)
 
 	for i := 0; i < len(nus); i++ {
 		nus[i].Id = keys[i].IntID()
+		nus[i].Tags, _ = getUserTags(wr, nus[i])
 	}
 
 	return nus, nil
@@ -164,17 +167,47 @@ func getUsersByRole(wr srv.WrapperRequest, s_role string) ([]users.NUser, error)
 
 func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]users.NUser, error) {
 	var nus []users.NUser
+	var uTagsAll []UserTag
+	var uTags []UserTag
 
-	q := datastore.NewQuery("users").Filter("Tags =", tags)
-
-	keys, err := q.GetAll(wr.C, &nus)
-	if (len(keys) == 0) || err != nil {
-		srv.AppWarning(wr, fmt.Sprintf("%s", err))
+	q := datastore.NewQuery("users-tags")
+	_, err := q.GetAll(wr.C, &uTagsAll)
+	if err != nil {
 		return nus, errors.New("User not found. Bad tags")
 	}
 
-	for i := 0; i < len(nus); i++ {
-		nus[i].Id = keys[i].IntID()
+	// After recover all UserTags it makes a homemade filtering
+	// because dinamically filteres based on tags array are not
+	// allowed in GAE datastore
+
+	uTags = make([]UserTag, 0)
+	for _, ut := range uTagsAll {
+		filtered := 0
+		for _, filter := range tags {
+			if ut.Tag == filter {
+				filtered++
+			}
+		}
+		if filtered == len(tags) {
+			uTags = append(uTags, ut)
+		}
+	}
+
+	// Now, it recovers the users entity by the Ids
+	userMap := make(map[int64]users.NUser)
+	for _, uTag := range uTags {
+		if _, ok := userMap[uTag.UserId]; !ok {
+			nu, err := getUserById(wr, fmt.Sprintf("%d", uTag.UserId))
+			if err != nil {
+				return nus, err
+			}
+			userMap[uTag.UserId] = nu
+		}
+	}
+
+	nus = make([]users.NUser, 0)
+	for _, nu := range userMap {
+		nus = append(nus, nu)
 	}
 
 	return nus, nil
@@ -190,7 +223,7 @@ func getUserTags(wr srv.WrapperRequest, nu users.NUser) ([]string, error) {
 	if err != nil {
 		return tags, err
 	}
-	tags = make([]string, len(userTags))
+	tags = make([]string, 0)
 	for _, utag := range userTags {
 		tags = append(tags, utag.Tag)
 	}
