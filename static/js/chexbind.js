@@ -66,26 +66,29 @@ function chexInit(){
 		})
     }
 
+
+
     loadListLabels("#usersTags")
     $("#usersTags").on("click","*",function(e){
 	$(this).toggleClass("label-primary")
     })
     $("#usersTags").on("click",function(e){
 	tags=[]
+	$("#usersListed").empty()
 	$("#usersTags").find(".label-primary").each(function(){
 	    tags.push($(this).html())
 	})
-	    
 	    if (tags.length>0){
-		console.log("Hago el ajax con : "+tags)
-		console.log(JSON.stringify(tags))
-		/*getUsers(tags,function(data){
-		    if (data){
-			console.log("encontrados "+data.length)
+		getUsers(tags,function(data){
+		    // show results in the panel #usersListed
+		    if (data.length==0){
+			$("#usersListed").append("<span class=\"list-group-item\">No hubo resultados</span>")
 		    }else{
-			console.log("no encontro usuarios")
+			data.forEach(function(e){
+			    $("#usersListed").append("<a href=\"#\" class=\"list-group-item\">"+e.Name+"</a>")
+			})
 		    }
-		})*/
+		})
 	    }
     })
 
