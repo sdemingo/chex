@@ -13,7 +13,7 @@ import (
 type UserTag struct {
 	Id     int64 `json:",string" datastore:"-"`
 	UserId int64
-	TagId  int64
+	Tag    string
 }
 
 func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []users.NUser, err error) {
@@ -63,19 +63,9 @@ func putUser(wr srv.WrapperRequest, nu users.NUser) error {
 	}
 	nu.Id = key.IntID()
 
-	// Check the tags names in the Tag Entity
 	// Add a UserTags entry for each tag for this user
+	addUserTags(wr, nu)
 
-	/*
-
-		// Store the user-tags relations
-		for _, tag := range nu.Tags {
-			tkey := datastore.NewKey(wr.C, "users-tags", "", 0, nil)
-			_, err = datastore.Put(wr.C, tkey, tag)
-			if err != nil {
-				return err
-			}
-		}*/
 	return nil
 }
 
@@ -96,6 +86,11 @@ func updateUser(wr srv.WrapperRequest, nu users.NUser) error {
 	if err != nil {
 		return err
 	}
+
+	// Delete all users-tags
+	deleteUserTags(wr, nu)
+	// Add a UserTags entry for each tag for this user
+	addUserTags(wr, nu)
 
 	return nil
 }
@@ -183,4 +178,74 @@ func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]users.NUser, error)
 	}
 
 	return nus, nil
+}
+
+func getUserTags(wr srv.WrapperRequest, nu users.NUser) ([]string, error) {
+
+	var tags []string
+	var userTags []UserTag
+
+	q := datastore.NewQuery("users-tags").Filter("UserId =", nu.Id)
+	_, err := q.GetAll(wr.C, &userTags)
+	if err != nil {
+		return tags, err
+	}
+	tags = make([]string, len(userTags))
+	for _, utag := range userTags {
+		tags = append(tags, utag.Tag)
+	}
+
+	return tags, nil
+
+}
+
+func addUserTags(wr srv.WrapperRequest, nu users.NUser) error {
+	for _, tag := range nu.Tags {
+		key := datastore.NewKey(wr.C, "users-tags", "", 0, nil)
+		ut := UserTag{UserId: nu.Id, Tag: tag}
+		key, err := datastore.Put(wr.C, key, &ut)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func deleteUserTags(wr srv.WrapperRequest, nu users.NUser) error {
+	var userTags []UserTag
+
+	q := datastore.NewQuery("users-tags").Filter("UserId =", nu.Id)
+	_, err := q.GetAll(wr.C, &userTags)
+	if err != nil {
+		return err
+	}
+	for _, utag := range userTags {
+		key := datastore.NewKey(wr.C, "users-tags", "", utag.Id, nil)
+		err = datastore.Delete(wr.C, key)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func getAllUserTags(wr srv.WrapperRequest) ([]string, error) {
+	var tagsMap = make(map[string]int, 0)
+	var userTags []UserTag
+	var tags = make([]string, 0)
+
+	q := datastore.NewQuery("users-tags")
+	_, err := q.GetAll(wr.C, &userTags)
+	if err != nil {
+		return tags, err
+	}
+	tags = make([]string, len(userTags))
+	for _, utag := range userTags {
+		if _, ok := tagsMap[utag.Tag]; !ok {
+			tagsMap[utag.Tag] = 1
+			tags = append(tags, utag.Tag)
+		}
+	}
+
+	return tags, nil
 }

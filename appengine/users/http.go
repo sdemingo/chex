@@ -76,6 +76,22 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	return viewTmpl, nil
 }
 
+func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	err := srv.CheckPerm(wr, users.OP_VIEW)
+	if err != nil {
+		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	tags, err := getAllUserTags(wr)
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	tc["Content"] = tags
+
+	return infoTmpl, nil
+}
+
 func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	return newTmpl, nil
 }

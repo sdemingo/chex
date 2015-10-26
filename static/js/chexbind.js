@@ -65,7 +65,7 @@ function chexInit(){
 	    })
 		})
     }
-/*
+
     loadListLabels("#usersTags")
     $("#usersTags").on("click","*",function(e){
 	$(this).toggleClass("label-primary")
@@ -79,16 +79,16 @@ function chexInit(){
 	    if (tags.length>0){
 		console.log("Hago el ajax con : "+tags)
 		console.log(JSON.stringify(tags))
-		getUsers(tags,function(data){
+		/*getUsers(tags,function(data){
 		    if (data){
 			console.log("encontrados "+data.length)
 		    }else{
 			console.log("no encontro usuarios")
 		    }
-		})
+		})*/
 	    }
     })
-*/
+
     
 
 

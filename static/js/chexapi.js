@@ -49,7 +49,7 @@ function editUser(u,success,error){
 
 function getTags(success,error){
     $.ajax({
-	url:DOMAIN+'/users/tags',
+	url:DOMAIN+'/users/tags/list',
 	type: 'get',
 	dataType: 'json',
 	success: function(data){
