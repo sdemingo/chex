@@ -21,9 +21,7 @@ func init() {
 	})
 
 	// Users routes
-	http.HandleFunc("/users/all", func(w http.ResponseWriter, r *http.Request) {
-		srv.AppHandler(w, r, users.GetAll) // deprecated
-	})
+
 	http.HandleFunc("/users/get", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, users.GetOne)
 	})

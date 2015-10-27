@@ -16,31 +16,6 @@ var newTmpl = "appengine/users/tmpl/edit.html"
 var viewTmpl = "appengine/users/tmpl/view.html"
 var infoTmpl = "appengine/users/tmpl/info.html"
 
-// it would be deprecated!
-func GetAll(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-
-	err := srv.CheckPerm(wr, users.OP_ADMIN)
-	if err != nil {
-		return listTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
-
-	filters := make(map[string][]string)
-	filters["role"] = []string{fmt.Sprintf("%d", users.ROLE_ADMIN)}
-	admins, err := getUsers(wr, filters)
-
-	filters["role"] = []string{fmt.Sprintf("%d", users.ROLE_TEACHER)}
-	teachers, err := getUsers(wr, filters)
-
-	filters["role"] = []string{fmt.Sprintf("%d", users.ROLE_STUDENT)}
-	students, err := getUsers(wr, filters)
-
-	tc["Admins"] = admins
-	tc["Teachers"] = teachers
-	tc["Students"] = students
-
-	return listTmpl, nil
-}
-
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	err := srv.CheckPerm(wr, users.OP_ADMIN)
 	if err != nil {
