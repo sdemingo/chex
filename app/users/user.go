@@ -59,6 +59,18 @@ func (n NUser) GetStringTags() string {
 	return strings.Join(n.Tags, ",")
 }
 
+func (n NUser) GetStringRole() string {
+	switch n.Role {
+	case ROLE_ADMIN:
+		return "Administrador"
+	case ROLE_TEACHER:
+		return "Profesor"
+	case ROLE_STUDENT:
+		return "Estudiante"
+	}
+	return ""
+}
+
 func (n NUser) IsValid() (err error) {
 
 	if len(n.Name) < 0 || len(n.Name) > MAXSZUSERNAME {
