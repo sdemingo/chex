@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"app/users"
 	"appengine/datastore"
@@ -38,7 +39,7 @@ func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []users.N
 	}
 
 	if filters["tags"] != nil {
-		nus, err := getUsersByTags(wr, filters["tags"])
+		nus, err := getUsersByTags(wr, strings.Split(filters["tags"][0], ","))
 		return nus, err
 	}
 
@@ -180,16 +181,14 @@ func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]users.NUser, error)
 	// because dinamically filteres based on tags array are not
 	// allowed in GAE datastore
 
+	// busqueda inclusiva
 	uTags = make([]UserTag, 0)
 	for _, ut := range uTagsAll {
-		filtered := 0
 		for _, filter := range tags {
 			if ut.Tag == filter {
-				filtered++
+				uTags = append(uTags, ut)
+				break
 			}
-		}
-		if filtered == len(tags) {
-			uTags = append(uTags, ut)
 		}
 	}
 
