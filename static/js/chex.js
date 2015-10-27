@@ -88,7 +88,7 @@ var users = (function(){
 	});
     }
 
-    var editUser = function(){
+    var editUser = function(u){
 	$.ajax({
 	    url:DOMAIN+'/users/update',
 	    type: 'post',
@@ -138,7 +138,7 @@ var users = (function(){
 		}else{
 		    data.forEach(function(e){
 			$(settings.panel+" .results")
-			    .append("<a href=\"#\" class=\"list-group-item\">"+e.Name+"</a>")
+			    .append("<a href=\"/users/get?id="+e.Id+"\" class=\"list-group-item\">"+e.Name+"</a>")
 		    })
 		}
 	    },

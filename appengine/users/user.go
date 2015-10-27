@@ -100,6 +100,13 @@ func deleteUser(wr srv.WrapperRequest, nu users.NUser) error {
 	if err := nu.IsValid(); err != nil {
 		return err
 	}
+
+	// Delete all users-tags
+	err := deleteUserTags(wr, nu)
+	if err != nil {
+		return err
+	}
+
 	key := datastore.NewKey(wr.C, "users", "", nu.Id, nil)
 	return datastore.Delete(wr.C, key)
 }
@@ -247,10 +254,14 @@ func deleteUserTags(wr srv.WrapperRequest, nu users.NUser) error {
 	var userTags []UserTag
 
 	q := datastore.NewQuery("users-tags").Filter("UserId =", nu.Id)
-	_, err := q.GetAll(wr.C, &userTags)
+	keys, err := q.GetAll(wr.C, &userTags)
 	if err != nil {
 		return err
 	}
+	for i := 0; i < len(userTags); i++ {
+		userTags[i].Id = keys[i].IntID()
+	}
+
 	for _, utag := range userTags {
 		key := datastore.NewKey(wr.C, "users-tags", "", utag.Id, nil)
 		err = datastore.Delete(wr.C, key)
