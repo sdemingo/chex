@@ -11,10 +11,10 @@ const (
 	ROLE_STUDENT = 3
 	ROLE_GUEST   = 1
 
-	OP_VIEW    = 1 // ver tests
-	OP_CHECKIN = 2 // hacer tests
-	OP_UPDATE  = 4 // crear tests
-	OP_ADMIN   = 8 // labores de administración (crear usuarios, ....)
+	OP_VIEW   = 1 // ver tests
+	OP_MAKE   = 2 // hacer tests
+	OP_COMMIT = 4 // crear tests
+	OP_ADMIN  = 8 // labores de administración (crear usuarios, ....)
 
 	MAXSZUSERNAME = 100
 

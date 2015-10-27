@@ -3,8 +3,9 @@ package http
 import (
 	"net/http"
 
+	"appengine/questions"
 	"appengine/srv"
-	"appengine/tests"
+	//"appengine/tests"
 	"appengine/users"
 )
 
@@ -15,9 +16,12 @@ func init() {
 
 	http.HandleFunc("/logout", srv.AppLogout)
 
-	// Test routes
-	http.HandleFunc("/test/all", func(w http.ResponseWriter, r *http.Request) {
-		srv.AppHandler(w, r, tests.GetAll)
+	// Questions
+	http.HandleFunc("/questions/list", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, questions.GetList)
+	})
+	http.HandleFunc("/questions/new", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, questions.New)
 	})
 
 	// Users routes

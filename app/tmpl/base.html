@@ -41,10 +41,10 @@
 	      <ul class="dropdown-menu">
                 {{ if .User.IsAdmin}}
 		<li><a href="/users/list">Usuarios</a></li>
-		<li><a href="/test/new">Crear Examen</a></li>
+		<li><a href="/questions/list">Preguntas</a></li>
                 {{end}}
 		{{ if .User.IsTeacher}}
-		<li><a href="/test/new">Crear Examen</a></li>
+		<li><a href="/questions/list">Preguntas</a></li>
 		{{end}}
 		<li role="separator" class="divider"></li>
 		<li><a href="/logout">Salir</a></li>

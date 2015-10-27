@@ -3,7 +3,6 @@ package users
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	"app/users"
 	"appengine/srv"
@@ -23,7 +22,6 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 
 	wr.R.ParseForm()
-	srv.AppWarning(wr, fmt.Sprintf("%s", wr.R.Form["tags"]))
 	nus, err := getUsers(wr, wr.R.Form)
 	if err != nil {
 		return listTmpl, err

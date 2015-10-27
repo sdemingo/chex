@@ -1,0 +1,26 @@
+{{define "content"}}
+
+<div class="form-group col-md-12">
+  <div class="row col-md-12 ">
+    <ul class="nav nav-pills text-right">
+      <li role="presentation" class="active"><a href="/questions/new">Crear</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="row col-md-12">
+
+  <div id="questionsList" class="form-group col-md-6 col-md-offset-3">
+    <form id="questionsListForm" method="post">
+      <input type="text" class="form-control" name="Name" placeholder="..." value="Búsqueda">
+      <div class="panel label-panel tags">
+      </div>
+    </form>
+
+    <div class="panel list-group results">
+    </div>
+  </div>
+
+  
+</div>
+{{end}}

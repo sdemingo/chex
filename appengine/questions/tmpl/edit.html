@@ -1,0 +1,63 @@
+{{define "content"}}
+
+<div class="form-group col-md-12">
+  <div class="row col-md-12 ">
+    <ul class="nav nav-pills text-right">
+      <li role="presentation" class="active"><a href="/questions/list" >Volver</a></li>
+    </ul>
+  </div>
+</div>
+
+
+
+
+<div class="panel col-md-12">
+
+  <div class="form-group col-md-6 col-md-offset-3">
+    <form id="questEditForm" method="post">
+      {{if .Content}}
+      <input type="hidden" name="Id" value="{{.Content.Id}}">
+      {{end}}
+      
+      <div class="form-group">
+	<label>Texto de la pregunta:</label>
+	<textarea name="Text" class="form-control">
+        {{if .Content}}
+        {{.Content.Text}}
+        {{end}}
+	</textarea>
+      </div>
+
+      <div class="form-group">
+	<label>Consejos/sugerencias/advertencias:</label>
+	<textarea name="Hint" class="form-control">
+        {{if .Content}}
+        {{.Content.Text}}
+        {{end}}
+	</textarea>
+      </div>
+
+      <div class="form-group">
+        <label >Posibles opciones de respuesta:</label>
+        
+      </div>
+
+
+      
+      <div class="form-group">
+	<label>Etiquetas</label>
+	<input type="text" class="form-control" name="Tags" placeholder="Escríbelas separadas por comas" value="{{.Content.GetStringTags}}">
+      </div>
+
+      <div class="form-group text-right">
+      {{if .Content}}
+	<button type="button" id="questUpdateSubmit" class="btn btn-default">Editar</button>
+      {{else}}
+	<button type="button" id="questNewSubmit" class="btn btn-default">Crear</button>
+      {{end}}
+      </div>
+    </form>
+    <div id="questEditAlert" class="alert" role="alert">...</div>
+  </div>
+
+{{end}}

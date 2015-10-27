@@ -47,7 +47,11 @@ Array.prototype.clean = function(deleteValue) {
     return this;
 };
 
+var DOMAIN=""
 
+var error = function(data){
+    console.log("Internal server error: "+data)
+}
 
 /*
   
@@ -57,15 +61,9 @@ Array.prototype.clean = function(deleteValue) {
 
 var users = (function(){
 
-    var DOMAIN=""
-
     var settings={
 	form:"#userEditForm",
 	panel:"#usersList"
-    }
-
-    var error = function(data){
-	console.log("Internal server error: "+data)
     }
 
 
@@ -212,13 +210,8 @@ var users = (function(){
     }
 
 
-    var fetchInitData = function(){
-	// init labels panel
-	listTags()
-    }
-
     var init = function() {
-	fetchInitData()
+	listTags()
 	bindFunctions()
 	$(".alert").css("visibility", "hidden");
     }
@@ -227,4 +220,64 @@ var users = (function(){
 	init: init,
 	
     }
+})()
+
+
+
+/*
+  
+  Modulo de usuarios
+
+*/
+
+var questions = (function(){
+    var settings={
+	form:"#questEditForm",
+	/*panel:"#usersList"*/
+    }
+
+
+    var addUser =  function(u){
+
+    }
+
+    var editUser = function(u){
+
+    }
+
+    var listTags = function(){
+
+    }
+
+    var listUsers = function(tags){
+
+    }
+
+    var deleteUser = function(){
+
+    }
+
+    var resetForm = function(){
+	$(settings.form).each(function(){this.reset()})
+	    }
+    
+    var readForm = function(){
+
+    }
+    
+    var bindFunctions = function(){
+
+    }
+
+
+    var init = function() {
+	listTags()
+	bindFunctions()
+    }
+
+    return{
+	init: init,
+	
+    }
+
 })()

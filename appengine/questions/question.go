@@ -11,11 +11,10 @@ type Question struct {
 	SolutionId int64        `json:",string"`
 	Solution   *Answer      `datastore:"-"`
 
-	Text      string
-	Hint      string
-	Options   []string
-	Tags      []string
-	AutoCheck bool
+	Text    string
+	Hint    string
+	Options []string
+	Tags    []string
 }
 
 func NewQuestion(text string, options []string, tags []string) Question {
@@ -28,7 +27,6 @@ func NewQuestion(text string, options []string, tags []string) Question {
 	q.Hint = ""
 	q.Options = options
 	q.Tags = tags
-	q.AutoCheck = false
 
 	return *q
 }

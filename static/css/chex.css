@@ -10,7 +10,12 @@
     margin-bottom:50px;
 }
 
-
+textarea.form-control  {
+   resize: none;
+   height: 100%;
+   min-height:150px;
+   padding:10;
+}
 
 a:focus, a:active, 
 button::-moz-focus-inner,
