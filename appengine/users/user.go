@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"app/users"
 	"appengine/datastore"
@@ -51,6 +52,8 @@ func putUser(wr srv.WrapperRequest, nu users.NUser) error {
 	if err := nu.IsValid(); err != nil {
 		return err
 	}
+
+	nu.TimeStamp = time.Now()
 
 	_, err := getUserByMail(wr, nu.Mail)
 	if err == nil {

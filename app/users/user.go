@@ -3,6 +3,7 @@ package users
 import (
 	"errors"
 	"strings"
+	"time"
 )
 
 const (
@@ -23,11 +24,12 @@ const (
 )
 
 type NUser struct {
-	Id   int64 `json:",string" datastore:"-"`
-	Mail string
-	Name string
-	Role int8     `json:",string"`
-	Tags []string `datastore:"-"`
+	Id        int64 `json:",string" datastore:"-"`
+	Mail      string
+	Name      string
+	Role      int8      `json:",string"`
+	Tags      []string  `datastore:"-"`
+	TimeStamp time.Time `json:"`
 }
 
 func IsAllowed(userPerm int8, opMask byte) bool {
@@ -35,7 +37,7 @@ func IsAllowed(userPerm int8, opMask byte) bool {
 }
 
 func New(mail string, name string, role int8) NUser {
-	nu := NUser{-1, mail, name, role, make([]string, 10)}
+	nu := NUser{-1, mail, name, role, make([]string, 10), time.Now()}
 	return nu
 }
 
@@ -69,6 +71,10 @@ func (n NUser) GetStringRole() string {
 		return "Estudiante"
 	}
 	return ""
+}
+
+func (n NUser) GetStringTimeStamp() string {
+	return n.TimeStamp.Format("02/01/2006")
 }
 
 func (n NUser) IsValid() (err error) {

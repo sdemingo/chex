@@ -15,6 +15,7 @@
   <h2>{{.Content.Name}}</h2>
   <p><strong>Rol: </strong>{{.Content.GetStringRole}} </p>
   <p><strong>Email: </strong>{{.Content.Mail}} </p>
+  <p><strong>Alta: </strong>{{.Content.GetStringTimeStamp}} </p>
   <p><strong>Etiquetas: </strong></p>
   {{range .Content.Tags}}
     <span class="label label-default">{{.}}</span>
