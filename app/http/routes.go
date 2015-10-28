@@ -32,6 +32,9 @@ func init() {
 	http.HandleFunc("/users/get", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, users.GetOne)
 	})
+	http.HandleFunc("/users/me", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, users.GetOne)
+	})
 	http.HandleFunc("/users/list", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, users.GetList)
 	})
@@ -53,5 +56,4 @@ func init() {
 	http.HandleFunc("/users/tags/list", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, users.GetTagsList)
 	})
-
 }

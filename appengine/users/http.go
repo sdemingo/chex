@@ -3,6 +3,8 @@ package users
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"strings"
 
 	"app/users"
 	"appengine/srv"
@@ -34,18 +36,31 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
-	err := srv.CheckPerm(wr, users.OP_ADMIN)
-	if err != nil {
-		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var nus []users.NUser
 
-	wr.R.ParseForm()
-	nus, err := getUsers(wr, wr.R.Form)
-	if len(nus) == 0 || err != nil {
-		return viewTmpl, errors.New("Usuario no encontrado")
-	}
+	if strings.HasSuffix(wr.R.URL.Path, "/me") {
+		filters := map[string][]string{"id": []string{fmt.Sprintf("%d", wr.NU.Id)}}
+		srv.AppWarning(wr, fmt.Sprintf("%s", filters))
+		nus, err := getUsers(wr, filters)
+		if len(nus) == 0 || err != nil {
+			return viewTmpl, errors.New("Usuario no encontrado")
+		}
+		tc["Content"] = nus[0]
 
-	tc["Content"] = nus[0]
+	} else {
+		err := srv.CheckPerm(wr, users.OP_ADMIN)
+		if err != nil {
+			return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+		}
+
+		wr.R.ParseForm()
+		nus, err = getUsers(wr, wr.R.Form)
+		if len(nus) == 0 || err != nil {
+			return viewTmpl, errors.New("Usuario no encontrado")
+		}
+		tc["Content"] = nus[0]
+		tc["UserProfile"] = true
+	}
 
 	return viewTmpl, nil
 }

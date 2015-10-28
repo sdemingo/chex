@@ -4,8 +4,10 @@
   <div class="row col-md-12 ">
     <ul class="nav nav-pills text-right">
       <li role="presentation" class="active"><a href="#" onclick="window.history.back()" >Volver</a></li>
+      {{if .UserProfile}}
       <li role="presentation" ><a href="/users/edit?id={{.Content.Id}}">Editar</a></li>
       <li role="presentation" ><a href="/users/delete?id={{.Content.Id}}">Borrar</a></li>
+      {{end}}
     </ul>
   </div>
 </div>
