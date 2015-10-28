@@ -3,6 +3,7 @@
 $(document).ready(function () {
     $(".dropdown-toggle").dropdown();
     users.init()
+    questions.init()
 })
 
 
@@ -226,7 +227,7 @@ var users = (function(){
 
 /*
   
-  Modulo de usuarios
+  Modulo de preguntas
 
 */
 
@@ -237,11 +238,11 @@ var questions = (function(){
     }
 
 
-    var addUser =  function(u){
-
+    var addQuest =  function(u){
+	
     }
 
-    var editUser = function(u){
+    var editQuest = function(u){
 
     }
 
@@ -249,11 +250,11 @@ var questions = (function(){
 
     }
 
-    var listUsers = function(tags){
+    var listQuests = function(tags){
 
     }
 
-    var deleteUser = function(){
+    var deleteQuest = function(){
 
     }
 
@@ -267,6 +268,19 @@ var questions = (function(){
     
     var bindFunctions = function(){
 
+	// Edit Quest form
+	$(settings.form+" .btn-add").on("click",function(){
+	    $(settings.form+" .question-options")
+		.append("<div class=\"input-group\">\
+<input type=\"text\" class=\"form-control\" name=\"Options\">\
+<span class=\"input-group-btn\">\
+<button type=\"button\" class=\"btn btn-default btn-del\">-</button></div>\
+</span>")
+	})
+
+	$(settings.form).on("click",".btn-del",function(){
+	    $(this).closest("div.input-group").remove()
+	})
     }
 
 

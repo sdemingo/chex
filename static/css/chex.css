@@ -6,15 +6,24 @@
     margin:1px;
 }
 
+.btn-add{
+    margin-right:5px;
+}
+
+.input-group{
+    margin:5px;
+}
+
+
 .panel{
     margin-bottom:50px;
 }
 
 textarea.form-control  {
-   resize: none;
-   height: 100%;
-   min-height:150px;
-   padding:10;
+    resize: none;
+    height: 100%;
+    min-height:150px;
+    padding:10;
 }
 
 a:focus, a:active, 

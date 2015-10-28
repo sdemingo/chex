@@ -29,6 +29,14 @@
       </div>
 
       <div class="form-group">
+        <label >Posibles opciones de respuesta:</label>
+        <button type="button"  class="btn btn-default btn-add pull-right">+</button>
+      </div>
+
+      <div class="form-group question-options">
+      </div>
+
+     <div class="form-group">
 	<label>Consejos/sugerencias/advertencias:</label>
 	<textarea name="Hint" class="form-control">
         {{if .Content}}
@@ -37,13 +45,6 @@
 	</textarea>
       </div>
 
-      <div class="form-group">
-        <label >Posibles opciones de respuesta:</label>
-        
-      </div>
-
-
-      
       <div class="form-group">
 	<label>Etiquetas</label>
 	<input type="text" class="form-control" name="Tags" placeholder="Escríbelas separadas por comas" value="{{.Content.GetStringTags}}">
