@@ -238,8 +238,23 @@ var questions = (function(){
     }
 
 
-    var addQuest =  function(u){
-	
+    var addQuest =  function(q){
+	$.ajax({
+	    url:DOMAIN+'/questions/add',
+	    type: 'post',
+	    dataType: 'json',
+	    data: JSON.stringify(q),
+	    success: function(data){
+		if (data.Error){
+		    showErrorMessage("Error al crear pregunta")
+		    console.log(data.Error)
+		}else{
+		    showInfoMessage("Pregunta creada con éxito")
+		    resetForm()
+		}
+	    },
+	    error: error
+	});
     }
 
     var editQuest = function(u){
@@ -263,7 +278,13 @@ var questions = (function(){
 	    }
     
     var readForm = function(){
-
+	var q = $(settings.form).serializeObject()
+	q.Tags = q.Tags.split(",").map(function(e){
+	    return e.trim()
+	})
+	q.Tags.clean("")
+	
+	return q
     }
     
     var bindFunctions = function(){
@@ -280,6 +301,15 @@ var questions = (function(){
 
 	$(settings.form).on("click",".btn-del",function(){
 	    $(this).closest("div.input-group").remove()
+	})
+
+	// Add User
+	$(settings.form+" #questNewSubmit").click(function(){
+	    var q = readForm()
+	    if (!q) {
+		return
+	    }
+	    addQuest(q)
 	})
     }
 

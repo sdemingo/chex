@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	TYPE_TESTSINGLE   = iota
+	TYPE_TESTSINGLE   = 1
 	TYPE_TESTMULTIPLE = iota
 
 	ERR_BADANSWERMARK = "Mark not valid"

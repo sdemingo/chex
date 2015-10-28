@@ -36,7 +36,16 @@
       <div class="form-group question-options">
       </div>
 
-     <div class="form-group">
+      <div class="form-group">
+	<label>Tipo de respuesta</label>
+	<select  class="form-control" name="AType">
+	  <option value="1" selected>Respuesta test solución única</option>
+	  <option value="2">Respuesta test solución múltiple</option>
+	  <option value="3">Respuesta abierta o ensayo</option>
+	</select>
+      </div>
+
+      <div class="form-group">
 	<label>Consejos/sugerencias/advertencias:</label>
 	<textarea name="Hint" class="form-control">
         {{if .Content}}

@@ -11,6 +11,7 @@ type Question struct {
 	SolutionId int64        `json:",string"`
 	Solution   *Answer      `datastore:"-"`
 
+	AType   AnswerBodyType
 	Text    string
 	Hint    string
 	Options []string

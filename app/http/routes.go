@@ -23,6 +23,9 @@ func init() {
 	http.HandleFunc("/questions/new", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, questions.New)
 	})
+	http.HandleFunc("/questions/add", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, questions.Add)
+	})
 
 	// Users routes
 

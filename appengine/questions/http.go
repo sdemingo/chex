@@ -1,9 +1,9 @@
 package questions
 
 import (
-	//"encoding/json"
+	"encoding/json"
 	"errors"
-	//"fmt"
+	"fmt"
 
 	"app/users"
 	"appengine/srv"
@@ -37,4 +37,30 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	return newTmpl, nil
+}
+
+func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	err := srv.CheckPerm(wr, users.OP_COMMIT)
+	if err != nil {
+		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	var q Question
+
+	decoder := json.NewDecoder(wr.R.Body)
+	err = decoder.Decode(&q)
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	//err = putQuestion(wr, q)
+	//if err != nil {
+	//	return infoTmpl, err
+	//
+
+	srv.AppWarning(wr, fmt.Sprintf("%s", q.Options))
+
+	tc["Content"] = q
+
+	return infoTmpl, nil
 }
