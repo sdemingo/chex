@@ -176,7 +176,6 @@ func getUsersByRole(wr srv.WrapperRequest, s_role string) ([]users.NUser, error)
 func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]users.NUser, error) {
 	var nus []users.NUser
 	var uTagsAll []UserTag
-	var uTags []UserTag
 
 	q := datastore.NewQuery("users-tags")
 	_, err := q.GetAll(wr.C, &uTagsAll)
@@ -188,32 +187,27 @@ func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]users.NUser, error)
 	// because dinamically filteres based on tags array are not
 	// allowed in GAE datastore
 
-	// busqueda inclusiva
-	uTags = make([]UserTag, 0)
-	for _, ut := range uTagsAll {
-		for _, filter := range tags {
-			if ut.Tag == filter {
-				uTags = append(uTags, ut)
-				break
+	filtered := make(map[int64]int)
+	for _, tag := range tags {
+		for _, ut := range uTagsAll {
+			if ut.Tag == tag {
+				if _, ok := filtered[ut.UserId]; !ok {
+					filtered[ut.UserId] = 1
+				} else {
+					filtered[ut.UserId]++
+				}
 			}
 		}
 	}
 
-	// Now, it recovers the users entity by the Ids
-	userMap := make(map[int64]users.NUser)
-	for _, uTag := range uTags {
-		if _, ok := userMap[uTag.UserId]; !ok {
-			nu, err := getUserById(wr, fmt.Sprintf("%d", uTag.UserId))
+	for id, _ := range filtered {
+		if filtered[id] == len(tags) {
+			nu, err := getUserById(wr, fmt.Sprintf("%d", id))
 			if err != nil {
 				return nus, err
 			}
-			userMap[uTag.UserId] = nu
+			nus = append(nus, nu)
 		}
-	}
-
-	nus = make([]users.NUser, 0)
-	for _, nu := range userMap {
-		nus = append(nus, nu)
 	}
 
 	return nus, nil

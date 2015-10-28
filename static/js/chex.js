@@ -130,7 +130,7 @@ var users = (function(){
 	    dataType: 'json',
 	    data: {tags:tags.join(",")},
 	    success: function(data){
-		if (data.length==0){
+		if ((!data) || (data.length==0)){
 		    $(settings.panel+" .results")
 			.append("<span class=\"list-group-item\">No hubo resultados</span>")
 		}else{
