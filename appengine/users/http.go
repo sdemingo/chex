@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	//"io/ioutil"
 	"strings"
 
 	"app/users"
@@ -82,6 +83,7 @@ func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, erro
 }
 
 func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	tc["ImportForm"] = true
 	return newTmpl, nil
 }
 
@@ -169,6 +171,43 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 
 	tc["Content"] = nu
+
+	return infoTmpl, nil
+}
+
+func Import(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	err := srv.CheckPerm(wr, users.OP_ADMIN)
+	if err != nil {
+		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	file, _, err := wr.R.FormFile("importFile")
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	var nus []users.NUser
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&nus)
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	for _, nu := range nus {
+		err = nu.IsValid()
+		if err != nil {
+			return infoTmpl, err
+		}
+	}
+
+	for _, nu := range nus {
+		err = putUser(wr, nu)
+		if err != nil {
+			return infoTmpl, err
+		}
+	}
+
+	tc["Content"] = fmt.Sprintf("Se han creado en la base de datos %d usuarios", len(nus))
 
 	return infoTmpl, nil
 }

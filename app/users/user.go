@@ -87,5 +87,10 @@ func (n NUser) IsValid() (err error) {
 		return errors.New(ERR_NOTVALIDUSER)
 	}
 
+	if n.Role != ROLE_GUEST && n.Role != ROLE_TEACHER &&
+		n.Role != ROLE_STUDENT && n.Role != ROLE_ADMIN {
+		return errors.New(ERR_NOTVALIDUSER)
+	}
+
 	return
 }
