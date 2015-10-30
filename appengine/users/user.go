@@ -57,7 +57,7 @@ func putUser(wr srv.WrapperRequest, nu users.NUser) error {
 
 	_, err := getUserByMail(wr, nu.Mail)
 	if err == nil {
-		return errors.New("Usuario duplicado")
+		return errors.New(users.ERR_DUPLICATEDUSER)
 	}
 
 	key := datastore.NewKey(wr.C, "users", "", 0, nil)
@@ -81,7 +81,7 @@ func updateUser(wr srv.WrapperRequest, nu users.NUser) error {
 
 	old, err := getUserById(wr, fmt.Sprintf("%d", nu.Id))
 	if err != nil {
-		return errors.New("Usuario no encontrado")
+		return errors.New(users.ERR_USERNOTFOUND)
 	}
 
 	nu.Mail = old.Mail
@@ -122,7 +122,7 @@ func getUserByMail(wr srv.WrapperRequest, email string) (users.NUser, error) {
 
 	keys, err := q.GetAll(wr.C, &nus)
 	if (len(keys) == 0) || err != nil {
-		return nu, errors.New("User not found. Bad mail")
+		return nu, errors.New(users.ERR_USERNOTFOUND)
 	}
 	nu = nus[0]
 	nu.Id = keys[0].IntID()
@@ -137,14 +137,14 @@ func getUserById(wr srv.WrapperRequest, s_id string) (users.NUser, error) {
 
 	id, err := strconv.ParseInt(s_id, 10, 64)
 	if err != nil {
-		return nu, errors.New("User not found. Bad ID")
+		return nu, errors.New(users.ERR_USERNOTFOUND)
 	}
 
 	if id != 0 {
 		k := datastore.NewKey(wr.C, "users", "", id, nil)
 		datastore.Get(wr.C, k, &nu)
 	} else {
-		return nu, errors.New("User not found. Bad ID")
+		return nu, errors.New(users.ERR_USERNOTFOUND)
 	}
 
 	nu.Id = id
@@ -158,14 +158,14 @@ func getUsersByRole(wr srv.WrapperRequest, s_role string) ([]users.NUser, error)
 
 	role, err := strconv.ParseInt(s_role, 10, 64)
 	if err != nil {
-		return nus, errors.New("User role bad formatted")
+		return nus, errors.New(users.ERR_NOTVALIDUSER)
 	}
 
 	q := datastore.NewQuery("users").Filter("Role =", role)
 
 	keys, err := q.GetAll(wr.C, &nus)
 	if (len(keys) == 0) || err != nil {
-		return nus, errors.New("User not found. Bad role")
+		return nus, errors.New(users.ERR_USERNOTFOUND)
 	}
 
 	for i := 0; i < len(nus); i++ {
@@ -183,7 +183,7 @@ func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]users.NUser, error)
 	q := datastore.NewQuery("users-tags")
 	_, err := q.GetAll(wr.C, &uTagsAll)
 	if err != nil {
-		return nus, errors.New("User not found. Bad tags")
+		return nus, errors.New(users.ERR_USERNOTFOUND)
 	}
 
 	// After recover all UserTags it makes a homemade filtering

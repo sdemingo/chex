@@ -20,6 +20,8 @@ const (
 	MAXSZUSERNAME = 100
 
 	ERR_NOTVALIDUSER        = "Usuario no valido"
+	ERR_DUPLICATEDUSER      = "Usuario duplicado"
+	ERR_USERNOTFOUND        = "Usuario no encontrado"
 	ERR_NOTOPERATIONALLOWED = "Operación no permitida"
 )
 
