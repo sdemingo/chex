@@ -3,7 +3,7 @@ package questions
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
+	//"fmt"
 
 	"app/users"
 	"appengine/srv"
@@ -54,12 +54,12 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return infoTmpl, err
 	}
 
-	//err = putQuestion(wr, q)
-	//if err != nil {
-	//	return infoTmpl, err
-	//
+	err = putQuestion(wr, q)
+	if err != nil {
+		return infoTmpl, err
+	}
 
-	srv.AppWarning(wr, fmt.Sprintf("%s", q.Options))
+	//srv.AppWarning(wr, fmt.Sprintf("%s", q.Options))
 
 	tc["Content"] = q
 

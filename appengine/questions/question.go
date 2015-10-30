@@ -32,7 +32,7 @@ type Question struct {
 	TimeStamp  time.Time    `json:"`
 	CheckSum   string       `json:"`
 
-	AType   AnswerBodyType
+	AType   AnswerBodyType `json:",string"`
 	Text    string
 	Hint    string
 	Options []string
@@ -53,21 +53,21 @@ func NewQuestion(text string, options []string, tags []string) Question {
 	return *q
 }
 
-func (q Question) SetSolution(sol *Answer) {
+func (q *Question) SetSolution(sol *Answer) {
 	if sol != nil {
 		q.Solution = sol
 		q.SolutionId = sol.Id
 	}
 }
 
-func (q Question) SetAuthor(author *users.NUser) {
+func (q *Question) SetAuthor(author *users.NUser) {
 	if author != nil {
 		q.Author = author
 		q.AuthorId = author.Id
 	}
 }
 
-func (q Question) SetChecksum() {
+func (q *Question) SetCheckSum() {
 	s := q.Text
 	for _, op := range q.Options {
 		s = s + op
@@ -75,8 +75,8 @@ func (q Question) SetChecksum() {
 	q.CheckSum = fmt.Sprintf("%x", md5.Sum([]byte(s)))
 }
 
-func (q Question) IsValid() error {
-	if q.Text == "" {
+func (q *Question) IsValid() error {
+	if q != nil && q.Text == "" {
 		return errors.New(ERR_NOTVALIDQUEST)
 	}
 	return nil
@@ -88,7 +88,7 @@ func putQuestion(wr srv.WrapperRequest, q Question) error {
 	}
 
 	q.TimeStamp = time.Now()
-	q.SetChecksum()
+	q.SetCheckSum()
 
 	_, err := getQuestionByChecksum(wr, q.CheckSum)
 	if err == nil {
