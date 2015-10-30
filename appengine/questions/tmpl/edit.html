@@ -70,4 +70,24 @@
     <div id="questEditAlert" class="alert" role="alert">...</div>
   </div>
 
+{{if .ImportForm}}
+  
+  <div class="form-group col-md-6 col-md-offset-3">
+    <hr>
+    <form id="questImportForm" enctype="multipart/form-data" action="/questions/import" method="post">
+      <div class="form-group">
+	<label >Adjuntar un archivo</label>
+	<input type="file" name="importFile" />
+	<!--  <p class="help-block">Ejemplo de texto de ayuda.</p>-->
+      </div>
+
+      <div class="form-group text-right">
+	<button type="submit" id="questImportSubmit" class="btn btn-default">Importar</button>
+      </div>
+    </form> 
+  </div>
+{{end}}
+
+
+</div>
 {{end}}

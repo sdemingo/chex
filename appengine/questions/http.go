@@ -36,6 +36,7 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	tc["ImportForm"] = true
 	return newTmpl, nil
 }
 
