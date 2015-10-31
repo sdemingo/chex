@@ -34,11 +34,6 @@ func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []users.N
 		return nus, err
 	}
 
-	if filters["role"] != nil {
-		nus, err := getUsersByRole(wr, filters["role"][0])
-		return nus, err
-	}
-
 	if filters["tags"] != nil {
 		nus, err := getUsersByTags(wr, strings.Split(filters["tags"][0], ","))
 		return nus, err
@@ -153,29 +148,6 @@ func getUserById(wr srv.WrapperRequest, s_id string) (users.NUser, error) {
 	return nu, nil
 }
 
-func getUsersByRole(wr srv.WrapperRequest, s_role string) ([]users.NUser, error) {
-	var nus []users.NUser
-
-	role, err := strconv.ParseInt(s_role, 10, 64)
-	if err != nil {
-		return nus, errors.New(users.ERR_NOTVALIDUSER)
-	}
-
-	q := datastore.NewQuery("users").Filter("Role =", role)
-
-	keys, err := q.GetAll(wr.C, &nus)
-	if (len(keys) == 0) || err != nil {
-		return nus, errors.New(users.ERR_USERNOTFOUND)
-	}
-
-	for i := 0; i < len(nus); i++ {
-		nus[i].Id = keys[i].IntID()
-		nus[i].Tags, _ = getUserTags(wr, nus[i])
-	}
-
-	return nus, nil
-}
-
 func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]users.NUser, error) {
 	var nus []users.NUser
 	var uTagsAll []UserTag
@@ -226,6 +198,7 @@ func getUserTags(wr srv.WrapperRequest, nu users.NUser) ([]string, error) {
 	if err != nil {
 		return tags, err
 	}
+
 	tags = make([]string, 0)
 	for _, utag := range userTags {
 		tags = append(tags, utag.Tag)
