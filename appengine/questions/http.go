@@ -23,14 +23,12 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 
 	wr.R.ParseForm()
-	/*
-		nus, err := getUsers(wr, wr.R.Form)
-		if err != nil {
-			return listTmpl, err
-		}
+	qs, err := getQuestions(wr, wr.R.Form)
+	if err != nil {
+		return listTmpl, err
+	}
 
-		tc["Content"] = nus
-	*/
+	tc["Content"] = qs
 
 	return listTmpl, nil
 }
@@ -58,8 +56,6 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if err != nil {
 		return infoTmpl, err
 	}
-
-	//srv.AppWarning(wr, fmt.Sprintf("%s", q.Options))
 
 	tc["Content"] = q
 

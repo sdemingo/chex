@@ -4,6 +4,9 @@ import (
 	"crypto/md5"
 	"errors"
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"app/users"
@@ -68,9 +71,11 @@ func (q *Question) SetAuthor(author *users.NUser) {
 }
 
 func (q *Question) SetCheckSum() {
-	s := q.Text
+	re := regexp.MustCompile("\\s+")
+
+	s := re.ReplaceAllString(strings.ToLower(q.Text), "")
 	for _, op := range q.Options {
-		s = s + op
+		s = s + re.ReplaceAllString(strings.ToLower(op), "")
 	}
 	q.CheckSum = fmt.Sprintf("%x", md5.Sum([]byte(s)))
 }
@@ -80,6 +85,26 @@ func (q *Question) IsValid() error {
 		return errors.New(ERR_NOTVALIDQUEST)
 	}
 	return nil
+}
+
+func getQuestions(wr srv.WrapperRequest, filters map[string][]string) ([]Question, error) {
+
+	var qs []Question
+	var err error
+
+	if filters["id"] != nil {
+		q, err := getQuestById(wr, filters["id"][0])
+		qs := make([]Question, 1)
+		qs[0] = q
+		return qs, err
+	}
+
+	if filters["tags"] != nil {
+		qs, err := getQuestByTags(wr, strings.Split(filters["tags"][0], ","))
+		return qs, err
+	}
+
+	return qs, err
 }
 
 func putQuestion(wr srv.WrapperRequest, q Question) error {
@@ -123,6 +148,68 @@ func getQuestionByChecksum(wr srv.WrapperRequest, sum string) (Question, error) 
 	q.Tags, _ = getQuestTags(wr, q)
 
 	return q, nil
+}
+
+func getQuestById(wr srv.WrapperRequest, s_id string) (Question, error) {
+
+	var q Question
+
+	id, err := strconv.ParseInt(s_id, 10, 64)
+	if err != nil {
+		return q, errors.New(ERR_QUESTNOTFOUND)
+	}
+
+	if id != 0 {
+		k := datastore.NewKey(wr.C, "questions", "", id, nil)
+		datastore.Get(wr.C, k, &q)
+	} else {
+		return q, errors.New(ERR_QUESTNOTFOUND)
+	}
+
+	q.Id = id
+	q.Tags, _ = getQuestTags(wr, q)
+
+	return q, nil
+}
+
+func getQuestByTags(wr srv.WrapperRequest, tags []string) ([]Question, error) {
+	var qs []Question
+	var qTagsAll []QuestionTag
+
+	qry := datastore.NewQuery("questions-tags")
+	_, err := qry.GetAll(wr.C, &qTagsAll)
+	if err != nil {
+		return qs, errors.New(ERR_QUESTNOTFOUND)
+	}
+
+	filtered := make(map[int64]int)
+	for _, tag := range tags {
+		for _, qt := range qTagsAll {
+			if qt.Tag == tag {
+				if _, ok := filtered[qt.QuestId]; !ok {
+					filtered[qt.QuestId] = 1
+				} else {
+					filtered[qt.QuestId]++
+				}
+			}
+		}
+	}
+
+	for id, _ := range filtered {
+		if filtered[id] == len(tags) {
+			q, err := getQuestById(wr, fmt.Sprintf("%d", id))
+			if err != nil {
+				return qs, err
+			}
+
+			// only append the questions of the session user
+			if q.AuthorId == wr.NU.Id {
+				qs = append(qs, q)
+			}
+		}
+	}
+
+	return qs, nil
 }
 
 func addQuestTags(wr srv.WrapperRequest, q Question) error {
