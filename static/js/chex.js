@@ -30,6 +30,13 @@ var validator = {
 		return (/^(\s*\w+\s*,)*\s*\w+\s*$/m.test(value))
 	    },
 	    instructions: "value must a word without spaces sequence"
+	},
+	isEmail : {
+	    validate:function(value){
+		var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+		return (re.test(value))
+	    },
+	    instructions: "value must a valid email"
 	}		
     },
     
@@ -88,7 +95,7 @@ var users = (function(){
 
     var types={
 	Name:"isNonEmpty",
-	Mail:"isNonEmpty",
+	Mail:"isEmail",
 	Tags:"isWordEnumeration"
     }
 
@@ -131,7 +138,7 @@ var users = (function(){
 		}
 	    },
 	    error: error
-	});
+	})
     }
 
     var listTags = function(){
@@ -147,9 +154,7 @@ var users = (function(){
 		    })
 			}
 	    },
-	    error: function(data){
-		console.log("Server Internal Error:"+data);
-            }
+	    error: error
 	})
     }
 
@@ -170,9 +175,7 @@ var users = (function(){
 		    })
 		}
 	    },
-	    error: function(data){
-		console.log("Server Internal Error:"+data);
-            }
+	    error: error
 	});
     }
 
@@ -245,7 +248,6 @@ var users = (function(){
 
     return{
 	init: init,
-	
     }
 })()
 
@@ -389,11 +391,13 @@ var error = function(data){
 
 function showInfoMessage(text) {
     var alert = $("#infoPanel").css("visibility", "visible").addClass("alert-success").text(text)
+    window.scrollTo(0,0);
     window.setTimeout(function() { $("#infoPanel").removeClass("alert-success").css("visibility", "hidden") }, 1500)
 }
 
 function showErrorMessage(text) {
     var alert = $("#infoPanel").css("visibility", "visible").addClass("alert-danger").text(text)
+    window.scrollTo(0,0);
     window.setTimeout(function() { $("#infoPanel").removeClass("alert-danger").css("visibility", "hidden") }, 1500)
 }
 
