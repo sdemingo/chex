@@ -44,7 +44,7 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		srv.AppWarning(wr, fmt.Sprintf("%s", filters))
 		nus, err := getUsers(wr, filters)
 		if len(nus) == 0 || err != nil {
-			return viewTmpl, errors.New("Usuario no encontrado")
+			return viewTmpl, errors.New(users.ERR_USERNOTFOUND)
 		}
 		tc["Content"] = nus[0]
 
@@ -57,7 +57,7 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		wr.R.ParseForm()
 		nus, err = getUsers(wr, wr.R.Form)
 		if len(nus) == 0 || err != nil {
-			return viewTmpl, errors.New("Usuario no encontrado")
+			return viewTmpl, errors.New(users.ERR_USERNOTFOUND)
 		}
 		tc["Content"] = nus[0]
 		tc["UserProfile"] = true
@@ -67,7 +67,7 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_VIEW)
+	err := srv.CheckPerm(wr, users.OP_VIEWER)
 	if err != nil {
 		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
@@ -97,7 +97,7 @@ func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	wr.R.ParseForm()
 	nus, err := getUsers(wr, wr.R.Form)
 	if len(nus) == 0 || err != nil {
-		return viewTmpl, errors.New("Usuario no encontrado")
+		return viewTmpl, errors.New(users.ERR_USERNOTFOUND)
 	}
 
 	tc["Content"] = nus[0]
@@ -114,11 +114,11 @@ func Delete(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	wr.R.ParseForm()
 	nus, err := getUsers(wr, wr.R.Form)
 	if len(nus) == 0 || err != nil {
-		return infoTmpl, errors.New("Usuario no encontrado")
+		return infoTmpl, errors.New(users.ERR_USERNOTFOUND)
 	}
 	err = deleteUser(wr, nus[0])
 	if err != nil {
-		return infoTmpl, errors.New("Usuario no encontrado")
+		return infoTmpl, errors.New(users.ERR_USERNOTFOUND)
 	}
 
 	tc["Content"] = "Usuario borrado con éxito"
