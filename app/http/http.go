@@ -21,7 +21,7 @@ var teacherTmpl = "app/tmpl/teacherWelcome.html"
 
 func Welcome(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
-	err := srv.CheckPerm(wr, users.OP_VIEW)
+	err := srv.CheckPerm(wr, users.OP_VIEWER)
 	if err != nil {
 		return "", errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}

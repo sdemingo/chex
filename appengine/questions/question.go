@@ -87,6 +87,10 @@ func (q *Question) IsValid() error {
 	return nil
 }
 
+func (q *Question) GetHTMLText() string {
+	return q.Text
+}
+
 func getQuestions(wr srv.WrapperRequest, filters map[string][]string) ([]Question, error) {
 
 	var qs []Question
@@ -241,4 +245,25 @@ func getQuestTags(wr srv.WrapperRequest, q Question) ([]string, error) {
 
 	return tags, nil
 
+}
+
+func getAllQuestionsTags(wr srv.WrapperRequest) ([]string, error) {
+	var tagsMap = make(map[string]int, 0)
+	var questionTags []QuestionTag
+	var tags = make([]string, 0)
+
+	q := datastore.NewQuery("questions-tags")
+	_, err := q.GetAll(wr.C, &questionTags)
+	if err != nil {
+		return tags, err
+	}
+	tags = make([]string, len(questionTags))
+	for _, qtag := range questionTags {
+		if _, ok := tagsMap[qtag.Tag]; !ok {
+			tagsMap[qtag.Tag] = 1
+			tags = append(tags, qtag.Tag)
+		}
+	}
+
+	return tags, nil
 }

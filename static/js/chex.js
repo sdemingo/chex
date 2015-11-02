@@ -176,7 +176,7 @@ var users = (function(){
 		}
 	    },
 	    error: error
-	});
+	})
     }
 
     var deleteUser = function(){
@@ -243,7 +243,7 @@ var users = (function(){
     var init = function() {
 	listTags()
 	bindFunctions()
-	$(".alert").css("visibility", "hidden");
+	$(".alert").css("visibility", "hidden")
     }
 
     return{
@@ -270,7 +270,7 @@ var users = (function(){
 var questions = (function(){
     var settings={
 	form:"#questEditForm",
-	/*panel:"#usersList"*/
+	panel:"#questList"
     }
 
 
@@ -298,11 +298,41 @@ var questions = (function(){
     }
 
     var listTags = function(){
-
+	$.ajax({
+	    url:DOMAIN+'/questions/tags/list',
+	    type: 'get',
+	    dataType: 'json',
+	    success: function(data){
+		if (data){
+		    $.each(data,function(i,e){
+			$(settings.panel+" .tags")
+			    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
+		    })
+			}
+	    },
+	    error: error
+	})
     }
 
     var listQuests = function(tags){
-
+	$.ajax({
+	    url:DOMAIN+'/questions/list',
+	    type: 'get',
+	    dataType: 'json',
+	    data: {tags:tags.join(",")},
+	    success: function(data){
+		if ((!data) || (data.length==0)){
+		    $(settings.panel+" .results")
+			.append("<span class=\"list-group-item\">No hubo resultados</span>")
+		}else{
+		    data.forEach(function(e){
+			$(settings.panel+" .results")
+			    .append("<a href=\"/questions/get?id="+e.Id+"\" class=\"list-group-item\">"+e.Text+"</a>")
+		    })
+		}
+	    },
+	    error: error
+	})
     }
 
     var deleteQuest = function(){
@@ -339,13 +369,29 @@ var questions = (function(){
 	    $(this).closest("div.input-group").remove()
 	})
 
-	// Add User
+	// Add Quest
 	$(settings.form+" #questNewSubmit").click(function(){
 	    var q = readForm()
 	    if (!q) {
 		return
 	    }
 	    addQuest(q)
+	})
+
+	// List Quests
+	$(settings.panel+" .tags").on("click","*",function(e){
+	    $(this).toggleClass("label-primary")
+	})
+
+	$(settings.panel+" .tags").on("click",function(e){
+	    tags=[]
+	    $(settings.panel+" .results").empty()
+	    $(settings.panel+" .tags").find(".label-primary").each(function(){
+		tags.push($(this).html())
+	    })
+		if (tags.length>0){
+		    listQuests(tags)
+		}
 	})
     }
 
