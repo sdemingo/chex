@@ -20,6 +20,9 @@ func init() {
 	http.HandleFunc("/questions/list", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, questions.GetList)
 	})
+	http.HandleFunc("/questions/get", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, questions.GetOne)
+	})
 	http.HandleFunc("/questions/new", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, questions.New)
 	})

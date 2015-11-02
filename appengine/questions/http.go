@@ -46,7 +46,7 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if len(qs) == 0 || err != nil {
 		return viewTmpl, errors.New(ERR_QUESTNOTFOUND)
 	}
-	tc["Content"] = qs[0]
+	tc["Content"] = &qs[0]
 
 	return viewTmpl, nil
 }

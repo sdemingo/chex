@@ -4,10 +4,13 @@ import (
 	"crypto/md5"
 	"errors"
 	"fmt"
+	"html/template"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/russross/blackfriday"
 
 	"app/users"
 	"appengine/datastore"
@@ -87,8 +90,9 @@ func (q *Question) IsValid() error {
 	return nil
 }
 
-func (q *Question) GetHTMLText() string {
-	return q.Text
+func (q *Question) GetHTMLText() template.HTML {
+	in := []byte(q.Text)
+	return template.HTML(string(blackfriday.MarkdownBasic(in)))
 }
 
 func getQuestions(wr srv.WrapperRequest, filters map[string][]string) ([]Question, error) {
