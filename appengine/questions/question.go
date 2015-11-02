@@ -118,6 +118,7 @@ func putQuestion(wr srv.WrapperRequest, q Question) error {
 
 	q.TimeStamp = time.Now()
 	q.SetCheckSum()
+	q.AuthorId = wr.NU.Id
 
 	_, err := getQuestionByChecksum(wr, q.CheckSum)
 	if err == nil {
