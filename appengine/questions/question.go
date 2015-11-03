@@ -1,6 +1,7 @@
 package questions
 
 import (
+	"bytes"
 	"crypto/md5"
 	"errors"
 	"fmt"
@@ -18,9 +19,14 @@ import (
 )
 
 const (
-	ERR_NOTVALIDQUEST   = "Pregunta no valido"
-	ERR_DUPLICATEDQUEST = "Pregunta duplicada"
-	ERR_QUESTNOTFOUND   = "Pregunta no encontrada"
+	ERR_NOTVALIDQUEST     = "Pregunta no valido"
+	ERR_DUPLICATEDQUEST   = "Pregunta duplicada"
+	ERR_QUESTNOTFOUND     = "Pregunta no encontrada"
+	ERR_BADRENDEREDANSWER = "Pregunta renderizada erroneamente"
+
+	TMPL_NOANSWEREDQUESTION = `
+		<ul>{{range .}}<li>{{ . }}</li>{{end}}</ul>
+`
 )
 
 type QuestionTag struct {
@@ -93,6 +99,23 @@ func (q *Question) IsValid() error {
 func (q *Question) GetHTMLText() template.HTML {
 	in := []byte(q.Text)
 	return template.HTML(string(blackfriday.MarkdownBasic(in)))
+}
+
+func (q *Question) GetHTMLOptions() template.HTML {
+	var s template.HTML
+	if q.Solution != nil {
+		// llamamos al renderizador de la respuesta
+	} else {
+		var doc bytes.Buffer
+		t, err := template.New("options").Parse(TMPL_NOANSWEREDQUESTION)
+		err = t.Execute(&doc, q.Options)
+		if err != nil {
+			s = template.HTML(ERR_BADRENDEREDANSWER)
+		} else {
+			s = template.HTML(doc.String())
+		}
+	}
+	return s
 }
 
 func getQuestions(wr srv.WrapperRequest, filters map[string][]string) ([]Question, error) {
