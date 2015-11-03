@@ -327,7 +327,7 @@ var questions = (function(){
 		}else{
 		    data.forEach(function(e){
 			$(settings.panel+" .results")
-			    .append("<a href=\"/questions/get?id="+e.Id+"\" class=\"list-group-item\">"+e.Text+"</a>")
+			    .append("<a href=\"/questions/get?id="+e.Id+"\" class=\"list-group-item\">"+resume(e.Text)+"</a>")
 		    })
 		}
 	    },
@@ -429,10 +429,21 @@ var questions = (function(){
 
 
 
-var error = function(data){
+function error (data){
     console.log("Internal server error: "+data)
 }
 
+
+function resume(text,max){
+    if (!max){
+	max=150
+    }
+    if (text.length > max){
+	return text.substring(0,max)+" ..."
+    }else{
+	return text
+    }
+}
 
 
 function showInfoMessage(text) {
