@@ -13,6 +13,9 @@ func init() {
 	http.HandleFunc("/welcome", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, Welcome)
 	})
+	http.HandleFunc("/help", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, Help)
+	})
 
 	http.HandleFunc("/logout", srv.AppLogout)
 

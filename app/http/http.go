@@ -18,6 +18,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 var adminTmpl = "app/tmpl/adminWelcome.html"
 var studentTmpl = "app/tmpl/studentWelcome.html"
 var teacherTmpl = "app/tmpl/teacherWelcome.html"
+var helpTmpl = "app/tmpl/help.html"
 
 func Welcome(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
@@ -37,4 +38,8 @@ func Welcome(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 
 	return studentTmpl, nil
+}
+
+func Help(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	return helpTmpl, nil
 }
