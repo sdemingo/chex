@@ -3,6 +3,7 @@ package questions
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 )
 
@@ -27,13 +28,28 @@ func (a TestSingleBody) GetType() AnswerBodyType {
 func (a TestSingleBody) GetHTML(options []string) template.HTML {
 
 	var doc bytes.Buffer
-	tmpl := `
+	unsolvedTmpl := `
 	<ul>{{range $index, $item := .}}
         <li><input type="radio" name="solution" value="{{$index}}" /><label>{{ $item }}</label></li>
         {{end}}</ul>
 `
-	t, err := template.New("options").Parse(tmpl)
-	err = t.Execute(&doc, options)
+
+	solvedTmpl := `
+        <ul class="list-group">{{range $index, $item := .}}
+        {{if eq $index ` + fmt.Sprintf("%d", a.Solution) + `}}
+        <li class="list-group-item list-group-item-success">{{ $item }}</li>
+        {{else}}
+        <li class="list-group-item">{{ $item }}</li>
+        {{end}}
+        {{end}}</ul>
+`
+	var t *template.Template
+	if a.Solution < 0 {
+		t, _ = template.New("options").Parse(unsolvedTmpl)
+	} else {
+		t, _ = template.New("options").Parse(solvedTmpl)
+	}
+	err := t.Execute(&doc, options)
 	if err != nil {
 		return template.HTML(ERR_BADRENDEREDANSWER)
 	} else {

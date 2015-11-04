@@ -9,7 +9,7 @@
   </div>
 </div>
 
-<div class="panel label-panel col-md-6 col-md-offset-3">
+<div class="panel label-panel col-md-8 col-md-offset-2">
   <!-- Panel de etiquetas -->
   <div class="row col-md-3">
   {{range .Content.Tags}}
@@ -18,7 +18,7 @@
   </div>
 
   <!-- Panel de avisos de pregunta -->
-  <div class="row col-md-3 pull-right">
+  <div class="row col-md-1 pull-right">
     
   {{if not .Content.Solution}}
     <a href="/help#no-solution" class="label label-danger">Sin Solución</a>
@@ -27,17 +27,18 @@
 
 </div>
 
-<div class="panel col-md-6 col-md-offset-3">
+<div class="panel col-md-8 col-md-offset-2">
   {{.Content.GetHTMLText}}
   <hr>
   {{if .Content.Solution}}
-  <div class="row">
+  <div class="row col-md-11 col-md-offset-1">
     {{.Options}}
   </div>
   {{else}}
   <form id="answerEditForm" class="form-group" method="post" action="/answers/add">
     <input type="hidden" name="QuestId" value="{{ .Content.Id }}">
   {{.Options}}
+    <input type="button" class="btn btn-default pull-right" name="answerNewSubmit" value="Contestar" />
   </form>
   {{end}}
 </div>
