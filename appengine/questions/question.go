@@ -1,7 +1,6 @@
 package questions
 
 import (
-	"bytes"
 	"crypto/md5"
 	"errors"
 	"fmt"
@@ -102,20 +101,7 @@ func (q *Question) GetHTMLText() template.HTML {
 }
 
 func (q *Question) GetHTMLOptions() template.HTML {
-	var s template.HTML
-	if q.Solution != nil {
-		// llamamos al renderizador de la respuesta
-	} else {
-		var doc bytes.Buffer
-		t, err := template.New("options").Parse(TMPL_NOANSWEREDQUESTION)
-		err = t.Execute(&doc, q.Options)
-		if err != nil {
-			s = template.HTML(ERR_BADRENDEREDANSWER)
-		} else {
-			s = template.HTML(doc.String())
-		}
-	}
-	return s
+	return q.Solution.Body.GetHTML(q.Options)
 }
 
 func getQuestions(wr srv.WrapperRequest, filters map[string][]string) ([]Question, error) {
@@ -138,7 +124,7 @@ func getQuestions(wr srv.WrapperRequest, filters map[string][]string) ([]Questio
 	return qs, err
 }
 
-func putQuestion(wr srv.WrapperRequest, q Question) error {
+func putQuestion(wr srv.WrapperRequest, q *Question) error {
 	if err := q.IsValid(); err != nil {
 		return err
 	}
@@ -153,7 +139,7 @@ func putQuestion(wr srv.WrapperRequest, q Question) error {
 	}
 
 	key := datastore.NewKey(wr.C, "questions", "", 0, nil)
-	key, err = datastore.Put(wr.C, key, &q)
+	key, err = datastore.Put(wr.C, key, q)
 	if err != nil {
 		return err
 	}
@@ -244,7 +230,7 @@ func getQuestByTags(wr srv.WrapperRequest, tags []string) ([]Question, error) {
 	return qs, nil
 }
 
-func addQuestTags(wr srv.WrapperRequest, q Question) error {
+func addQuestTags(wr srv.WrapperRequest, q *Question) error {
 	for _, tag := range q.Tags {
 		key := datastore.NewKey(wr.C, "questions-tags", "", 0, nil)
 		qt := QuestionTag{QuestId: q.Id, Tag: tag}

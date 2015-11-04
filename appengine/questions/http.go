@@ -46,7 +46,22 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if len(qs) == 0 || err != nil {
 		return viewTmpl, errors.New(ERR_QUESTNOTFOUND)
 	}
-	tc["Content"] = &qs[0]
+	q := &qs[0]
+
+	// if the question hasn't got a answer to render. It makes a
+	// blank anwser body based on Atype of the question and
+	// renders it
+
+	var abody AnswerBody
+	if q.Solution == nil {
+		switch q.AType {
+		case TYPE_TESTSINGLE:
+			abody = NewTestSingleAnswer(-1)
+		}
+	}
+
+	tc["Options"] = abody.GetHTML(q.Options)
+	tc["Content"] = q
 
 	return viewTmpl, nil
 }
@@ -86,7 +101,7 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return infoTmpl, err
 	}
 
-	err = putQuestion(wr, q)
+	err = putQuestion(wr, &q)
 	if err != nil {
 		return infoTmpl, err
 	}

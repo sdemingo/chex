@@ -28,9 +28,18 @@
 </div>
 
 <div class="panel col-md-6 col-md-offset-3">
-  <p>{{.Content.GetHTMLText}}</p>
+  {{.Content.GetHTMLText}}
   <hr>
-{{.Content.GetHTMLOptions}}
+  {{if .Content.Solution}}
+  <div class="row">
+    {{.Options}}
+  </div>
+  {{else}}
+  <form id="answerEditForm" class="form-group" method="post" action="/answers/add">
+    <input type="hidden" name="QuestId" value="{{ .Content.Id }}">
+  {{.Options}}
+  </form>
+  {{end}}
 </div>
 
 {{end}}

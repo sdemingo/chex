@@ -36,6 +36,14 @@ textarea.form-control  {
     padding:10;
 }
 
+.form-group ul{
+    list-style:none;
+}
+
+.form-group input[type=radio] + label{
+    margin-left: 15px;
+    font-weight:normal;
+}
 
 
 
