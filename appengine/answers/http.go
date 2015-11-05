@@ -19,7 +19,7 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
-	var a Answer
+	var a *Answer
 
 	decoder := json.NewDecoder(wr.R.Body)
 	err = decoder.Decode(&a)
@@ -30,12 +30,18 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	// Del cliente la respuesta ha llegado con los campos (QuestId, AuthorId, AType)
 	// Ahora necesitamos crear el body y asociarselo
 
-	// err = putQuestion(wr, &q)
-	// if err != nil {
-	// 	return infoTmpl, err
-	// }
+	var abody AnswerBody
+	switch a.BodyType {
+	case TYPE_TESTSINGLE:
+		abody = NewTestSingleAnswer(-1)
+	}
 
-	// tc["Content"] = q
+	a.AuthorId = wr.NU.Id
+	a.SetBody(abody)
+
+	err = putAnswer(wr, a)
+
+	tc["Content"] = a
 
 	return infoTmpl, nil
 }
