@@ -48,6 +48,7 @@ type AnswerBody interface {
 	IsUnsolved() bool
 }
 
+// Return an answer wihtout a body
 func NewAnswer(questionId int64, authorId int64) *Answer {
 	a := new(Answer)
 	a.Id = -1
@@ -56,6 +57,22 @@ func NewAnswer(questionId int64, authorId int64) *Answer {
 	a.Comment = ""
 	a.BodyType = -1
 	a.BodyId = -1
+
+	return a
+}
+
+// Return an answer wihtout a blank body of bodyType
+func NewAnswerWithBody(questionId int64, authorId int64, bodyType AnswerBodyType) *Answer {
+	a := NewAnswer(questionId, authorId)
+
+	var abody AnswerBody
+
+	switch bodyType {
+	case TYPE_TESTSINGLE:
+		abody = NewTestSingleAnswer(-1)
+	}
+
+	a.SetBody(abody)
 
 	return a
 }

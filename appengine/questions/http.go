@@ -50,18 +50,14 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	q := &qs[0]
 
 	// if the question hasn't got a answer to render. It makes a
-	// blank anwser body based on Atype of the question and
-	// renders it
+	// blank anwser based on Atype of the question to render it
 
-	var abody answers.AnswerBody
+	var blankAnswer *answers.Answer
 	if q.Solution == nil {
-		switch q.AType {
-		case answers.TYPE_TESTSINGLE:
-			abody = answers.NewTestSingleAnswer(-1)
-		}
+		blankAnswer = answers.NewAnswerWithBody(-1, -1, q.AType)
 	}
 
-	tc["Options"] = abody.GetHTML(q.Options)
+	tc["Options"] = blankAnswer.Body.GetHTML(q.Options)
 	tc["Content"] = q
 
 	return viewTmpl, nil
