@@ -1,5 +1,5 @@
 // Single Test Answer
-package questions
+package answers
 
 import (
 	"bytes"

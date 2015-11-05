@@ -6,6 +6,7 @@ import (
 	//"fmt"
 
 	"app/users"
+	"appengine/answers"
 	"appengine/srv"
 )
 
@@ -52,11 +53,11 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	// blank anwser body based on Atype of the question and
 	// renders it
 
-	var abody AnswerBody
+	var abody answers.AnswerBody
 	if q.Solution == nil {
 		switch q.AType {
-		case TYPE_TESTSINGLE:
-			abody = NewTestSingleAnswer(-1)
+		case answers.TYPE_TESTSINGLE:
+			abody = answers.NewTestSingleAnswer(-1)
 		}
 	}
 

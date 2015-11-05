@@ -13,15 +13,15 @@ import (
 	"github.com/russross/blackfriday"
 
 	"app/users"
+	"appengine/answers"
 	"appengine/datastore"
 	"appengine/srv"
 )
 
 const (
-	ERR_NOTVALIDQUEST     = "Pregunta no valido"
-	ERR_DUPLICATEDQUEST   = "Pregunta duplicada"
-	ERR_QUESTNOTFOUND     = "Pregunta no encontrada"
-	ERR_BADRENDEREDANSWER = "Pregunta renderizada erroneamente"
+	ERR_NOTVALIDQUEST   = "Pregunta no valido"
+	ERR_DUPLICATEDQUEST = "Pregunta duplicada"
+	ERR_QUESTNOTFOUND   = "Pregunta no encontrada"
 
 	TMPL_NOANSWEREDQUESTION = `
 		<ul>{{range .}}<li>{{ . }}</li>{{end}}</ul>
@@ -35,15 +35,15 @@ type QuestionTag struct {
 }
 
 type Question struct {
-	Id         int64        `json:",string" datastore:"-"`
-	AuthorId   int64        `json:",string"`
-	Author     *users.NUser `datastore:"-"`
-	SolutionId int64        `json:",string"`
-	Solution   *Answer      `datastore:"-"`
-	TimeStamp  time.Time    `json:"`
-	CheckSum   string       `json:"`
+	Id         int64           `json:",string" datastore:"-"`
+	AuthorId   int64           `json:",string"`
+	Author     *users.NUser    `datastore:"-"`
+	SolutionId int64           `json:",string"`
+	Solution   *answers.Answer `datastore:"-"`
+	TimeStamp  time.Time       `json:"`
+	CheckSum   string          `json:"`
 
-	AType   AnswerBodyType `json:",string"`
+	AType   answers.AnswerBodyType `json:",string"`
 	Text    string
 	Hint    string
 	Options []string
@@ -64,7 +64,7 @@ func NewQuestion(text string, options []string, tags []string) Question {
 	return *q
 }
 
-func (q *Question) SetSolution(sol *Answer) {
+func (q *Question) SetSolution(sol *answers.Answer) {
 	if sol != nil {
 		q.Solution = sol
 		q.SolutionId = sol.Id

@@ -1,4 +1,4 @@
-package questions
+package answers
 
 import (
 	"errors"
@@ -16,7 +16,9 @@ const (
 	TYPE_TESTMULTIPLE = iota
 
 	//ERR_BADANSWERMARK  = "Mark not valid"
-	ERR_ANSWERNOTFOUND = "Respuesta no encontrada"
+	ERR_ANSWERNOTFOUND    = "Respuesta no encontrada"
+	ERR_BADRENDEREDANSWER = "Respuesta renderizada erroneamente"
+	ERR_ANSWERWITHOUTBODY = "Respuesta sin cuerpo definido"
 )
 
 var bodiesTable = []string{"",
@@ -26,15 +28,14 @@ var bodiesTable = []string{"",
 type Answer struct {
 	Id        int64 `json:",string" datastore:"-"`
 	QuestId   int64 `json:",string"`
-	Quest     *Question
-	AuthorId  int64          `json:",string"`
-	TimeStamp time.Time      `json:"`
-	AType     AnswerBodyType `json:"`
+	AuthorId  int64 `json:",string"`
+	TimeStamp time.Time
 	Author    *users.NUser
 
-	Body    AnswerBody
-	BodyId  int64 `json:",string"`
-	Comment string
+	BodyType AnswerBodyType `json:",string"`
+	Body     AnswerBody
+	BodyId   int64
+	Comment  string
 }
 
 type AnswerBodyType int
@@ -47,23 +48,32 @@ type AnswerBody interface {
 	IsUnsolved() bool
 }
 
-func NewAnswer(questionId int64, authorId int64, body AnswerBody) *Answer {
+func NewAnswer(questionId int64, authorId int64) *Answer {
 	a := new(Answer)
 	a.Id = -1
 	a.QuestId = questionId
 	a.AuthorId = authorId
-	a.Body = body
-	a.BodyId = body.GetId()
 	a.Comment = ""
+	a.BodyType = -1
+	a.BodyId = -1
 
 	return a
 }
 
+func (a *Answer) SetBody(abody AnswerBody) {
+	a.Body = abody
+	a.BodyId = abody.GetId()
+	a.BodyType = abody.GetType()
+}
+
 func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 
+	if a.BodyId < 0 || a.BodyType < 0 {
+		return errors.New(ERR_ANSWERWITHOUTBODY)
+	}
 	a.TimeStamp = time.Now()
 	a.AuthorId = wr.NU.Id
-	a.AType = a.Body.GetType()
+	a.BodyType = a.Body.GetType()
 
 	key := datastore.NewKey(wr.C, "answers", "", 0, nil)
 	key, err := datastore.Put(wr.C, key, a)
@@ -73,7 +83,7 @@ func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 	a.Id = key.IntID()
 
 	// metemos en answer body también
-	bodyTable := bodiesTable[a.AType]
+	bodyTable := bodiesTable[a.BodyType]
 	key = datastore.NewKey(wr.C, bodyTable, "", 0, nil)
 	key, err = datastore.Put(wr.C, key, a.Body)
 	if err != nil {
@@ -119,7 +129,7 @@ func getAnswersById(wr srv.WrapperRequest, s_id string) (Answer, error) {
 
 	// falta el answer body
 	var b AnswerBody
-	bodyTable := bodiesTable[a.AType]
+	bodyTable := bodiesTable[a.BodyType]
 	k := datastore.NewKey(wr.C, bodyTable, "", id, nil)
 	datastore.Get(wr.C, k, &b)
 	a.Body = b
