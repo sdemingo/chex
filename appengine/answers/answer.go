@@ -110,58 +110,35 @@ func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 	}
 
 	var key *datastore.Key
-	var bkey *datastore.Key
 
 	a2, err := getAnswer(wr, a.AuthorId, a.QuestId)
-	if err != nil { // answer not found. Is new answer
+	if err != nil { // New
 		key = datastore.NewKey(wr.C, "answers", "", 0, nil)
-		a.Id = key.IntID()
 		a.AuthorId = wr.NU.Id
 		a.BodyType = a.Body.GetType()
 		a.TimeStamp = time.Now()
 
-		// actualizamos primero el body
-		bodyTable := bodiesTable[a.BodyType]
-		bkey = datastore.NewKey(wr.C, bodyTable, "", 0, nil)
-
-		// debo meter un tipo concreto no una interfaz
-		switch body := a.Body.(type) {
-		case TestSingleBody:
-			bkey, err = datastore.Put(wr.C, bkey, &body)
-
-		}
-		a.BodyId = bkey.IntID()
+		err = putAnswerBody(wr, a, 0)
 		if err != nil {
 			return err
 		}
 
-		// actualizo ahora la respuesta
 		_, err := datastore.Put(wr.C, key, a)
 		if err != nil {
 			return err
 		}
 		a.Id = key.IntID()
 
-	} else { // answer found. Updated
+	} else { // Updated
 		a.BodyId = a2.BodyId
 		key = datastore.NewKey(wr.C, "answers", "", a2.Id, nil)
 		a.TimeStamp = time.Now()
 
-		// actualizamos primero el body
-		bodyTable := bodiesTable[a.BodyType]
-		bkey = datastore.NewKey(wr.C, bodyTable, "", a.BodyId, nil)
-
-		// debo meter un tipo concreto no una interfaz
-		switch body := a.Body.(type) {
-		case TestSingleBody:
-			bkey, err = datastore.Put(wr.C, bkey, &body)
-		}
-		//a.BodyId = bkey.IntID()
+		err = putAnswerBody(wr, a, a.BodyId)
 		if err != nil {
 			return err
 		}
 
-		// actualizo ahora la respuesta
 		_, err := datastore.Put(wr.C, key, a)
 		if err != nil {
 			return err
@@ -170,6 +147,20 @@ func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 	}
 
 	return nil
+}
+
+func putAnswerBody(wr srv.WrapperRequest, a *Answer, id int64) error {
+
+	bodyTable := bodiesTable[a.BodyType]
+	bkey := datastore.NewKey(wr.C, bodyTable, "", id, nil)
+
+	var err error
+	switch body := a.Body.(type) {
+	case TestSingleBody:
+		bkey, err = datastore.Put(wr.C, bkey, &body)
+	}
+	a.BodyId = bkey.IntID()
+	return err
 }
 
 func getAnswers(wr srv.WrapperRequest, filters map[string][]string) ([]Answer, error) {
