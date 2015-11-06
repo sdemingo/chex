@@ -476,8 +476,8 @@ var answers = (function(){
 	var a = $(settings.form).serializeObject()
 
 	// RawSolution must be marshall into a simple string always
-	if (Array.isArray(a.RawSolution)){
-	    a.RawSolution = a.RawSolution.toString()
+	if (Array.isArray(a.RawBody)){
+	    a.RawSolution = a.RawBody.toString()
 	}
 	return a
     }

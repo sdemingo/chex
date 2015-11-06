@@ -27,8 +27,8 @@ var bodiesTable = []string{"",
 	"testmultiples-bodies"}
 
 type Answer struct {
-	Id          int64  `json:",string" datastore:"-"`
-	RawSolution string `datastore:"-"`
+	Id      int64  `json:",string" datastore:"-"`
+	RawBody string `datastore:"-"`
 
 	QuestId   int64 `json:",string"`
 	AuthorId  int64 `json:",string"`
@@ -67,19 +67,33 @@ func NewAnswer(questionId int64, authorId int64) *Answer {
 // Return an answer with a blank body of bodyType
 func NewAnswerWithBody(questionId int64, authorId int64, bodyType AnswerBodyType) (*Answer, error) {
 	a := NewAnswer(questionId, authorId)
+	a.BodyType = bodyType
+	err := a.BuildBody()
+	return a, err
+}
 
+// Try build a body of  BodyType from the RawBody property
+func (a *Answer) BuildBody() error {
 	var abody AnswerBody
 
-	switch bodyType {
+	if a.BodyType < 0 {
+		return errors.New(ERR_ANSWERWITHOUTBODY)
+	}
+
+	switch a.BodyType {
 	case TYPE_TESTSINGLE:
-		abody = NewTestSingleAnswer(-1)
+		sol, err := strconv.ParseInt(a.RawBody, 10, 32)
+		if err != nil {
+			abody = NewTestSingleAnswer(-1)
+		} else {
+			abody = NewTestSingleAnswer(int(sol))
+		}
 	default:
-		return nil, errors.New(ERR_BADANSWERTYPE)
+		return errors.New(ERR_BADANSWERTYPE)
 	}
 
 	a.SetBody(abody)
-
-	return a, nil
+	return nil
 }
 
 func (a *Answer) SetBody(abody AnswerBody) {
@@ -95,29 +109,66 @@ func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 		return errors.New(ERR_ANSWERWITHOUTBODY)
 	}
 
-	key := datastore.NewKey(wr.C, "answers", "", a.Id, nil)
-	a.Id = key.IntID()
+	var key *datastore.Key
+	var bkey *datastore.Key
 
-	a.TimeStamp = time.Now()
-	a.AuthorId = wr.NU.Id
-	a.BodyType = a.Body.GetType()
+	a2, err := getAnswer(wr, a.AuthorId, a.QuestId)
+	if err != nil { // answer not found. Is new answer
+		key = datastore.NewKey(wr.C, "answers", "", 0, nil)
+		a.Id = key.IntID()
+		a.AuthorId = wr.NU.Id
+		a.BodyType = a.Body.GetType()
+		a.TimeStamp = time.Now()
 
-	key, err := datastore.Put(wr.C, key, a)
-	if err != nil {
-		return err
-	}
-
-	/*
-		// metemos en answer body también
+		// actualizamos primero el body
 		bodyTable := bodiesTable[a.BodyType]
-		key = datastore.NewKey(wr.C, bodyTable, "", 0, nil)
-		srv.AppWarning(wr, fmt.Sprintf("%s  %d", bodyTable, a.Body.GetType()))
-		key, err = datastore.Put(wr.C, key, &a.Body)
+		bkey = datastore.NewKey(wr.C, bodyTable, "", 0, nil)
+
+		// debo meter un tipo concreto no una interfaz
+		switch body := a.Body.(type) {
+		case TestSingleBody:
+			bkey, err = datastore.Put(wr.C, bkey, &body)
+
+		}
+		a.BodyId = bkey.IntID()
 		if err != nil {
 			return err
 		}
-		a.BodyId = key.IntID()
-	*/
+
+		// actualizo ahora la respuesta
+		_, err := datastore.Put(wr.C, key, a)
+		if err != nil {
+			return err
+		}
+		a.Id = key.IntID()
+
+	} else { // answer found. Updated
+		a.BodyId = a2.BodyId
+		key = datastore.NewKey(wr.C, "answers", "", a2.Id, nil)
+		a.TimeStamp = time.Now()
+
+		// actualizamos primero el body
+		bodyTable := bodiesTable[a.BodyType]
+		bkey = datastore.NewKey(wr.C, bodyTable, "", a.BodyId, nil)
+
+		// debo meter un tipo concreto no una interfaz
+		switch body := a.Body.(type) {
+		case TestSingleBody:
+			bkey, err = datastore.Put(wr.C, bkey, &body)
+		}
+		//a.BodyId = bkey.IntID()
+		if err != nil {
+			return err
+		}
+
+		// actualizo ahora la respuesta
+		_, err := datastore.Put(wr.C, key, a)
+		if err != nil {
+			return err
+		}
+		a.Id = key.IntID()
+	}
+
 	return nil
 }
 
@@ -134,6 +185,23 @@ func getAnswers(wr srv.WrapperRequest, filters map[string][]string) ([]Answer, e
 	}
 
 	return as, err
+}
+
+func getAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*Answer, error) {
+
+	var as []Answer
+	var a Answer
+
+	q := datastore.NewQuery("answers").Filter("AuthorId =", authorId).Filter("QuestId =", questId)
+
+	keys, err := q.GetAll(wr.C, &as)
+	if (len(keys) == 0) || err != nil {
+		return nil, errors.New(ERR_ANSWERNOTFOUND)
+	}
+	a = as[0]
+	a.Id = keys[0].IntID()
+
+	return &a, nil
 }
 
 func getAnswersById(wr srv.WrapperRequest, s_id string) (Answer, error) {
