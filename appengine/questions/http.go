@@ -54,7 +54,10 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	var blankAnswer *answers.Answer
 	if q.Solution == nil {
-		blankAnswer = answers.NewAnswerWithBody(-1, -1, q.AType)
+		blankAnswer, err = answers.NewAnswerWithBody(-1, -1, q.AType)
+		if err != nil {
+			return viewTmpl, err
+		}
 	}
 
 	tc["Options"] = blankAnswer.Body.GetHTML(q.Options)

@@ -2,11 +2,12 @@ package answers
 
 import (
 	"errors"
+	//"fmt"
 	"html/template"
 	"strconv"
 	"time"
 
-	"app/users"
+	//"app/users"
 	"appengine/datastore"
 	"appengine/srv"
 )
@@ -15,10 +16,10 @@ const (
 	TYPE_TESTSINGLE   = 1
 	TYPE_TESTMULTIPLE = iota
 
-	//ERR_BADANSWERMARK  = "Mark not valid"
 	ERR_ANSWERNOTFOUND    = "Respuesta no encontrada"
 	ERR_BADRENDEREDANSWER = "Respuesta renderizada erroneamente"
 	ERR_ANSWERWITHOUTBODY = "Respuesta sin cuerpo definido"
+	ERR_BADANSWERTYPE     = "Respuesta con tipo de cuerpo desconocido"
 )
 
 var bodiesTable = []string{"",
@@ -26,14 +27,16 @@ var bodiesTable = []string{"",
 	"testmultiples-bodies"}
 
 type Answer struct {
-	Id        int64 `json:",string" datastore:"-"`
+	Id          int64  `json:",string" datastore:"-"`
+	RawSolution string `datastore:"-"`
+
 	QuestId   int64 `json:",string"`
 	AuthorId  int64 `json:",string"`
 	TimeStamp time.Time
-	Author    *users.NUser
+	//Author    *users.NUser
 
 	BodyType AnswerBodyType `json:",string"`
-	Body     AnswerBody
+	Body     AnswerBody     `datastore:"-"`
 	BodyId   int64
 	Comment  string
 }
@@ -51,7 +54,7 @@ type AnswerBody interface {
 // Return an answer wihtout a body
 func NewAnswer(questionId int64, authorId int64) *Answer {
 	a := new(Answer)
-	a.Id = -1
+	a.Id = 0
 	a.QuestId = questionId
 	a.AuthorId = authorId
 	a.Comment = ""
@@ -61,8 +64,8 @@ func NewAnswer(questionId int64, authorId int64) *Answer {
 	return a
 }
 
-// Return an answer wihtout a blank body of bodyType
-func NewAnswerWithBody(questionId int64, authorId int64, bodyType AnswerBodyType) *Answer {
+// Return an answer with a blank body of bodyType
+func NewAnswerWithBody(questionId int64, authorId int64, bodyType AnswerBodyType) (*Answer, error) {
 	a := NewAnswer(questionId, authorId)
 
 	var abody AnswerBody
@@ -70,11 +73,13 @@ func NewAnswerWithBody(questionId int64, authorId int64, bodyType AnswerBodyType
 	switch bodyType {
 	case TYPE_TESTSINGLE:
 		abody = NewTestSingleAnswer(-1)
+	default:
+		return nil, errors.New(ERR_BADANSWERTYPE)
 	}
 
 	a.SetBody(abody)
 
-	return a
+	return a, nil
 }
 
 func (a *Answer) SetBody(abody AnswerBody) {
@@ -83,31 +88,36 @@ func (a *Answer) SetBody(abody AnswerBody) {
 	a.BodyType = abody.GetType()
 }
 
+// Create or update an answer
 func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 
-	if a.BodyId < 0 || a.BodyType < 0 {
+	if a.BodyType < 0 {
 		return errors.New(ERR_ANSWERWITHOUTBODY)
 	}
+
+	key := datastore.NewKey(wr.C, "answers", "", a.Id, nil)
+	a.Id = key.IntID()
+
 	a.TimeStamp = time.Now()
 	a.AuthorId = wr.NU.Id
 	a.BodyType = a.Body.GetType()
 
-	key := datastore.NewKey(wr.C, "answers", "", 0, nil)
 	key, err := datastore.Put(wr.C, key, a)
 	if err != nil {
 		return err
 	}
-	a.Id = key.IntID()
 
-	// metemos en answer body también
-	bodyTable := bodiesTable[a.BodyType]
-	key = datastore.NewKey(wr.C, bodyTable, "", 0, nil)
-	key, err = datastore.Put(wr.C, key, a.Body)
-	if err != nil {
-		return err
-	}
-	a.BodyId = key.IntID()
-
+	/*
+		// metemos en answer body también
+		bodyTable := bodiesTable[a.BodyType]
+		key = datastore.NewKey(wr.C, bodyTable, "", 0, nil)
+		srv.AppWarning(wr, fmt.Sprintf("%s  %d", bodyTable, a.Body.GetType()))
+		key, err = datastore.Put(wr.C, key, &a.Body)
+		if err != nil {
+			return err
+		}
+		a.BodyId = key.IntID()
+	*/
 	return nil
 }
 

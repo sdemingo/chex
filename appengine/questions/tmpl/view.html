@@ -37,6 +37,7 @@
   {{else}}
   <form id="answerEditForm" class="form-group" method="post" action="/answers/add">
     <input type="hidden" name="QuestId" value="{{ .Content.Id }}">
+    <input type="hidden" name="BodyType" value="{{ .Content.AType }}">
   {{.Options}}
     <input type="button" class="btn btn-default pull-right" name="answerNewSubmit" value="Contestar" />
   </form>

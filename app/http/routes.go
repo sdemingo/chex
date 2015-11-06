@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 
+	"appengine/answers"
 	"appengine/questions"
 	"appengine/srv"
 	//"appengine/tests"
@@ -34,6 +35,11 @@ func init() {
 	})
 	http.HandleFunc("/questions/tags/list", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, questions.GetTagsList)
+	})
+
+	// Answers
+	http.HandleFunc("/answers/add", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, answers.Add)
 	})
 
 	// Users routes

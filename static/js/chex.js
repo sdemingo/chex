@@ -7,6 +7,7 @@ $(document).ready(function () {
     $(".dropdown-toggle").dropdown();
     users.init()
     questions.init()
+    answers.init()
 })
 
 
@@ -404,6 +405,101 @@ var questions = (function(){
     return{
 	init: init,
 	
+    }
+
+})()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+  
+  Modulo de respuestas
+
+*/
+
+var answers = (function(){
+    var settings={
+	form:"#answerEditForm",
+	//panel:"#questList"
+    }
+
+
+    var addAnswer =  function(a){
+	$.ajax({
+	    url:DOMAIN+'/answers/add',
+	    type: 'post',
+	    dataType: 'json',
+	    data: JSON.stringify(a),
+	    success: function(data){
+		if (data.Error){
+		    showErrorMessage("Error al crear respuesta")
+		    console.log(data.Error)
+		}else{
+		    showInfoMessage("Respuesta creada con éxito")
+		    //resetForm()
+		}
+	    },
+	    error: error
+	});
+    }
+
+    var editAnswer = function(u){
+
+    }
+
+
+    var listAnswers = function(){
+
+    }
+
+    var deleteAnswer = function(){
+
+    }
+
+    var resetForm = function(){
+	$(settings.form).each(function(){this.reset()})
+	    }
+    
+    var readForm = function(){
+	var a = $(settings.form).serializeObject()
+
+	// RawSolution must be marshall into a simple string always
+	if (Array.isArray(a.RawSolution)){
+	    a.RawSolution = a.RawSolution.toString()
+	}
+	return a
+    }
+    
+    var bindFunctions = function(){
+	// Add Answer
+	$(settings.form).on("change",function(){
+	    var a = readForm()
+	    if (!a) {
+		return
+	    }
+	    addAnswer(a)
+	})
+    }
+
+
+    var init = function() {
+	bindFunctions()
+    }
+
+    return{
+	init: init,	
     }
 
 })()

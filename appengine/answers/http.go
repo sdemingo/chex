@@ -3,7 +3,7 @@ package answers
 import (
 	"encoding/json"
 	"errors"
-	//"fmt"
+	"fmt"
 
 	"app/users"
 	"appengine/srv"
@@ -27,21 +27,25 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return infoTmpl, err
 	}
 
-	// Del cliente la respuesta ha llegado con los campos (QuestId, AuthorId, AType)
-	// Ahora necesitamos crear el body y asociarselo
+	srv.AppWarning(wr, fmt.Sprintf("%s", a.RawSolution))
+	// Create a blank answer to take the blank body
+	a2, err := NewAnswerWithBody(-1, -1, a.BodyType)
+	if err != nil {
+		return infoTmpl, err
 
-	var abody AnswerBody
-	switch a.BodyType {
-	case TYPE_TESTSINGLE:
-		abody = NewTestSingleAnswer(-1)
+	}
+	abody := a2.Body
+	a.AuthorId = wr.NU.Id
+
+	// Put the client data into the answer body
+
+	// ...
+	a.SetBody(abody)
+	err = putAnswer(wr, a)
+	if err != nil {
+		return infoTmpl, err
 	}
 
-	a.AuthorId = wr.NU.Id
-	a.SetBody(abody)
-
-	err = putAnswer(wr, a)
-
 	tc["Content"] = a
-
 	return infoTmpl, nil
 }

@@ -30,7 +30,7 @@ func (a TestSingleBody) GetHTML(options []string) template.HTML {
 	var doc bytes.Buffer
 	unsolvedTmpl := `
 	<ul>{{range $index, $item := .}}
-        <li><input type="radio" name="solution" value="{{$index}}" /><label>{{ $item }}</label></li>
+        <li><input type="radio" name="RawSolution" value="{{$index}}" /><label>{{ $item }}</label></li>
         {{end}}</ul>
 `
 
