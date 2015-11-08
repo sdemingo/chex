@@ -102,6 +102,28 @@ func (a *Answer) SetBody(abody AnswerBody) {
 	a.BodyType = abody.GetType()
 }
 
+func GetAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*Answer, error) {
+
+	var as []Answer
+	var a Answer
+
+	q := datastore.NewQuery("answers").Filter("AuthorId =", authorId).Filter("QuestId =", questId)
+
+	keys, err := q.GetAll(wr.C, &as)
+	if (len(keys) == 0) || err != nil {
+		return nil, errors.New(ERR_ANSWERNOTFOUND)
+	}
+	a = as[0]
+	a.Id = keys[0].IntID()
+
+	err = getAnswerBody(wr, &a)
+	if err != nil {
+		return nil, errors.New(ERR_ANSWERNOTFOUND)
+	}
+
+	return &a, err
+}
+
 // Create or update an answer
 func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 
@@ -111,7 +133,7 @@ func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 
 	var key *datastore.Key
 
-	a2, err := getAnswer(wr, a.AuthorId, a.QuestId)
+	a2, err := GetAnswer(wr, a.AuthorId, a.QuestId)
 	if err != nil { // New
 		key = datastore.NewKey(wr.C, "answers", "", 0, nil)
 		a.AuthorId = wr.NU.Id
@@ -163,6 +185,22 @@ func putAnswerBody(wr srv.WrapperRequest, a *Answer, id int64) error {
 	return err
 }
 
+func getAnswerBody(wr srv.WrapperRequest, a *Answer) error {
+
+	bodyTable := bodiesTable[a.BodyType]
+	bkey := datastore.NewKey(wr.C, bodyTable, "", a.BodyId, nil)
+
+	var err error
+	switch a.BodyType {
+	case TYPE_TESTSINGLE:
+		var body TestSingleBody
+		err = datastore.Get(wr.C, bkey, &body)
+		body.Id = bkey.IntID()
+		a.Body = body
+	}
+	return err
+}
+
 func getAnswers(wr srv.WrapperRequest, filters map[string][]string) ([]Answer, error) {
 
 	var as []Answer
@@ -176,23 +214,6 @@ func getAnswers(wr srv.WrapperRequest, filters map[string][]string) ([]Answer, e
 	}
 
 	return as, err
-}
-
-func getAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*Answer, error) {
-
-	var as []Answer
-	var a Answer
-
-	q := datastore.NewQuery("answers").Filter("AuthorId =", authorId).Filter("QuestId =", questId)
-
-	keys, err := q.GetAll(wr.C, &as)
-	if (len(keys) == 0) || err != nil {
-		return nil, errors.New(ERR_ANSWERNOTFOUND)
-	}
-	a = as[0]
-	a.Id = keys[0].IntID()
-
-	return &a, nil
 }
 
 func getAnswersById(wr srv.WrapperRequest, s_id string) (Answer, error) {

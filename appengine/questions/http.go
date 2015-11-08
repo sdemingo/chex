@@ -52,15 +52,14 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	// if the question hasn't got a answer to render. It makes a
 	// blank anwser based on Atype of the question to render it
 
-	var blankAnswer *answers.Answer
 	if q.Solution == nil {
-		blankAnswer, err = answers.NewAnswerWithBody(-1, -1, q.AType)
+		q.Solution, err = answers.NewAnswerWithBody(-1, -1, q.AType)
 		if err != nil {
 			return viewTmpl, err
 		}
 	}
 
-	tc["Options"] = blankAnswer.Body.GetHTML(q.Options)
+	tc["Options"] = q.Solution.Body.GetHTML(q.Options)
 	tc["Content"] = q
 
 	return viewTmpl, nil
