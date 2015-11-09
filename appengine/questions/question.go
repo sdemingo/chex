@@ -22,10 +22,6 @@ const (
 	ERR_NOTVALIDQUEST   = "Pregunta no valido"
 	ERR_DUPLICATEDQUEST = "Pregunta duplicada"
 	ERR_QUESTNOTFOUND   = "Pregunta no encontrada"
-
-	TMPL_NOANSWEREDQUESTION = `
-		<ul>{{range .}}<li>{{ . }}</li>{{end}}</ul>
-`
 )
 
 type QuestionTag struct {
@@ -48,20 +44,6 @@ type Question struct {
 	Hint    string
 	Options []string
 	Tags    []string
-}
-
-func NewQuestion(text string, options []string, tags []string) Question {
-	q := new(Question)
-	q.Id = -1
-	q.AuthorId = -1
-	q.SolutionId = -1
-
-	q.Text = text
-	q.Hint = ""
-	q.Options = options
-	q.Tags = tags
-
-	return *q
 }
 
 func (q *Question) SetSolution(sol *answers.Answer) {
@@ -99,12 +81,6 @@ func (q *Question) GetHTMLText() template.HTML {
 	in := []byte(q.Text)
 	return template.HTML(string(blackfriday.MarkdownBasic(in)))
 }
-
-/*
-func (q *Question) GetHTMLOptions() template.HTML {
-	return q.Solution.Body.GetHTML(q.Options)
-}
-*/
 
 func getQuestions(wr srv.WrapperRequest, filters map[string][]string) ([]Question, error) {
 
