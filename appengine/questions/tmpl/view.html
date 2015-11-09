@@ -30,18 +30,29 @@
 <div class="panel col-md-8 col-md-offset-2">
   {{.Content.GetHTMLText}}
   <hr>
-  {{if .Content.Solution}}
-  <div class="row col-md-11 col-md-offset-1">
-    {{.Options}}
+  
+  <div id="answerPanel" class="row col-md-11 col-md-offset-1">
+
+    {{ if .OptionsSolved }}
+    <div id="solvedPanel">
+       {{.OptionsSolved}}
+      <input type="button" class="btn btn-default pull-right" id="answerUpdateButton" value="Actualizar" />
+    </div>
+    {{end}}
+
+    <div id="unSolvedPanel">
+      <form id="answerEditForm" class="form-group" method="post" action="/answers/add">
+	<input type="hidden" name="QuestId" value="{{ .Content.Id }}">
+	<input type="hidden" name="BodyType" value="{{ .Content.AType }}">
+        {{.OptionsUnSolved}}
+	<input type="button" class="btn btn-default pull-right" id="answerNewSubmit" value="Contestar" />
+	{{ if .OptionsSolved }}
+	<input type="button" class="btn btn-default pull-right" id="answerNewCancel" value="Cancelar" />
+        {{end}}
+      </form>
+    </div>
+
   </div>
-  {{else}}
-  <form id="answerEditForm" class="form-group" method="post" action="/answers/add">
-    <input type="hidden" name="QuestId" value="{{ .Content.Id }}">
-    <input type="hidden" name="BodyType" value="{{ .Content.AType }}">
-  {{.Options}}
-    <input type="button" class="btn btn-default pull-right" name="answerNewSubmit" value="Contestar" />
-  </form>
-  {{end}}
 </div>
 
 {{end}}

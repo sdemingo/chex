@@ -100,9 +100,11 @@ func (q *Question) GetHTMLText() template.HTML {
 	return template.HTML(string(blackfriday.MarkdownBasic(in)))
 }
 
+/*
 func (q *Question) GetHTMLOptions() template.HTML {
 	return q.Solution.Body.GetHTML(q.Options)
 }
+*/
 
 func getQuestions(wr srv.WrapperRequest, filters map[string][]string) ([]Question, error) {
 

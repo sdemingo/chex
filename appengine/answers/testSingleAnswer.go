@@ -25,9 +25,9 @@ func (a TestSingleBody) GetType() AnswerBodyType {
 	return TYPE_TESTSINGLE
 }
 
-func (a TestSingleBody) GetHTML(options []string) template.HTML {
+func (a TestSingleBody) GetHTML(options []string) (template.HTML, template.HTML, error) {
 
-	var doc bytes.Buffer
+	var doc1, doc2 bytes.Buffer
 	unsolvedTmpl := `
 	<ul>{{range $index, $item := .}}
         <li><input type="radio" name="RawBody" value="{{$index}}" /><label>{{ $item }}</label></li>
@@ -43,18 +43,14 @@ func (a TestSingleBody) GetHTML(options []string) template.HTML {
         {{end}}
         {{end}}</ul>
 `
-	var t *template.Template
-	if a.Solution < 0 {
-		t, _ = template.New("options").Parse(unsolvedTmpl)
-	} else {
-		t, _ = template.New("options").Parse(solvedTmpl)
-	}
-	err := t.Execute(&doc, options)
-	if err != nil {
-		return template.HTML(ERR_BADRENDEREDANSWER)
-	} else {
-		return template.HTML(doc.String())
-	}
+
+	tu, err := template.New("options").Parse(unsolvedTmpl)
+	err = tu.Execute(&doc1, options)
+
+	ts, err := template.New("options").Parse(solvedTmpl)
+	err = ts.Execute(&doc2, options)
+
+	return template.HTML(doc1.String()), template.HTML(doc2.String()), err
 }
 
 func (a TestSingleBody) Equals(master AnswerBody) bool {

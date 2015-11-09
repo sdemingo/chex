@@ -59,7 +59,9 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		}
 	}
 
-	tc["Options"] = q.Solution.Body.GetHTML(q.Options)
+	unSolved, solved, err := q.Solution.Body.GetHTML(q.Options)
+	tc["OptionsSolved"] = solved
+	tc["OptionsUnSolved"] = unSolved
 	tc["Content"] = q
 
 	return viewTmpl, nil

@@ -432,7 +432,7 @@ var questions = (function(){
 var answers = (function(){
     var settings={
 	form:"#answerEditForm",
-	//panel:"#questList"
+	panel:"#answerPanel"
     }
 
 
@@ -483,13 +483,31 @@ var answers = (function(){
     }
     
     var bindFunctions = function(){
-	// Add Answer
-	$(settings.form).on("change",function(){
+	// si existe la solución  la mostramos primeramente
+	if ($(settings.panel+" #solvedPanel").length){
+	    $(settings.panel+" #unSolvedPanel").hide()
+	}
+
+	// ocultar la solución y mostrar el formulario para editar
+	$(settings.panel+" #answerUpdateButton").on("click",function(){
+	    $(settings.panel+" #solvedPanel").hide()
+	    $(settings.panel+" #unSolvedPanel").show()
+	})
+
+	// ocultar el formulario de respuesta y mostrar la solución
+	$(settings.panel+" #answerNewCancel").on("click",function(){
+	    $(settings.panel+" #unSolvedPanel").hide()
+	    $(settings.panel+" #solvedPanel").show()
+	})
+
+	// crea una nueva respuesta o actualiza la existente
+	$(settings.panel+" #answerNewSubmit").on("click",function(){
 	    var a = readForm()
 	    if (!a) {
 		return
 	    }
 	    addAnswer(a)
+	    location.reload()
 	})
     }
 

@@ -47,7 +47,7 @@ type AnswerBody interface {
 	GetId() int64
 	GetType() AnswerBodyType
 	Equals(master AnswerBody) bool
-	GetHTML(options []string) template.HTML
+	GetHTML(options []string) (template.HTML, template.HTML, error)
 	IsUnsolved() bool
 }
 
