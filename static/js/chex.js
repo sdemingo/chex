@@ -11,81 +11,6 @@ $(document).ready(function () {
 })
 
 
-var validator = {
-    
-    types:{
-	isNonEmpty :{
-	    validate:function(value){
-		return value!= ""
-	    },
-	    instructions: "value cannot be empty"
-	},
-	isNumber : {
-	    validate:function(value){
-		return !isNaN(value)
-	    },
-	    instructions: "value must be a number"
-	},
-	isWordEnumeration : {
-	    validate:function(value){
-		return (/^(\s*\w+\s*,)*\s*\w+\s*$/m.test(value))
-	    },
-	    instructions: "value must a word without spaces sequence"
-	},
-	isEmail : {
-	    validate:function(value){
-		var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
-		return (re.test(value))
-	    },
-	    instructions: "value must a valid email"
-	}		
-    },
-    
-    config:{},
-    
-    messages:[],
-    
-    validate:function(data,types){
-	var i,msg,type,checker,result
-	
-	this.messages=[]
-	for (i in data){
-	    if (data.hasOwnProperty(i)){
-		type = types[i]
-		checker = this.types[type]
-		if (!type){
-		    continue
-		}
-		if (!checker){
-		    console.log("Error: no checker for this type")
-		}
-		result = checker.validate(data[i])
-		if (!result){
-		    msg = "Invalid value for "+i+":, "+checker.instructions
-		    this.messages.push(msg)
-		}
-	    }
-	}
-	return this.hasErrors()
-    },
-
-    hasErrors: function(){
-	return this.messages.length !=0
-    },
-
-    getErrors: function(){
-	m=this.messages.join("\n")
-	this.messages=[]
-	return m
-    }
-}
-
-
-
-
-
-
-
 /*
   
   Modulo de usuarios
@@ -256,12 +181,6 @@ var users = (function(){
 
 
 
-
-
-
-
-
-
 /*
   
   Modulo de preguntas
@@ -413,16 +332,6 @@ var questions = (function(){
 
 
 
-
-
-
-
-
-
-
-
-
-
 /*
   
   Modulo de respuestas
@@ -524,18 +433,74 @@ var answers = (function(){
 
 
 
+var validator = {
+    
+    types:{
+	isNonEmpty :{
+	    validate:function(value){
+		return value!= ""
+	    },
+	    instructions: "value cannot be empty"
+	},
+	isNumber : {
+	    validate:function(value){
+		return !isNaN(value)
+	    },
+	    instructions: "value must be a number"
+	},
+	isWordEnumeration : {
+	    validate:function(value){
+		return (/^(\s*\w+\s*,)*\s*\w+\s*$/m.test(value))
+	    },
+	    instructions: "value must a word without spaces sequence"
+	},
+	isEmail : {
+	    validate:function(value){
+		var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+		return (re.test(value))
+	    },
+	    instructions: "value must a valid email"
+	}		
+    },
+    
+    config:{},
+    
+    messages:[],
+    
+    validate:function(data,types){
+	var i,msg,type,checker,result
+	
+	this.messages=[]
+	for (i in data){
+	    if (data.hasOwnProperty(i)){
+		type = types[i]
+		checker = this.types[type]
+		if (!type){
+		    continue
+		}
+		if (!checker){
+		    console.log("Error: no checker for this type")
+		}
+		result = checker.validate(data[i])
+		if (!result){
+		    msg = "Invalid value for "+i+":, "+checker.instructions
+		    this.messages.push(msg)
+		}
+	    }
+	}
+	return this.hasErrors()
+    },
 
+    hasErrors: function(){
+	return this.messages.length !=0
+    },
 
-
-
-
-
-
-/*
-  
-  Otras cosas
-
-*/
+    getErrors: function(){
+	m=this.messages.join("\n")
+	this.messages=[]
+	return m
+    }
+}
 
 
 
