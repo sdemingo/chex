@@ -1,0 +1,277 @@
+{{define "content"}}
+
+<div class="form-group col-md-12">
+  <div class="row col-md-12 ">
+    <ul class="nav nav-pills text-right">
+      <li role="presentation" class="active"><a href="/tests/list" >Volver</a></li>
+    </ul>
+  </div>
+</div>
+
+
+
+
+<div class="panel col-md-12">
+
+  <div class="form-group col-md-6 col-md-offset-3">
+    <form id="testEditForm" method="post">
+      
+      <div class="form-group">
+	<label>Título</label>
+	<input type="text" class="form-control" name="Title" placeholder="Título del exámen" value="">
+      </div>
+
+      <div class="form-group">
+	<label>Alías</label>
+	<input type="text" class="form-control" name="Alias" placeholder="Alías" value="">
+      </div>
+
+      <div class="form-group">
+	<label>Descripción</label>
+	<textarea name="Desc" class="form-control">
+	</textarea>
+      </div>
+
+      <div class="form-group">
+	<label>Ejercicios</label>
+	<div class="panel panel-default panel-selection">
+	  <ul class="list-group">
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<input type="text" class="form-control item-input-value"/>
+		<input type="text" class="form-control item-input-value"/>
+		<a href="" class="item-link">Cras justo odio</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<input type="text" class="form-control item-input-value"/>
+		<input type="text" class="form-control item-input-value"/>
+		<a href="" class="item-link">Cras justo odio</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<input type="text" class="form-control item-input-value"/>
+		<input type="text" class="form-control item-input-value"/>
+		<a href="" class="item-link">Cras justo odio</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<input type="text" class="form-control item-input-value"/>
+		<input type="text" class="form-control item-input-value"/>
+		<a href="" class="item-link">Cras justo odio</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<input type="text" class="form-control item-input-value"/>
+		<input type="text" class="form-control item-input-value"/>
+		<a href="" class="item-link">Cras justo odio</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<input type="text" class="form-control item-input-value"/>
+		<input type="text" class="form-control item-input-value"/>
+		<a href="" class="item-link">Cras justo odio</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<input type="text" class="form-control item-input-value"/>
+		<input type="text" class="form-control item-input-value"/>
+		<a href="" class="item-link">Cras justo odio</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<input type="text" class="form-control item-input-value"/>
+		<input type="text" class="form-control item-input-value"/>
+		<a href="" class="item-link">Cras justo odio</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<input type="text" class="form-control item-input-value"/>
+		<input type="text" class="form-control item-input-value"/>
+		<a href="" class="item-link">Cras justo odio</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<input type="text" class="form-control item-input-value"/>
+		<input type="text" class="form-control item-input-value"/>
+		<a href="" class="item-link">Cras justo odio</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<input type="text" class="form-control item-input-value"/>
+		<input type="text" class="form-control item-input-value"/>
+		<a href="" class="item-link">Cras justo odio</a>
+	      </div>
+	    </li>
+
+	  </ul>
+	  <button type="button" id="addQuest" class="btn btn-default pull-right">Añadir</button>
+	</div>
+      </div>
+
+      <div class="form-group">
+	<label>Usuarios permitidos</label>
+	<div class="panel panel-default panel-selection">
+	  <ul class="list-group">
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	    <li class="list-group-item">
+	      <div class="form-inline">
+		<a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		<a href="" class="item-link">Nombre de Usuario</a>
+	      </div>
+	    </li>
+
+	  </ul>
+	  <button type="button" id="addUser" class="btn btn-default pull-right">Añadir</button>
+	</div>
+      </div>	
+
+
+
+      <div class="form-group">
+	<label>Etiquetas</label>
+	<input type="text" class="form-control" name="Tags" placeholder="Escríbelas separadas por comas" value="{{.Content.GetStringTags}}">
+      </div>
+
+      <div class="form-group text-right">
+	<button type="button" id="testNewSubmit" class="btn btn-default">Crear</button>
+      </div>
+    </form>
+    <div id="testEditAlert" class="alert" role="alert">...</div>
+  </div>
+
+{{if .ImportForm}}
+  
+  <div class="form-group col-md-6 col-md-offset-3">
+    <hr>
+    <form id="testImportForm" enctype="multipart/form-data" action="/tests/import" method="post">
+      <div class="form-group">
+	<label >Adjuntar un archivo</label>
+	<input type="file" name="importFile" />
+	<!--  <p class="help-block">Ejemplo de texto de ayuda.</p>-->
+      </div>
+
+      <div class="form-group text-right">
+	<button type="submit" id="testImportSubmit" class="btn btn-default">Importar</button>
+      </div>
+    </form> 
+  </div>
+{{end}}
+
+
+</div>
+{{end}}

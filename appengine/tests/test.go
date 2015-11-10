@@ -28,6 +28,13 @@ type Test struct {
 	State     int
 	Exercises []int64 // all exercises
 	UList     []int64 // users allowed
+	Tags      []string
+}
+
+type TestTag struct {
+	Id     int64 `json:",string" datastore:"-"`
+	TestId int64
+	Tag    string
 }
 
 type Exercise struct {

@@ -29,6 +29,25 @@ body {
 }
 
 
+
+.panel-selection ul{
+    height:400px;
+    max-height:400px;
+    overflow-y:scroll;
+}
+
+.panel-selection .item-remove{
+    margin-right:10px;
+}
+
+.panel-selection .item-input-value{
+    width:4em;
+}
+
+.panel-selection .item-link{
+    margin-left:10px;
+}
+
 textarea.form-control  {
     resize: none;
     height: 100%;

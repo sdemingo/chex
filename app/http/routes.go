@@ -6,7 +6,7 @@ import (
 	"appengine/answers"
 	"appengine/questions"
 	"appengine/srv"
-	//"appengine/tests"
+	"appengine/tests"
 	"appengine/users"
 )
 
@@ -40,6 +40,11 @@ func init() {
 	// Answers
 	http.HandleFunc("/answers/add", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, answers.Add)
+	})
+
+	// Tests
+	http.HandleFunc("/tests/new", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, tests.New)
 	})
 
 	// Users routes

@@ -13,9 +13,9 @@ import (
 // Templates
 
 var listTmpl = "appengine/tests/tmpl/list.html"
-var newTmpl = "appengine/test/tmpl/edit.html"
-var viewTmpl = "appengine/test/tmpl/view.html"
-var infoTmpl = "appengine/test/tmpl/info.html"
+var newTmpl = "appengine/tests/tmpl/edit.html"
+var viewTmpl = "appengine/tests/tmpl/view.html"
+var infoTmpl = "appengine/tests/tmpl/info.html"
 
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	err := srv.CheckPerm(wr, users.OP_COMMITTER)
