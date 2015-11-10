@@ -33,7 +33,7 @@ body {
 .panel-selection ul{
     height:400px;
     max-height:400px;
-    overflow-y:scroll;
+    overflow-y:auto;
 }
 
 .panel-selection .item-remove{

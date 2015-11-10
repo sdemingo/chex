@@ -7,4 +7,5 @@ $(document).ready(function () {
     users.init()
     questions.init()
     answers.init()
+    tests.init()
 })
