@@ -10,6 +10,5 @@ $(target): $(files)
 		cat $$file >> $(target) ; \
 	done
 	uglifyjs $(target) > $(target_min)
-	rm $(target)
 
 all: $(target)

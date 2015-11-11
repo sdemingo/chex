@@ -13,7 +13,7 @@ var tests = (function(){
     }
 
     var data={
-	listedQuests=[]
+	results:{}
     }
 
 
@@ -42,7 +42,7 @@ var tests = (function(){
 
     var listTags = function(){
 	$("#testSelectQuestionPanel .tags").empty()
-	questions.tags("#testSelectQuestionPanel",data.listedQuests)
+	questions.tags("#testSelectQuestionPanel",data.results)
 	
     }
 

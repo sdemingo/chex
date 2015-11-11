@@ -36,7 +36,7 @@ var questions = (function(){
 
     }
 
-    var listTags = function(panel){
+    var listTags = function(panel,results){
 	$.ajax({
 	    url:DOMAIN+'/questions/tags/list',
 	    type: 'get',
@@ -48,17 +48,20 @@ var questions = (function(){
 			    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
 		    })
 			}
+		if (results){
+		    results.allTags=data
+		}
 	    },
 	    error: error
 	})
     }
 
-    var listQuests = function(panel,tags,list){
+    var listQuests = function(panel,results){
 	$.ajax({
 	    url:DOMAIN+'/questions/list',
 	    type: 'get',
 	    dataType: 'json',
-	    data: {tags:tags.join(",")},
+	    data: {tags:results.seletedTags.join(",")},
 	    success: function(data){
 		if ((!data) || (data.length==0)){
 		    $(panel+" .results")
@@ -69,7 +72,9 @@ var questions = (function(){
 			    .append("<li class=\"list-group-item\"><a href=\"/questions/get?id="+e.Id+"\" >"+resume(e.Text)+"</a></li>")
 		    })
 		}
-		list=data.slice()
+		if (results){
+		    results.quests=data
+		}
 	    },
 	    error: error
 	})
@@ -119,7 +124,7 @@ var questions = (function(){
 	})
 
 	// List Quests
-	initTagPanel(settings.panel)
+	initTagPanel(settings.panel,{})
     }
 
 
@@ -128,9 +133,9 @@ var questions = (function(){
 
     // Public methods of module
 
-    var initTagPanel = function(panel,qlist){
+    var initTagPanel = function(panel,results){
 
-	listTags(panel+" .tags")
+	listTags(panel+" .tags",results)
 
 	$(panel+" .tags").on("click","*",function(e){
 	    $(this).toggleClass("label-primary")
@@ -138,13 +143,13 @@ var questions = (function(){
 
 	$(panel+" .tags").on("click",function(e){
 	    e.preventDefault()
-	    tags=[]
+	    results.seletedTags=[]
 	    $(panel+" .results").empty()
 	    $(panel+" .tags").find(".label-primary").each(function(){
-		tags.push($(this).html())
+		results.seletedTags.push($(this).html())
 	    })
-		if (tags.length>0){
-		    listQuests(panel,tags,qlist)
+		if (results.seletedTags.length>0){
+		    listQuests(panel,results)
 		}
 	})
     }
