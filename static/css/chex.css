@@ -29,12 +29,17 @@ body {
 }
 
 
+.panel-selection{
+    min-height:500px;
+}
 
-.panel-selection ul{
+.panel-selection-main{
+    margin-bottom:0;
     height:400px;
     max-height:400px;
     overflow-y:auto;
 }
+
 
 .panel-selection .item-remove{
     margin-right:10px;
@@ -65,6 +70,9 @@ textarea.form-control  {
 }
 
 
+.list-group-item a{
+    text-decoration:none;
+}
 
 /* Sticky footer styles
 -------------------------------------------------- */
