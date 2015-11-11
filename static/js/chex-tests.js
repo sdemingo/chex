@@ -6,10 +6,14 @@
 
 */
 
-var questions = (function(){
+var tests = (function(){
     var settings={
-	form:"#testsEditForm",
+	form:"",
 	panel:""
+    }
+
+    var data={
+	listedQuests=[]
     }
 
 
@@ -37,7 +41,9 @@ var questions = (function(){
     }
 
     var listTags = function(){
-
+	$("#testSelectQuestionPanel .tags").empty()
+	questions.tags("#testSelectQuestionPanel",data.listedQuests)
+	
     }
 
     var listTests = function(tags){
@@ -54,12 +60,12 @@ var questions = (function(){
     
     var readForm = function(){
 	/*var q = $(settings.form).serializeObject()
-	q.Tags = q.Tags.split(",").map(function(e){
-	    return e.trim()
-	})
-	q.Tags.clean("")
-	
-	return q*/
+	  q.Tags = q.Tags.split(",").map(function(e){
+	  return e.trim()
+	  })
+	  q.Tags.clean("")
+	  
+	  return q*/
     }
     
     var bindFunctions = function(){
@@ -70,14 +76,24 @@ var questions = (function(){
 	    
 	})
 
-	// Add users button
+	// Show questions for select them
+	$("#addMoreQuests").click(function(){
+	    $("#testSelectedQuestionPanel").hide()
+	    $("#testSelectQuestionPanel").show()
+	    listTags()
+	})
+
+	// Add selected quests and show all
+	$("#addSelectedQuests").click(function(){
+	    $("#testSelectedQuestionPanel").show()
+	    $("#testSelectQuestionPanel").hide()
+	})
     }
 
 
     var init = function() {
 	$("#testSelectQuestionPanel").hide()
 	$("#testSelectedQuestionPanel ul").empty()
-	listTags()
 	bindFunctions()
     }
 

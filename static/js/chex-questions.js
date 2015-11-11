@@ -36,7 +36,7 @@ var questions = (function(){
 
     }
 
-    var listTags = function(){
+    var listTags = function(panel){
 	$.ajax({
 	    url:DOMAIN+'/questions/tags/list',
 	    type: 'get',
@@ -44,7 +44,7 @@ var questions = (function(){
 	    success: function(data){
 		if (data){
 		    $.each(data,function(i,e){
-			$(settings.panel+" .tags")
+			$(panel)
 			    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
 		    })
 			}
@@ -53,7 +53,7 @@ var questions = (function(){
 	})
     }
 
-    var listQuests = function(tags){
+    var listQuests = function(panel,tags,list){
 	$.ajax({
 	    url:DOMAIN+'/questions/list',
 	    type: 'get',
@@ -61,14 +61,15 @@ var questions = (function(){
 	    data: {tags:tags.join(",")},
 	    success: function(data){
 		if ((!data) || (data.length==0)){
-		    $(settings.panel+" .results")
+		    $(panel+" .results")
 			.append("<span class=\"list-group-item\">No hubo resultados</span>")
 		}else{
 		    data.forEach(function(e){
-			$(settings.panel+" .results")
-			    .append("<a href=\"/questions/get?id="+e.Id+"\" class=\"list-group-item\">"+resume(e.Text)+"</a>")
+			$(panel+" .results")
+			    .append("<li class=\"list-group-item\"><a href=\"/questions/get?id="+e.Id+"\" >"+resume(e.Text)+"</a></li>")
 		    })
 		}
+		list=data.slice()
 	    },
 	    error: error
 	})
@@ -118,31 +119,44 @@ var questions = (function(){
 	})
 
 	// List Quests
-	$(settings.panel+" .tags").on("click","*",function(e){
+	initTagPanel(settings.panel)
+    }
+
+
+
+
+
+    // Public methods of module
+
+    var initTagPanel = function(panel,qlist){
+
+	listTags(panel+" .tags")
+
+	$(panel+" .tags").on("click","*",function(e){
 	    $(this).toggleClass("label-primary")
 	})
 
-	$(settings.panel+" .tags").on("click",function(e){
+	$(panel+" .tags").on("click",function(e){
+	    e.preventDefault()
 	    tags=[]
-	    $(settings.panel+" .results").empty()
-	    $(settings.panel+" .tags").find(".label-primary").each(function(){
+	    $(panel+" .results").empty()
+	    $(panel+" .tags").find(".label-primary").each(function(){
 		tags.push($(this).html())
 	    })
 		if (tags.length>0){
-		    listQuests(tags)
+		    listQuests(panel,tags,qlist)
 		}
 	})
     }
 
 
     var init = function() {
-	listTags()
 	bindFunctions()
     }
 
     return{
 	init: init,
-	
+	tags: initTagPanel
     }
 
 })()

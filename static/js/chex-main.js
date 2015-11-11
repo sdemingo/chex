@@ -3,7 +3,7 @@ var DOMAIN=""
 
 
 $(document).ready(function () {
-    $(".dropdown-toggle").dropdown();
+    $(".dropdown-toggle").dropdown()
     users.init()
     questions.init()
     answers.init()
