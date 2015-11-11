@@ -238,12 +238,13 @@ var questions = (function(){
 	})
     }
 
-    var listQuests = function(panel,results){
+    // 
+    var listQuests = function(panel,tags,results){
 	$.ajax({
 	    url:DOMAIN+'/questions/list',
 	    type: 'get',
 	    dataType: 'json',
-	    data: {tags:results.seletedTags.join(",")},
+	    data: {tags:tags.join(",")},
 	    success: function(data){
 		if ((!data) || (data.length==0)){
 		    $(panel+" .results")
@@ -331,8 +332,8 @@ var questions = (function(){
 		results.seletedTags.push($(this).html())
 	    })
 		if (results.seletedTags.length>0){
-		    //listQuests(panel,tags,results)
-		    listQuests(panel,results)
+		    tags=results.seletedTags
+		    listQuests(panel,tags,results)
 		}
 	})
     }

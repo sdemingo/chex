@@ -9,6 +9,6 @@ $(target): $(files)
 	for file in $(files) ; do \
 		cat $$file >> $(target) ; \
 	done
-	uglifyjs $(target) > $(target_min)
+	#uglifyjs $(target) > $(target_min)
 
 all: $(target)

@@ -36,6 +36,7 @@ var questions = (function(){
 
     }
 
+    // Add to panel and to results.allTags the tag names
     var listTags = function(panel,results){
 	$.ajax({
 	    url:DOMAIN+'/questions/tags/list',
@@ -56,12 +57,13 @@ var questions = (function(){
 	})
     }
 
-    var listQuests = function(panel,results){
+    // Add to panel and to results.quests the questions tagged with tags
+    var listQuests = function(panel,tags,results){
 	$.ajax({
 	    url:DOMAIN+'/questions/list',
 	    type: 'get',
 	    dataType: 'json',
-	    data: {tags:results.seletedTags.join(",")},
+	    data: {tags:tags.join(",")},
 	    success: function(data){
 		if ((!data) || (data.length==0)){
 		    $(panel+" .results")
@@ -131,8 +133,17 @@ var questions = (function(){
 
 
 
-    // Public methods of module
+    /*
+      
+      Public interface of the module
 
+     */
+
+
+
+
+   // Init a tag panel with the tag names and search questions tagged
+   // with these tag names. Return the questions and the tags names in results
     var initTagPanel = function(panel,results){
 
 	listTags(panel+" .tags",results)
@@ -149,7 +160,8 @@ var questions = (function(){
 		results.seletedTags.push($(this).html())
 	    })
 		if (results.seletedTags.length>0){
-		    listQuests(panel,results)
+		    tags=results.seletedTags
+		    listQuests(panel,tags,results)
 		}
 	})
     }
