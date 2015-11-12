@@ -13,82 +13,97 @@ var questions = (function(){
     }
 
 
-    var addQuest =  function(q){
+
+    /*
+
+      Ajax Api
+
+    */
+    var addQuest =  function(q,cb){
 	$.ajax({
 	    url:DOMAIN+'/questions/add',
 	    type: 'post',
 	    dataType: 'json',
 	    data: JSON.stringify(q),
-	    success: function(data){
-		if (data.Error){
-		    showErrorMessage("Error al crear pregunta")
-		    console.log(data.Error)
-		}else{
-		    showInfoMessage("Pregunta creada con éxito")
-		    resetForm()
-		}
+	    success: function(response){
+		cb(response)
 	    },
 	    error: error
 	});
     }
 
-    var editQuest = function(u){
+    var editQuest = function(q,cb){
 
     }
 
-    // Add to panel and to results.allTags the tag names
-    var listTags = function(panel,results){
+    var listTags = function(cb){
 	$.ajax({
 	    url:DOMAIN+'/questions/tags/list',
 	    type: 'get',
 	    dataType: 'json',
-	    success: function(data){
-		if (data){
-		    $.each(data,function(i,e){
-			$(panel)
-			    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
-		    })
-			}
-		if (results){
-		    results.allTags=data
-		}
+	    success: function(response){
+		cb(response)
 	    },
 	    error: error
 	})
     }
 
-    // Add to panel and to results.quests the questions tagged with tags
-    var listQuests = function(panel,tags,results){
+    var listQuests = function(tags,cb){
 	$.ajax({
 	    url:DOMAIN+'/questions/list',
 	    type: 'get',
 	    dataType: 'json',
 	    data: {tags:tags.join(",")},
-	    success: function(data){
-		if ((!data) || (data.length==0)){
-		    $(panel+" .results")
-			.append("<span class=\"list-group-item\">No hubo resultados</span>")
-		}else{
-		    data.forEach(function(e){
-			$(panel+" .results")
-			    .append("<li class=\"list-group-item\"><a href=\"/questions/get?id="+e.Id+"\" >"+resume(e.Text)+"</a></li>")
-		    })
-		}
-		if (results){
-		    results.quests=data
-		}
+	    success:  function(response){
+		cb(response)
 	    },
 	    error: error
 	})
     }
 
-    var deleteQuest = function(){
+    var deleteQuest = function(q,cb){
 
     }
 
-    var resetForm = function(){
-	$(settings.form).each(function(){this.reset()})
-	    }
+
+    /*
+
+      Dom functions 
+
+    */
+
+
+    var addQuestResponse = function(response){
+	if (response.Error){
+	    showErrorMessage("Error al crear pregunta")
+	    console.log(data.Error)
+	}else{
+	    showInfoMessage("Pregunta creada con éxito")
+	    resetForm(settings.form)
+	}
+    }
+
+    var listQuestResponse = function(response){
+	if ((!response) || (response.length==0) || !Array.isArray(response)){
+	    $(settings.panel+" .results")
+		.append("<span class=\"list-group-item\">No hubo resultados</span>")
+	}else{
+	    response.forEach(function(e){
+		$(settings.panel+" .results")
+		    .append("<li class=\"list-group-item\"><a href=\"/questions/get?id="+e.Id+"\" >"+resume(e.Text)+"</a></li>")
+	    })
+	}
+    }
+
+    var listTagsResponse = function(response){
+	if (response){
+	    $.each(response,function(i,e){
+		$(settings.panel+" .tags")
+		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
+	    })
+		}
+    }
+
     
     var readForm = function(){
 	var q = $(settings.form).serializeObject()
@@ -100,8 +115,8 @@ var questions = (function(){
 	return q
     }
     
-    var bindFunctions = function(){
 
+    var bindFunctions = function(){
 	// Edit Quest form
 	$(settings.form+" .btn-add").on("click",function(){
 	    $(settings.form+" .question-options")
@@ -116,17 +131,32 @@ var questions = (function(){
 	    $(this).closest("div.input-group").remove()
 	})
 
+
 	// Add Quest
 	$(settings.form+" #questNewSubmit").click(function(){
 	    var q = readForm()
 	    if (!q) {
 		return
 	    }
-	    addQuest(q)
+	    addQuest(q,addQuestResponse)
 	})
 
 	// List Quests
-	initTagPanel(settings.panel,{})
+	$(settings.panel+" .tags").on("click","*",function(e){
+	    $(this).toggleClass("label-primary")
+	})
+
+	$(settings.panel+" .tags").on("click",function(e){
+	    e.preventDefault()
+	    tags=[]
+	    $(settings.panel+" .results").empty()
+	    $(settings.panel+" .tags").find(".label-primary").each(function(){
+		tags.push($(this).html())
+	    })
+		if (tags.length>0){
+		    listQuests(tags,listQuestResponse)
+		}
+	})
     }
 
 
@@ -137,43 +167,21 @@ var questions = (function(){
       
       Public interface of the module
 
-     */
-
-
-
-
-   // Init a tag panel with the tag names and search questions tagged
-   // with these tag names. Return the questions and the tags names in results
-    var initTagPanel = function(panel,results){
-
-	listTags(panel+" .tags",results)
-
-	$(panel+" .tags").on("click","*",function(e){
-	    $(this).toggleClass("label-primary")
-	})
-
-	$(panel+" .tags").on("click",function(e){
-	    e.preventDefault()
-	    results.seletedTags=[]
-	    $(panel+" .results").empty()
-	    $(panel+" .tags").find(".label-primary").each(function(){
-		results.seletedTags.push($(this).html())
-	    })
-		if (results.seletedTags.length>0){
-		    tags=results.seletedTags
-		    listQuests(panel,tags,results)
-		}
-	})
-    }
+    */
 
 
     var init = function() {
+	listTags(listTagsResponse)
 	bindFunctions()
     }
 
+
     return{
 	init: init,
-	tags: initTagPanel
+	list: listQuests,
+	tags: listTags,
+	add: addQuest,
+	del: deleteQuest
     }
 
 })()
