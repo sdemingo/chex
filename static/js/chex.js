@@ -195,81 +195,91 @@ var questions = (function(){
     }
 
 
-    var addQuest =  function(q){
+    /*
+
+      Ajax Api
+
+    */
+
+    var addQuest =  function(q,cb){
 	$.ajax({
 	    url:DOMAIN+'/questions/add',
 	    type: 'post',
 	    dataType: 'json',
 	    data: JSON.stringify(q),
-	    success: function(data){
-		if (data.Error){
-		    showErrorMessage("Error al crear pregunta")
-		    console.log(data.Error)
-		}else{
-		    showInfoMessage("Pregunta creada con éxito")
-		    resetForm()
-		}
-	    },
+	    success: cb,
 	    error: error
 	});
     }
 
-    var editQuest = function(u){
+    var editQuest = function(q,cb){
 
     }
 
-    var listTags = function(panel,results){
+    var listTags = function(cb){
 	$.ajax({
 	    url:DOMAIN+'/questions/tags/list',
 	    type: 'get',
 	    dataType: 'json',
-	    success: function(data){
-		if (data){
-		    $.each(data,function(i,e){
-			$(panel)
-			    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
-		    })
-			}
-		if (results){
-		    results.allTags=data
-		}
-	    },
+	    success: cb,
 	    error: error
 	})
     }
 
-    // 
-    var listQuests = function(panel,tags,results){
+    var listQuests = function(tags,cb){
 	$.ajax({
 	    url:DOMAIN+'/questions/list',
 	    type: 'get',
 	    dataType: 'json',
 	    data: {tags:tags.join(",")},
-	    success: function(data){
-		if ((!data) || (data.length==0)){
-		    $(panel+" .results")
-			.append("<span class=\"list-group-item\">No hubo resultados</span>")
-		}else{
-		    data.forEach(function(e){
-			$(panel+" .results")
-			    .append("<li class=\"list-group-item\"><a href=\"/questions/get?id="+e.Id+"\" >"+resume(e.Text)+"</a></li>")
-		    })
-		}
-		if (results){
-		    results.quests=data
-		}
-	    },
+	    success: cb,
 	    error: error
 	})
     }
 
-    var deleteQuest = function(){
+    var deleteQuest = function(q,cb){
 
     }
 
-    var resetForm = function(){
-	$(settings.form).each(function(){this.reset()})
-	    }
+
+    /*
+
+      Dom functions 
+
+    */
+
+
+    var addQuestResponse = function(response){
+	if (response.Error){
+	    showErrorMessage("Error al crear pregunta")
+	    console.log(data.Error)
+	}else{
+	    showInfoMessage("Pregunta creada con éxito")
+	    resetForm(settings.form)
+	}
+    }
+
+    var listQuestResponse = function(response){
+	if ((!response) || (response.length==0) || !Array.isArray(response)){
+	    $(settings.panel+" .results")
+		.append("<span class=\"list-group-item\">No hubo resultados</span>")
+	}else{
+	    response.forEach(function(e){
+		$(settings.panel+" .results")
+		    .append("<li class=\"list-group-item\"><a href=\"/questions/get?id="+e.Id+"\" >"+resume(e.Text)+"</a></li>")
+	    })
+	}
+    }
+
+    var listTagsResponse = function(response){
+	if (response){
+	    $.each(response,function(i,e){
+		$(settings.panel+" .tags")
+		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
+	    })
+		}
+    }
+
     
     var readForm = function(){
 	var q = $(settings.form).serializeObject()
@@ -281,8 +291,8 @@ var questions = (function(){
 	return q
     }
     
-    var bindFunctions = function(){
 
+    var bindFunctions = function(){
 	// Edit Quest form
 	$(settings.form+" .btn-add").on("click",function(){
 	    $(settings.form+" .question-options")
@@ -297,55 +307,57 @@ var questions = (function(){
 	    $(this).closest("div.input-group").remove()
 	})
 
+
 	// Add Quest
 	$(settings.form+" #questNewSubmit").click(function(){
 	    var q = readForm()
 	    if (!q) {
 		return
 	    }
-	    addQuest(q)
+	    addQuest(q,addQuestResponse)
 	})
 
 	// List Quests
-	initTagPanel(settings.panel,{})
-    }
-
-
-
-
-
-    // Public methods of module
-
-    var initTagPanel = function(panel,results){
-
-	listTags(panel+" .tags",results)
-
-	$(panel+" .tags").on("click","*",function(e){
+	$(settings.panel+" .tags").on("click","*",function(e){
 	    $(this).toggleClass("label-primary")
 	})
 
-	$(panel+" .tags").on("click",function(e){
+	$(settings.panel+" .tags").on("click",function(e){
 	    e.preventDefault()
-	    results.seletedTags=[]
-	    $(panel+" .results").empty()
-	    $(panel+" .tags").find(".label-primary").each(function(){
-		results.seletedTags.push($(this).html())
+	    tags=[]
+	    $(settings.panel+" .results").empty()
+	    $(settings.panel+" .tags").find(".label-primary").each(function(){
+		tags.push($(this).html())
 	    })
-		if (results.seletedTags.length>0){
-		    tags=results.seletedTags
-		    listQuests(panel,tags,results)
+		if (tags.length>0){
+		    listQuests(tags,listQuestResponse)
 		}
 	})
     }
 
 
+
+
+
+    /*
+      
+      Public interface of the module
+
+    */
+
+
     var init = function() {
+	listTags(listTagsResponse)
 	bindFunctions()
     }
 
+
     return{
 	init: init,
-	tags: initTagPanel
+	list: listQuests,
+	tags: listTags,
+	add: addQuest,
+	del: deleteQuest
     }
 
 })()
@@ -465,67 +477,81 @@ var answers = (function(){
 var tests = (function(){
     var settings={
 	form:"",
-	panel:""
-    }
-
-    var data={
-	results:{}
+	panel:"#testSelectQuestionPanel"
     }
 
 
-    var addTest =  function(q){
+    /*
+
+      Ajax Api
+
+    */
+
+    var addTest =  function(test,cb){
 	$.ajax({
 	    url:DOMAIN+'/tests/add',
 	    type: 'post',
 	    dataType: 'json',
 	    data: JSON.stringify(q),
-	    success: function(data){
-		if (data.Error){
-		    showErrorMessage("Error al crear pregunta")
-		    console.log(data.Error)
-		}else{
-		    showInfoMessage("Pregunta creada con éxito")
-		    resetForm()
-		}
-	    },
+	    success: cb,
 	    error: error
 	});
     }
 
-    var editTest = function(u){
+    var editTest = function(test,cb){
 
     }
 
-    var listTags = function(){
-	$("#testSelectQuestionPanel .tags").empty()
-	questions.tags("#testSelectQuestionPanel",data.results)
+    var listTests = function(tags,cb){
 	
     }
 
-    var listTests = function(tags){
+    var deleteTest = function(test,cb){
 
     }
-
-    var deleteTest = function(){
-
-    }
-
-    var resetForm = function(){
-	$(settings.form).each(function(){this.reset()})
-	    }
     
+
+    /*
+
+      Private and Dom functions 
+
+    */
+
+    // Listed the questions tags for search questions
+    var listQuestionsTags = function(cb){
+	questions.tags(cb)
+    }
+
+    // Callback after list questions request
+    var listQuestionsResponse = function(response){
+	if ((!response) || (response.length==0) || !Array.isArray(response)){
+	    $(settings.panel+" .results")
+		.append("<span class=\"list-group-item\">No hubo resultados</span>")
+	}else{
+	    response.forEach(function(e){
+		$(settings.panel+" .results")
+		    .append("<li class=\"list-group-item\"><a href=\"/questions/get?id="+e.Id+"\" >"+resume(e.Text)+"</a></li>")
+	    })
+	}
+    }
+
+    // Callback after lists tags request
+    var listQuestionsTagsResponse = function(response){
+	if (response){
+	    $(settings.panel+" .tags").empty()
+	    $.each(response,function(i,e){
+		$(settings.panel+" .tags")
+		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
+	    })
+		}
+    }
+
+
     var readForm = function(){
-	/*var q = $(settings.form).serializeObject()
-	  q.Tags = q.Tags.split(",").map(function(e){
-	  return e.trim()
-	  })
-	  q.Tags.clean("")
-	  
-	  return q*/
+
     }
     
     var bindFunctions = function(){
-	//$("#testQuestionPanel")
 
 	// Add questions button
 	$(settings.form+" #testNewSubmit").click(function(){
@@ -536,7 +562,7 @@ var tests = (function(){
 	$("#addMoreQuests").click(function(){
 	    $("#testSelectedQuestionPanel").hide()
 	    $("#testSelectQuestionPanel").show()
-	    listTags()
+	    listQuestionsTags(listQuestionsTagsResponse)
 	})
 
 	// Add selected quests and show all
@@ -544,6 +570,25 @@ var tests = (function(){
 	    $("#testSelectedQuestionPanel").show()
 	    $("#testSelectQuestionPanel").hide()
 	})
+
+
+	// List Tests
+	$(settings.panel+" .tags").on("click","*",function(e){
+	    $(this).toggleClass("label-primary")
+	})
+
+	$(settings.panel+" .tags").on("click",function(e){
+	    e.preventDefault()
+	    tags=[]
+	    $(settings.panel+" .results").empty()
+	    $(settings.panel+" .tags").find(".label-primary").each(function(){
+		tags.push($(this).html())
+	    })
+		if (tags.length>0){
+		    questions.list(tags,listQuestionsResponse)
+		}
+	})
+
     }
 
 
@@ -633,7 +678,11 @@ var validator = {
 
 
 
-
+function resetForm(form){
+    $(form).each(function(){
+	this.reset()
+    })
+}
 
 
 function error (data){

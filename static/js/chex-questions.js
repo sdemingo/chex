@@ -13,21 +13,19 @@ var questions = (function(){
     }
 
 
-
     /*
 
       Ajax Api
 
     */
+
     var addQuest =  function(q,cb){
 	$.ajax({
 	    url:DOMAIN+'/questions/add',
 	    type: 'post',
 	    dataType: 'json',
 	    data: JSON.stringify(q),
-	    success: function(response){
-		cb(response)
-	    },
+	    success: cb,
 	    error: error
 	});
     }
@@ -41,9 +39,7 @@ var questions = (function(){
 	    url:DOMAIN+'/questions/tags/list',
 	    type: 'get',
 	    dataType: 'json',
-	    success: function(response){
-		cb(response)
-	    },
+	    success: cb,
 	    error: error
 	})
     }
@@ -54,9 +50,7 @@ var questions = (function(){
 	    type: 'get',
 	    dataType: 'json',
 	    data: {tags:tags.join(",")},
-	    success:  function(response){
-		cb(response)
-	    },
+	    success: cb,
 	    error: error
 	})
     }
