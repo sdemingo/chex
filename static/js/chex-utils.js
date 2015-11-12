@@ -71,7 +71,11 @@ var validator = {
 
 
 
-
+function resetForm(form){
+    $(form).each(function(){
+	this.reset()
+    })
+}
 
 
 function error (data){

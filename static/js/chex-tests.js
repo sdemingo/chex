@@ -9,67 +9,81 @@
 var tests = (function(){
     var settings={
 	form:"",
-	panel:""
-    }
-
-    var data={
-	results:{}
+	panel:"#testSelectQuestionPanel"
     }
 
 
-    var addTest =  function(q){
+    /*
+
+      Ajax Api
+
+    */
+
+    var addTest =  function(test,cb){
 	$.ajax({
 	    url:DOMAIN+'/tests/add',
 	    type: 'post',
 	    dataType: 'json',
 	    data: JSON.stringify(q),
-	    success: function(data){
-		if (data.Error){
-		    showErrorMessage("Error al crear pregunta")
-		    console.log(data.Error)
-		}else{
-		    showInfoMessage("Pregunta creada con éxito")
-		    resetForm()
-		}
-	    },
+	    success: cb,
 	    error: error
 	});
     }
 
-    var editTest = function(u){
+    var editTest = function(test,cb){
 
     }
 
-    var listTags = function(){
-	$("#testSelectQuestionPanel .tags").empty()
-	questions.tags("#testSelectQuestionPanel",data.results)
+    var listTests = function(tags,cb){
 	
     }
 
-    var listTests = function(tags){
+    var deleteTest = function(test,cb){
 
     }
-
-    var deleteTest = function(){
-
-    }
-
-    var resetForm = function(){
-	$(settings.form).each(function(){this.reset()})
-	    }
     
+
+    /*
+
+      Private and Dom functions 
+
+    */
+
+    // Listed the questions tags for search questions
+    var listQuestionsTags = function(cb){
+	questions.tags(cb)
+    }
+
+    // Callback after list questions request
+    var listQuestionsResponse = function(response){
+	if ((!response) || (response.length==0) || !Array.isArray(response)){
+	    $(settings.panel+" .results")
+		.append("<span class=\"list-group-item\">No hubo resultados</span>")
+	}else{
+	    response.forEach(function(e){
+		$(settings.panel+" .results")
+		    .append("<li class=\"list-group-item\"><a href=\"/questions/get?id="+e.Id+"\" >"+resume(e.Text)+"</a></li>")
+	    })
+	}
+    }
+
+    // Callback after lists tags request
+    var listQuestionsTagsResponse = function(response){
+	if (response){
+	    $(settings.panel+" .tags").empty()
+	    $.each(response,function(i,e){
+		$(settings.panel+" .tags")
+		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
+	    })
+		}
+    }
+
+
     var readForm = function(){
-	/*var q = $(settings.form).serializeObject()
-	  q.Tags = q.Tags.split(",").map(function(e){
-	  return e.trim()
-	  })
-	  q.Tags.clean("")
-	  
-	  return q*/
+
     }
     
     var bindFunctions = function(){
-	//$("#testQuestionPanel")
 
 	// Add questions button
 	$(settings.form+" #testNewSubmit").click(function(){
@@ -80,7 +94,7 @@ var tests = (function(){
 	$("#addMoreQuests").click(function(){
 	    $("#testSelectedQuestionPanel").hide()
 	    $("#testSelectQuestionPanel").show()
-	    listTags()
+	    listQuestionsTags(listQuestionsTagsResponse)
 	})
 
 	// Add selected quests and show all
@@ -88,6 +102,25 @@ var tests = (function(){
 	    $("#testSelectedQuestionPanel").show()
 	    $("#testSelectQuestionPanel").hide()
 	})
+
+
+	// List Tests
+	$(settings.panel+" .tags").on("click","*",function(e){
+	    $(this).toggleClass("label-primary")
+	})
+
+	$(settings.panel+" .tags").on("click",function(e){
+	    e.preventDefault()
+	    tags=[]
+	    $(settings.panel+" .results").empty()
+	    $(settings.panel+" .tags").find(".label-primary").each(function(){
+		tags.push($(this).html())
+	    })
+		if (tags.length>0){
+		    questions.list(tags,listQuestionsResponse)
+		}
+	})
+
     }
 
 
