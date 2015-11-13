@@ -9,7 +9,12 @@
 var tests = (function(){
     var settings={
 	form:"",
-	panel:"#testSelectQuestionPanel"
+	panel:""
+    }
+
+    var data={
+	selectedQuestions:{},
+	questionsCache:{}
     }
 
 
@@ -49,33 +54,103 @@ var tests = (function(){
 
     */
 
+    // Mark question as selected 
+    var selectQuestion = function(element){
+	if (element.hasClass("list-group-item-info")) {
+            element.removeClass("list-group-item-info");
+	    delete data.selectedQuestions[$(this).attr("id")]
+        }else{
+	    element.addClass("list-group-item-info");
+	    data.selectedQuestions[element.attr("id")]=1
+	}
+    }
+
     // Listed the questions tags for search questions
     var listQuestionsTags = function(cb){
+	$("#testSelectQuestionPanel .results").empty()
 	questions.tags(cb)
     }
 
-    // Callback after list questions request
+    // Callback after list questions by tag request
     var listQuestionsResponse = function(response){
 	if ((!response) || (response.length==0) || !Array.isArray(response)){
-	    $(settings.panel+" .results")
+	    $("#testSelectQuestionPanel .results")
 		.append("<span class=\"list-group-item\">No hubo resultados</span>")
 	}else{
-	    response.forEach(function(e){
-		$(settings.panel+" .results")
-		    .append("<li class=\"list-group-item\"><a href=\"/questions/get?id="+e.Id+"\" >"+resume(e.Text)+"</a></li>")
-	    })
+	    response.forEach(function(q){
+		$("#testSelectQuestionPanel .results")
+		    .append(
+			$('<li id='+q.Id+' class="list-group-item col-md-12">\
+<div class="icons col-md-1">\
+<a href="#" class="item-select glyphicon glyphicon-ok"></a>\
+<a href="#" class="item-add glyphicon glyphicon-plus"></a>\
+</div>\
+<div class="text col-md-11">\
+<a class="item-text" href="/questions/get?id="+q.Id+"" >'+resume(q.Text)+'</a>\
+</div>\
+</li>')
+			    .on("click",".item-select",selectQuestionHandler)
+			    .on("click",".item-add",addQuestionsHandler)
+		    )
+		
+		data.questionsCache[q.Id]=q
+		1    })
 	}
     }
 
     // Callback after lists tags request
     var listQuestionsTagsResponse = function(response){
 	if (response){
-	    $(settings.panel+" .tags").empty()
+	    $("#testSelectQuestionPanel .tags").empty()
 	    $.each(response,function(i,e){
-		$(settings.panel+" .tags")
+		$("#testSelectQuestionPanel .tags")
 		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
 	    })
 		}
+    }
+
+
+    // Event handler to select a question
+    var selectQuestionHandler = function(event){
+	event.preventDefault()
+	var that = $(this).parent().parent()
+	selectQuestion(that)
+    }
+
+
+    // Event handler to add a question or a selected questions to a
+    // test
+    var addQuestionsHandler = function(event){
+	event.preventDefault()
+	
+	// mark this question as selected and add all of them
+	var that = $(this).parent().parent()
+	selectQuestion(that)
+
+	listQuestionsSelected()
+	$("#testSelectedQuestionPanel").show()
+	$("#testSelectQuestionPanel").hide()
+    }
+
+
+    // List every questions selected
+    var listQuestionsSelected = function(){
+	for (var id in data.selectedQuestions) {
+	    q = data.questionsCache[id]
+	    if (!q){
+		return
+	    }
+
+	    $("#testSelectedQuestionPanel .results")
+		.append('<li class="list-group-item">\
+<div class="form-inline">\
+<a href="" class="item-remove glyphicon glyphicon-remove"></a>\
+<input type="text" class="form-control item-input-value"/>\
+<input type="text" class="form-control item-input-value"/>\
+<a id='+q.Id+' href="" class="item-link">'+resume(q.Text)+'</a>\
+</div>\
+</li>')
+	}
     }
 
 
@@ -96,13 +171,14 @@ var tests = (function(){
 	    $("#testSelectQuestionPanel").show()
 	    listQuestionsTags(listQuestionsTagsResponse)
 	})
-
-	// Add selected quests and show all
-	$("#addSelectedQuests").click(function(){
+	
+	// Cancel the selection question form and return to selected
+	// question panel
+	$("#cancelSelectedQuests").click(function(){
 	    $("#testSelectedQuestionPanel").show()
 	    $("#testSelectQuestionPanel").hide()
 	})
-
+	
 
 	// List Tests
 	$(settings.panel+" .tags").on("click","*",function(e){

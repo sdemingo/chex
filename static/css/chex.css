@@ -40,8 +40,13 @@ body {
     overflow-y:auto;
 }
 
+.panel-selection .icons > a{
+    display:block;
+    margin-bottom:10px;
+}
 
-.panel-selection .item-remove{
+
+.panel-selection .item-text{
     margin-right:10px;
 }
 
