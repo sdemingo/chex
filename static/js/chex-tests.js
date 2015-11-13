@@ -1,5 +1,6 @@
 
 
+
 /*
   
   Modulo de tests
@@ -86,7 +87,7 @@ var tests = (function(){
 <a href="#" class="item-add glyphicon glyphicon-plus"></a>\
 </div>\
 <div class="text col-md-11">\
-<a class="item-text" href="/questions/get?id="+q.Id+"" >'+resume(q.Text)+'</a>\
+<a class="item-text" href="/questions/get?id='+q.Id+'" >'+resume(q.Text)+'</a>\
 </div>\
 </li>')
 			    .on("click",".item-select",selectQuestionHandler)
@@ -132,26 +133,47 @@ var tests = (function(){
 	$("#testSelectQuestionPanel").hide()
     }
 
+/*
+	      <li class="list-group-item col-md-12">
+		<div class="icons col-md-2 text-center">
+		  <input type="text" class="form-control item-input-value good-points"/>
+		  <input type="text" class="form-control item-input-value bad-points"/>
+		  <a href="" class="item-remove glyphicon glyphicon-remove"></a>
+		</div>
+		<div class="text col-md-10">
+		  <a href="" class="item-link">Cras justo odioLorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae dolor.
+		  </a>
+		</div>
+	      </li>
+*/
+
 
     // List every questions selected
     var listQuestionsSelected = function(){
+	$("#testSelectedQuestionPanel ul").empty()
+
 	for (var id in data.selectedQuestions) {
 	    q = data.questionsCache[id]
 	    if (!q){
 		return
 	    }
-
+	    
+	    
 	    $("#testSelectedQuestionPanel .results")
-		.append('<li class="list-group-item">\
-<div class="form-inline">\
-<a href="" class="item-remove glyphicon glyphicon-remove"></a>\
-<input type="text" class="form-control item-input-value"/>\
-<input type="text" class="form-control item-input-value"/>\
-<a id='+q.Id+' href="" class="item-link">'+resume(q.Text)+'</a>\
-</div>\
-</li>')
+		.append(
+		    $('<li id='+q.Id+' class="list-group-item col-md-12">')
+			.append('<div class="icons col-md-2 text-center">\
+		                   <input type="text" class="form-control item-input-value good-points"/>\
+                                   <input type="text" class="form-control item-input-value bad-points"/>\
+                       		  <a href="" class="item-remove glyphicon glyphicon-remove"></a>\
+                      		</div>')
+			.append(
+			    $('<div class="col-md-10">')
+				.append('<a href="/questions/get?id='+q.Id+'" class="item-link">'+resume(q.Text)+'</a>')
+			)
+		)
 	}
-    }
+    } 
 
 
     var readForm = function(){

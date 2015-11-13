@@ -29,6 +29,10 @@ body {
 }
 
 
+
+
+/*  Panel selection */
+
 .panel-selection{
     min-height:500px;
 }
@@ -42,7 +46,12 @@ body {
 
 .panel-selection .icons > a{
     display:block;
-    margin-bottom:10px;
+    margin:10px 0 10px 0;
+}
+
+.panel-selection .icons > input{
+    display:block;
+    margin:10px 0 10px 0;
 }
 
 
@@ -51,12 +60,28 @@ body {
 }
 
 .panel-selection .item-input-value{
-    width:4em;
+    font-size:0.8em;
+    height:2em;
+    padding:0 0 0 1em;
 }
 
 .panel-selection .item-link{
     margin-left:10px;
 }
+
+
+.panel-selection input.good-points{
+    background-color:#CCFF99;
+    color:#336600;
+}
+
+.panel-selection input.bad-points{
+    background-color:#FFE5CC;
+    color:#990000;
+}
+
+
+
 
 textarea.form-control  {
     resize: none;
