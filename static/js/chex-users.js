@@ -19,89 +19,144 @@ var users = (function(){
 	panel:"#usersList"
     }
 
-    var addUser =  function(u){
+
+
+    /*
+
+      Ajax Api
+
+    */
+
+
+    var addUser =  function(u,cb){
 	$.ajax({
 	    url:DOMAIN+'/users/add',
 	    type: 'post',
 	    dataType: 'json',
 	    data: JSON.stringify(u),
-	    success: function(data){
-		if (data.Error){
-		    showErrorMessage("Error al crear usuario")
-		    console.log(data.Error)
-		}else{
-		    showInfoMessage("Usuario creado con éxito")
-		    resetForm()
-		}
-	    },
+	    success: cb,
 	    error: error
 	});
     }
 
-    var editUser = function(u){
+    var editUser = function(u,cb){
 	$.ajax({
 	    url:DOMAIN+'/users/update',
 	    type: 'post',
 	    dataType: 'json',
 	    data: JSON.stringify(u),
-	    success: function(data){
-		if (data.Error){
-		    showErrorMessage("Error al editar usuario")
-		    console.log(data.Error)
-		}else{
-		    showInfoMessage("Usuario editado con éxito")
-		}
-	    },
+	    success: cb,
 	    error: error
 	})
     }
 
-    var listTags = function(){
+    var listTags = function(cb){
 	$.ajax({
 	    url:DOMAIN+'/users/tags/list',
 	    type: 'get',
 	    dataType: 'json',
-	    success: function(data){
-		if (data){
-		    $.each(data,function(i,e){
-			$(settings.panel+" .tags")
-			    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
-		    })
-			}
-	    },
+	    success: cb,
 	    error: error
 	})
     }
 
-    var listUsers = function(tags){
+    var listUsers = function(tags,cb){
 	$.ajax({
 	    url:DOMAIN+'/users/list',
 	    type: 'get',
 	    dataType: 'json',
 	    data: {tags:tags.join(",")},
-	    success: function(data){
-		if ((!data) || (data.length==0)){
-		    $(settings.panel+" .results")
-			.append("<span class=\"list-group-item\">No hubo resultados</span>")
-		}else{
-		    data.forEach(function(e){
-			$(settings.panel+" .results")
-			    .append("<a href=\"/users/get?id="+e.Id+"\" class=\"list-group-item\">"+e.Name+"</a>")
-		    })
-		}
-	    },
+	    success: cb,
 	    error: error
 	})
     }
 
-    var deleteUser = function(){
+    var deleteUser = function(u,cb){
 
     }
 
-    var resetForm = function(){
-	$(settings.form).each(function(){this.reset()})
-	    }
+
+
+
+    /*
+
+      Dom functions 
+
+    */
+
+    // Callback after the add user request
+    var addUserResponse = function(response){
+	if (response.Error){
+	    showErrorMessage("Error al crear usuario")
+	    console.log(data.Error)
+	}else{
+	    showInfoMessage("Usuario creada con éxito")
+	    resetForm(settings.form)
+	}
+    }
+
+   // Callback after the edit user request
+    var editUserResponse = function(response){
+	if (response.Error){
+	    showErrorMessage("Error al editar usuario")
+	    console.log(data.Error)
+	}else{
+	    showInfoMessage("Usuario editado con éxito")
+	    resetForm(settings.form)
+	}
+    }
+
+    // Callback after the list user tags request
+    var listTagsResponse = function(response){
+	if (response){
+	    $.each(response,function(i,e){
+		$(settings.panel+" .tags")
+		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
+		    .on("click",selectTag)
+	    })
+		}
+    }
+
+    // Callback after the list user request 
+    var listUsersResponse = function(response){
+	if ((!response) || (response.length==0)){
+	    $(settings.panel+" .results")
+		.append("<span class=\"list-group-item\">No hubo resultados</span>")
+	}else{
+	    response.forEach(function(e){
+		$(settings.panel+" .results")
+		    .append("<a href=\"/users/get?id="+e.Id+"\" class=\"list-group-item\">"+e.Name+"</a>")
+	    })
+	}
+    }
     
+
+    // Mark tag as selected 
+    var selectTag = function(event){
+	event.preventDefault()
+
+	var element = $(this)
+	if (element.hasClass("label-primary")) {
+            element.removeClass("label-primary");
+        }else{
+	    element.addClass("label-primary");
+	}
+    }
+
+    // Recover clicked tags and launch a search by these tags
+    var launchSearchByTag = function(){
+	tags=[]
+	$(settings.panel+" .results").empty()
+	$(settings.panel+" .tags").find(".label-primary").each(function(){
+	    tags.push($(this).html())
+	})
+
+	    if (tags.length>0){
+		listUsers(tags,listUsersResponse)
+	    }
+    }
+
+
     var readForm = function(){
 	var u = $(settings.form).serializeObject()
 	u.Tags = u.Tags.split(",").map(function(e){
@@ -117,7 +172,7 @@ var users = (function(){
 
 	return u
     }
-    
+
     var bindFunctions = function(){
 	// Add User
 	$(settings.form+" #userNewSubmit").click(function(){
@@ -125,7 +180,7 @@ var users = (function(){
 	    if (!u) {
 		return
 	    }
-	    addUser(u)
+	    addUser(u,addUserResponse)
 	})
 
 	// Edit Users
@@ -134,35 +189,26 @@ var users = (function(){
 	    if (!u){
 		return
 	    }
-	    editUser(u)
+	    editUser(u,editUserResponse)
 	})
 
 	// List Users
-	$(settings.panel+" .tags").on("click","*",function(e){
-	    $(this).toggleClass("label-primary")
-	})
-
-	$(settings.panel+" .tags").on("click",function(e){
-	    tags=[]
-	    $(settings.panel+" .results").empty()
-	    $(settings.panel+" .tags").find(".label-primary").each(function(){
-		tags.push($(this).html())
-	    })
-		if (tags.length>0){
-		    listUsers(tags)
-		}
-	})
+	$(settings.panel+" .tags").on("click",launchSearchByTag)
     }
 
 
     var init = function() {
-	listTags()
+	listTags(listTagsResponse)
 	bindFunctions()
 	$(".alert").css("visibility", "hidden")
     }
 
     return{
 	init: init,
+	list: listUsers,
+	tags: listTags,
+	add: addUser,
+	del: deleteUser
     }
 })()
 

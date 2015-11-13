@@ -133,20 +133,6 @@ var tests = (function(){
 	$("#testSelectQuestionPanel").hide()
     }
 
-/*
-	      <li class="list-group-item col-md-12">
-		<div class="icons col-md-2 text-center">
-		  <input type="text" class="form-control item-input-value good-points"/>
-		  <input type="text" class="form-control item-input-value bad-points"/>
-		  <a href="" class="item-remove glyphicon glyphicon-remove"></a>
-		</div>
-		<div class="text col-md-10">
-		  <a href="" class="item-link">Cras justo odioLorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec hendrerit tempor tellus. Donec pretium posuere tellus. Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nulla posuere. Donec vitae dolor.
-		  </a>
-		</div>
-	      </li>
-*/
-
 
     // List every questions selected
     var listQuestionsSelected = function(){

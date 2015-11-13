@@ -42,9 +42,11 @@
                 {{ if .User.IsAdmin}}
 		<li><a href="/users/list">Usuarios</a></li>
 		<li><a href="/questions/list">Preguntas</a></li>
+		<li><a href="/tests/new">Tests</a></li>
                 {{end}}
 		{{ if .User.IsTeacher}}
 		<li><a href="/questions/list">Preguntas</a></li>
+		<li><a href="/tests/new">Tests</a></li>
 		{{end}}
 		<li><a href="/help">Ayuda</a></li>
 		<li role="separator" class="divider"></li>
