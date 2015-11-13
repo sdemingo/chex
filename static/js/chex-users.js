@@ -95,7 +95,7 @@ var users = (function(){
 	}
     }
 
-   // Callback after the edit user request
+    // Callback after the edit user request
     var editUserResponse = function(response){
 	if (response.Error){
 	    showErrorMessage("Error al editar usuario")

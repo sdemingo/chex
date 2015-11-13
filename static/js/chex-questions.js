@@ -67,6 +67,7 @@ var questions = (function(){
     */
 
 
+    // Callback after the add quest request
     var addQuestResponse = function(response){
 	if (response.Error){
 	    showErrorMessage("Error al crear pregunta")
@@ -77,7 +78,8 @@ var questions = (function(){
 	}
     }
 
-    var listQuestResponse = function(response){
+    // Callback after the list quest request
+    var listQuestsResponse = function(response){
 	if ((!response) || (response.length==0) || !Array.isArray(response)){
 	    $(settings.panel+" .results")
 		.append("<span class=\"list-group-item\">No hubo resultados</span>")
@@ -89,13 +91,42 @@ var questions = (function(){
 	}
     }
 
+
+    // Callback after the list quests tags request
     var listTagsResponse = function(response){
 	if (response){
 	    $.each(response,function(i,e){
 		$(settings.panel+" .tags")
 		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
+		    .on("click",selectTag)
 	    })
 		}
+    }
+
+
+    // Mark tag as selected 
+    var selectTag = function(event){
+	event.preventDefault()
+	var element = $(this)
+	if (element.hasClass("label-primary")) {
+            element.removeClass("label-primary");
+        }else{
+	    element.addClass("label-primary");
+	}
+    }
+
+
+    // Recover clicked tags and launch a search by these tags
+    var launchSearchByTag = function(){
+	tags=[]
+	$(settings.panel+" .results").empty()
+	$(settings.panel+" .tags").find(".label-primary").each(function(){
+	    tags.push($(this).html())
+	})
+
+	    if (tags.length>0){
+		listQuests(tags,listQuestsResponse)
+	    }
     }
 
     
@@ -136,7 +167,8 @@ var questions = (function(){
 	})
 
 	// List Quests
-	$(settings.panel+" .tags").on("click","*",function(e){
+	$(settings.panel+" .tags").on("click",launchSearchByTag)
+	/*$(settings.panel+" .tags").on("click","*",function(e){
 	    $(this).toggleClass("label-primary")
 	})
 
@@ -150,7 +182,7 @@ var questions = (function(){
 		if (tags.length>0){
 		    listQuests(tags,listQuestResponse)
 		}
-	})
+	})*/
     }
 
 
