@@ -75,7 +75,7 @@ function resetForm(form){
     $(form).each(function(){
 	this.reset()
     })
-}
+	}
 
 
 function error (data){
@@ -96,44 +96,56 @@ function resume(text,max){
 
 
 function showInfoMessage(text) {
-    var alert = $("#infoPanel").css("visibility", "visible").addClass("alert-success").text(text)
-    window.scrollTo(0,0);
-    window.setTimeout(function() { $("#infoPanel").removeClass("alert-success").css("visibility", "hidden") }, 1500)
+    var modalData={
+	id:"dialog",
+	type:"success",
+	titleText:"Enhorabuena",
+	bodyText:text
+    }
+
+    modal.init(modalData)
+    $("#dialog").modal("show")
 }
 
 function showErrorMessage(text) {
-    var alert = $("#infoPanel").css("visibility", "visible").addClass("alert-danger").text(text)
-    window.scrollTo(0,0);
-    window.setTimeout(function() { $("#infoPanel").removeClass("alert-danger").css("visibility", "hidden") }, 1500)
+    var modalData={
+	id:"errorDialog",
+	type:"danger",
+	titleText:"Error",
+	bodyText:text
+    }
+
+    modal.init(modalData)
+    $("#errorDialog").modal("show")
 }
 
 
-$.fn.serializeObject = function()
-{
-    var o = {};
-    var a = this.serializeArray();
-    $.each(a, function() {
-        if (o[this.name] !== undefined) {
-	    if (!o[this.name].push) {
-                o[this.name] = [o[this.name]];
+    $.fn.serializeObject = function()
+    {
+	var o = {};
+	var a = this.serializeArray();
+	$.each(a, function() {
+            if (o[this.name] !== undefined) {
+		if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+		}
+		o[this.name].push(this.value || '');
+            } else {
+		o[this.name] = this.value || '';
+            }
+	});
+	return o;
+    };
+
+    Array.prototype.clean = function(deleteValue) {
+	for (var i = 0; i < this.length; i++) {
+	    if (this[i] == deleteValue) {         
+		this.splice(i, 1);
+		i--;
 	    }
-	    o[this.name].push(this.value || '');
-        } else {
-	    o[this.name] = this.value || '';
-        }
-    });
-    return o;
-};
-
-Array.prototype.clean = function(deleteValue) {
-    for (var i = 0; i < this.length; i++) {
-	if (this[i] == deleteValue) {         
-	    this.splice(i, 1);
-	    i--;
 	}
-    }
-    return this;
-};
+	return this;
+    };
 
 
 
@@ -142,65 +154,70 @@ Array.prototype.clean = function(deleteValue) {
 
 
 
-/*
-  - Run the modal with a button, using the same id for the modal an for data-target attr form button:
-  <button id="..." type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myDialog">
+    /*
+      - Run the modal with a button, using the same id for the modal an for data-target attr form button:
+      <button id="..." type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myDialog">
 
-  - Operate the modal manually:
-  $('#myDialog').modal('toggle');
-  $('#myDialog').modal('show');
-  $('#myDialog').modal('hide');
+      - Operate the modal manually:
+      $('#myDialog').modal('toggle');
+      $('#myDialog').modal('show');
+      $('#myDialog').modal('hide');
 
-  - Init the modal with an object as:
-  var modalData={
-     id:"myDialog",
-     titleText:"Titulo del dialogo",
-     bodyText:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit.",
-     actionButton:{
-     text:"Ok",
-     handler: actionButtonAnyHandler
-  }
-*/
+      - Init the modal with an object as:
+      var modalData={
+      id:"myDialog",
+      titleText:"Titulo del dialogo",
+      bodyText:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit.",
+      actionButton:{
+      text:"Ok",
+      handler: actionButtonAnyHandler
+      } 
+    */
 
 
-var modal = {
-    init:function(data){
-	$("body").append(
-	    $('<div class="modal fade" id="'+data.id+'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">')
-		.append(
-		    $('<div class="modal-dialog" role="document">')
-			.append(
-			    $('<div class="modal-content">')
-				.append(
-				    $('<div class="modal-header">')
-					.append(
-					    $('<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
-					)
-					.append(
-					    $('<h4 class="modal-title" id="myModalLabel">'+data.titleText+'</h4>')
-					)
-				)
-			    
-				.append(
-				    $('<div class="modal-body">')
-					.append(data.bodyText)
-				)
+    var modal = {
+	init:function(data){
 
-				.append(
-				    $('<div class="modal-footer">')
-					.append(
-					    $('<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>')
-					)
-				)
-			)
-		)
-	)
+	    if ($(".modal").length){
+		$(".modal").remove()
+	    }
 
-	// insert action button
-	if (data.actionButton){
-	    $(".modal .modal-footer").append(
-		$('<button type="button" class="btn btn-primary">'+data.actionButton.text+'</button>')
+	    $("body").append(
+		$('<div class="modal fade" id="'+data.id+'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">')
+		    .append(
+			$('<div class="modal-dialog" role="document">')
+			    .append(
+				$('<div class="modal-content">')
+				    .append(
+					$('<div class="modal-header modal-header-'+data.type+'">')
+					    .append(
+					$('<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
+					    )
+					    .append(
+						$('<h4 class="modal-title" id="myModalLabel">'+data.titleText+'</h4>')
+					    )
+				    )
+				
+				    .append(
+					$('<div class="modal-body">')
+					    .append(data.bodyText)
+				    )
+
+				    .append(
+					$('<div class="modal-footer">')
+					    .append(
+						$('<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>')
+					    )
+				    )
+			    )
+		    )
 	    )
+
+	    // insert action button
+	    if (data.actionButton){
+		$(".modal .modal-footer").append(
+		    $('<button type="button" class="btn btn-primary">'+data.actionButton.text+'</button>')
+		)
+	    }
 	}
     }
-}
