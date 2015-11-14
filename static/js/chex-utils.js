@@ -134,3 +134,73 @@ Array.prototype.clean = function(deleteValue) {
     }
     return this;
 };
+
+
+
+
+
+
+
+
+/*
+  - Run the modal with a button, using the same id for the modal an for data-target attr form button:
+  <button id="..." type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myDialog">
+
+  - Operate the modal manually:
+  $('#myDialog').modal('toggle');
+  $('#myDialog').modal('show');
+  $('#myDialog').modal('hide');
+
+  - Init the modal with an object as:
+  var modalData={
+     id:"myDialog",
+     titleText:"Titulo del dialogo",
+     bodyText:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit.",
+     actionButton:{
+     text:"Ok",
+     handler: actionButtonAnyHandler
+  }
+*/
+
+
+var modal = {
+    init:function(data){
+	$("body").append(
+	    $('<div class="modal fade" id="'+data.id+'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">')
+		.append(
+		    $('<div class="modal-dialog" role="document">')
+			.append(
+			    $('<div class="modal-content">')
+				.append(
+				    $('<div class="modal-header">')
+					.append(
+					    $('<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
+					)
+					.append(
+					    $('<h4 class="modal-title" id="myModalLabel">'+data.titleText+'</h4>')
+					)
+				)
+			    
+				.append(
+				    $('<div class="modal-body">')
+					.append(data.bodyText)
+				)
+
+				.append(
+				    $('<div class="modal-footer">')
+					.append(
+					    $('<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>')
+					)
+				)
+			)
+		)
+	)
+
+	// insert action button
+	if (data.actionButton){
+	    $(".modal .modal-footer").append(
+		$('<button type="button" class="btn btn-primary">'+data.actionButton.text+'</button>')
+	    )
+	}
+    }
+}
