@@ -82,11 +82,11 @@ var tests = (function(){
 		$("#testSelectQuestionPanel .results")
 		    .append(
 			$('<li id='+q.Id+' class="list-group-item col-md-12">\
-<div class="icons col-md-1">\
+<div class="icons row col-md-2">\
 <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
 <a href="#" class="item-add glyphicon glyphicon-plus"></a>\
 </div>\
-<div class="text col-md-11">\
+<div class="text col-md-10">\
 <a class="item-text" href="/questions/get?id='+q.Id+'" >'+resume(q.Text)+'</a>\
 </div>\
 </li>')
@@ -151,7 +151,10 @@ var tests = (function(){
 			.append('<div class="icons col-md-2 text-center">\
 		                   <input type="text" class="form-control item-input-value good-points"/>\
                                    <input type="text" class="form-control item-input-value bad-points"/>\
-                       		  <a href="" class="item-remove glyphicon glyphicon-remove"></a>\
+                       		 <div class="icons row">\
+                       		  <a href="#" class="item-remove glyphicon glyphicon-ok"></a>\
+                      		  <a href="#" class="item-remove glyphicon glyphicon-remove"></a>\
+                      		</div>\
                       		</div>')
 			.append(
 			    $('<div class="col-md-10">')

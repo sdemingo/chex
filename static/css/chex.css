@@ -45,8 +45,7 @@ body {
 }
 
 .panel-selection .icons > a{
-    display:block;
-    margin:10px 0 10px 0;
+    margin-right:10px;
 }
 
 .panel-selection .icons > input{
