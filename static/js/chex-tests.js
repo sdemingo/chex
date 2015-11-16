@@ -15,6 +15,7 @@ var tests = (function(){
 
     var data={
 	selectedQuestions:{},
+	testsQuestions:{},
 	questionsCache:{}
     }
 
@@ -72,6 +73,7 @@ var tests = (function(){
 	questions.tags(cb)
     }
 
+
     // Callback after list questions by tag request
     var listQuestionsResponse = function(response){
 	if ((!response) || (response.length==0) || !Array.isArray(response)){
@@ -114,36 +116,59 @@ var tests = (function(){
     // Event handler to select a question
     var selectQuestionHandler = function(event){
 	event.preventDefault()
-	var that = $(this).parent().parent()
+	var that = $(this).parents("li.list-group-item")
 	selectQuestion(that)
     }
 
 
-    // Event handler to add a question or a selected questions to a
-    // test
+    // Event handler to add questions to the tests collection
     var addQuestionsHandler = function(event){
 	event.preventDefault()
 	
 	// mark this question as selected and add all of them
-	var that = $(this).parent().parent()
+	var that = $(this).parents("li.list-group-item")
 	selectQuestion(that)
+	for (var id in data.selectedQuestions) {
+	    data.testsQuestions[id]=1
+	}
 
-	listQuestionsSelected()
+	// dump questions selected
+	data.selectedQuestions={}
+
+	listTestQuestions()
 	$("#testSelectedQuestionPanel").show()
 	$("#testSelectQuestionPanel").hide()
     }
 
 
+
+    // Event handler to remove questions selected from the test collection
+    var removeQuestionsHandler = function(event){
+	event.preventDefault()
+
+	// mark this question as selected and remove all of them
+	var that = $(this).parents("li.list-group-item")
+	selectQuestion(that)
+	for (var id in data.selectedQuestions) {
+	    delete data.testsQuestions[id]
+	}
+
+	// dump questions selected
+	data.selectedQuestions={}
+	
+	listTestQuestions()
+    }
+
+
     // List every questions selected
-    var listQuestionsSelected = function(){
+    var listTestQuestions = function(){
 	$("#testSelectedQuestionPanel ul").empty()
 
-	for (var id in data.selectedQuestions) {
+	for (var id in data.testsQuestions) {
 	    q = data.questionsCache[id]
 	    if (!q){
 		return
 	    }
-	    
 	    
 	    $("#testSelectedQuestionPanel .results")
 		.append(
@@ -152,16 +177,19 @@ var tests = (function(){
 		                   <input type="text" class="form-control item-input-value good-points"/>\
                                    <input type="text" class="form-control item-input-value bad-points"/>\
                        		 <div class="icons row">\
-                       		  <a href="#" class="item-remove glyphicon glyphicon-ok"></a>\
+                       		  <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
                       		  <a href="#" class="item-remove glyphicon glyphicon-remove"></a>\
                       		</div>\
                       		</div>')
+			    .on("click",".item-select",selectQuestionHandler)
+			    .on("click",".item-remove",removeQuestionsHandler)
+
 			.append(
 			    $('<div class="col-md-10">')
 				.append('<a href="/questions/get?id='+q.Id+'" class="item-link">'+resume(q.Text)+'</a>')
 			)
 		)
-	}
+	 }
     } 
 
 
