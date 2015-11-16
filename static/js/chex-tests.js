@@ -136,7 +136,7 @@ var tests = (function(){
 	data.selectedQuestions={}
 
 	listTestQuestions()
-	$("#testSelectedQuestionPanel").show()
+	$("#testAddedQuestionPanel").show()
 	$("#testSelectQuestionPanel").hide()
     }
 
@@ -162,7 +162,7 @@ var tests = (function(){
 
     // List every questions selected
     var listTestQuestions = function(){
-	$("#testSelectedQuestionPanel ul").empty()
+	$("#testAddedQuestionPanel ul").empty()
 
 	for (var id in data.testsQuestions) {
 	    q = data.questionsCache[id]
@@ -170,27 +170,54 @@ var tests = (function(){
 		return
 	    }
 	    
-	    $("#testSelectedQuestionPanel .results")
+	    $("#testAddedQuestionPanel .results")
 		.append(
 		    $('<li id='+q.Id+' class="list-group-item col-md-12">')
 			.append('<div class="icons col-md-2 text-center">\
-		                   <input type="text" class="form-control item-input-value good-points"/>\
-                                   <input type="text" class="form-control item-input-value bad-points"/>\
-                       		 <div class="icons row">\
-                       		  <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
-                      		  <a href="#" class="item-remove glyphicon glyphicon-remove"></a>\
-                      		</div>\
-                      		</div>')
-			    .on("click",".item-select",selectQuestionHandler)
-			    .on("click",".item-remove",removeQuestionsHandler)
+<input type="text" class="form-control item-input-value good-points"/>\
+<input type="text" class="form-control item-input-value bad-points"/>\
+<div class="icons row">\
+<a href="#" class="item-select glyphicon glyphicon-ok"></a>\
+<a href="#" class="item-remove glyphicon glyphicon-remove"></a>\
+</div>\
+</div>')
+			.on("click",".item-select",selectQuestionHandler)
+			.on("click",".item-remove",removeQuestionsHandler)
 
 			.append(
 			    $('<div class="col-md-10">')
 				.append('<a href="/questions/get?id='+q.Id+'" class="item-link">'+resume(q.Text)+'</a>')
 			)
 		)
-	 }
+	}
     } 
+
+
+
+    // Listed the users tags for search questions
+    var listUserTags = function(cb){
+	$("#testSelectUserPanel .results").empty()
+	users.tags(cb)
+    }
+
+
+    // Callback after list questions by tag request
+    var listUserResponse = function(response){
+
+    }
+
+    // Callback after lists user tags request
+    var listUserTagsResponse = function(response){
+	if (response){
+	    $("#testSelectUserPanel .tags").empty()
+	    $.each(response,function(i,e){
+		$("#testSelectUserPanel .tags")
+		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
+	    })
+		}
+    }
+
+
 
 
     var readForm = function(){
@@ -199,27 +226,26 @@ var tests = (function(){
     
     var bindFunctions = function(){
 
-	// Add questions button
+	// Add test button
 	$(settings.form+" #testNewSubmit").click(function(){
 	    
 	})
 
 	// Show questions for select them
 	$("#addMoreQuests").click(function(){
-	    $("#testSelectedQuestionPanel").hide()
+	    $("#testAddedQuestionPanel").hide()
 	    $("#testSelectQuestionPanel").show()
 	    listQuestionsTags(listQuestionsTagsResponse)
 	})
 	
-	// Cancel the selection question form and return to selected
-	// question panel
+	// Cancel the select questions action
 	$("#cancelSelectedQuests").click(function(){
-	    $("#testSelectedQuestionPanel").show()
+	    $("#testAddedQuestionPanel").show()
 	    $("#testSelectQuestionPanel").hide()
 	})
 	
 
-	// List Tests
+	// List Questions Tags
 	$(settings.panel+" .tags").on("click","*",function(e){
 	    $(this).toggleClass("label-primary")
 	})
@@ -236,12 +262,28 @@ var tests = (function(){
 		}
 	})
 
+
+	// Show users for select them
+	$("#addMoreUsers").click(function(){
+	    $("#testAddedUserPanel").hide()
+	    $("#testSelectUserPanel").show()
+	    listUserTags(listUserTagsResponse)
+	})
+
+	// Cancel the select users action
+	$("#cancelSelectedUser").click(function(){
+	    $("#testAddedUserPanel").show()
+	    $("#testSelectUserPanel").hide()
+	})
     }
 
 
     var init = function() {
 	$("#testSelectQuestionPanel").hide()
-	$("#testSelectedQuestionPanel ul").empty()
+	$("#testAddedQuestionPanel ul").empty()
+
+	$("#testSelectUserPanel").hide()
+	$("#testAddedUserPanel ul").empty()
 	bindFunctions()
     }
 
