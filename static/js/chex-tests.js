@@ -16,7 +16,8 @@ var tests = (function(){
     var data={
 	selectedQuestions:{},
 	testsQuestions:{},
-	questionsCache:{}
+	questionsCache:{},
+	usersCache:{}
     }
 
 
@@ -203,7 +204,29 @@ var tests = (function(){
 
     // Callback after list questions by tag request
     var listUserResponse = function(response){
-
+	if ((!response) || (response.length==0) || !Array.isArray(response)){
+	    $("#testSelectUserPanel .results")
+		.append("<span class=\"list-group-item\">No hubo resultados</span>")
+	}else{
+	    response.forEach(function(u){
+		$("#testSelectUserPanel .results")
+		    .append(
+			$('<li id='+u.Id+' class="list-group-item col-md-12">\
+<div class="icons row col-md-2">\
+<a href="#" class="item-select glyphicon glyphicon-ok"></a>\
+<a href="#" class="item-add glyphicon glyphicon-plus"></a>\
+</div>\
+<div class="text col-md-10">\
+<a class="item-text" href="/users/get?id='+u.Id+'" >'+u.Name+'</a>\
+</div>\
+</li>')
+			    //.on("click",".item-select",selectUserHandler)
+			    //.on("click",".item-add",addUserHandler)
+		    )
+		
+		data.usersCache[u.Id]=u
+		1    })
+	}
     }
 
     // Callback after lists user tags request
@@ -246,15 +269,15 @@ var tests = (function(){
 	
 
 	// List Questions Tags
-	$(settings.panel+" .tags").on("click","*",function(e){
+	$("#testSelectQuestionPanel .tags").on("click","*",function(e){
 	    $(this).toggleClass("label-primary")
 	})
 
-	$(settings.panel+" .tags").on("click",function(e){
+	$("#testSelectQuestionPanel .tags").on("click",function(e){
 	    e.preventDefault()
-	    tags=[]
-	    $(settings.panel+" .results").empty()
-	    $(settings.panel+" .tags").find(".label-primary").each(function(){
+	    var tags=[]
+	    $("#testSelectQuestionPanel .results").empty()
+	    $("#testSelectQuestionPanel .tags").find(".label-primary").each(function(){
 		tags.push($(this).html())
 	    })
 		if (tags.length>0){
@@ -274,6 +297,24 @@ var tests = (function(){
 	$("#cancelSelectedUser").click(function(){
 	    $("#testAddedUserPanel").show()
 	    $("#testSelectUserPanel").hide()
+	})
+
+
+	// List Users Tags
+	$("#testSelectUserPanel .tags").on("click","*",function(e){
+	    $(this).toggleClass("label-primary")
+	})
+
+	$("#testSelectUserPanel .tags").on("click",function(e){
+	    e.preventDefault()
+	    var tags=[]
+	    $("#testSelectUserPanel .results").empty()
+	    $("#testSelectUserPanel .tags").find(".label-primary").each(function(){
+		tags.push($(this).html())
+	    })
+		if (tags.length>0){
+		    users.list(tags,listUserResponse)
+		}
 	})
     }
 
