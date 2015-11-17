@@ -15,6 +15,7 @@ var tests = (function(){
 
     var data={
 	selectedQuestions:{},
+	selectedUsers:{},
 	testsQuestions:{},
 	testsUsers:{},
 	questionsCache:{},
@@ -59,13 +60,13 @@ var tests = (function(){
     */
 
     // Mark question as selected 
-    var selectItem = function(element){
+    var selectItem = function(element,list){
 	if (element.hasClass("list-group-item-info")) {
             element.removeClass("list-group-item-info");
-	    delete data.selectedQuestions[$(this).attr("id")]
+	    delete list[$(this).attr("id")]
         }else{
 	    element.addClass("list-group-item-info");
-	    data.selectedQuestions[element.attr("id")]=1
+	    list[element.attr("id")]=1
 	}
     }
 
@@ -119,7 +120,7 @@ var tests = (function(){
     var selectQuestionHandler = function(event){
 	event.preventDefault()
 	var that = $(this).parents("li.list-group-item")
-	selectItem(that)
+	selectItem(that,data.selectedQuestions)
     }
 
 
@@ -129,7 +130,7 @@ var tests = (function(){
 	
 	// mark this question as selected and add all of them
 	var that = $(this).parents("li.list-group-item")
-	selectItem(that)
+	selectItem(that,data.selectedQuestions)
 	for (var id in data.selectedQuestions) {
 	    data.testsQuestions[id]=1
 	}
@@ -150,7 +151,7 @@ var tests = (function(){
 
 	// mark this question as selected and remove all of them
 	var that = $(this).parents("li.list-group-item")
-	selectItem(that)
+	selectItem(that,data.selectedQuestions)
 	for (var id in data.selectedQuestions) {
 	    delete data.testsQuestions[id]
 	}
@@ -242,27 +243,27 @@ var tests = (function(){
     }
 
 
-    // Event handler to select a question
+    // Event handler to select a user
     var selectUserHandler = function(event){
 	event.preventDefault()
 	var that = $(this).parents("li.list-group-item")
-	selectItem(that)
+	selectItem(that,data.selectedUsers)
     }
 
 
-    // Event handler to add questions to the tests collection
+    // Event handler to add users to the tests collection
     var addUserHandler = function(event){
 	event.preventDefault()
 	
-	// mark this question as selected and add all of them
+	// mark this user as selected and add all of them
 	var that = $(this).parents("li.list-group-item")
-	selectItem(that)
-	for (var id in data.selectedQuestions) {
+	selectItem(that,data.selectedUsers)
+	for (var id in data.selectedUsers) {
 	    data.testsUsers[id]=1
 	}
 
-	// dump questions selected
-	data.selectedQuestions={}
+	// dump users selected
+	data.selectedUsers={}
 
 	listTestUsers()
 	$("#testAddedUserPanel").show()
@@ -283,12 +284,12 @@ var tests = (function(){
 	    $("#testAddedUserPanel .results")
 		.append(
 		    $('<li id='+u.Id+' class="list-group-item col-md-12">')
-			.append('<div class="row icons col-md-2 text-center">\
+			.append('<div class="row icons col-md-2">\
 <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
 <a href="#" class="item-remove glyphicon glyphicon-remove"></a>\
 </div>')
 			.on("click",".item-select",selectUserHandler)
-			//.on("click",".item-remove",removeUserHandler)
+			.on("click",".item-remove",removeUserHandler)
 
 			.append(
 			    $('<div class="col-md-10">')
@@ -298,6 +299,24 @@ var tests = (function(){
 	}
     } 
 
+
+    // Event handler to remove users selected from the test collection
+    var removeUserHandler = function(event){
+	event.preventDefault()
+
+	// mark this user as selected and remove all of them
+	var that = $(this).parents("li.list-group-item")
+	selectItem(that,data.selectedUsers)
+	for (var id in data.selectedUsers) {
+	    console.log(id)
+	    delete data.testsUsers[id]
+	}
+
+	// dump users selected
+	data.selectedUsers={}
+	
+	listTestUsers()
+    }
 
 
 
