@@ -16,6 +16,7 @@ var tests = (function(){
     var data={
 	selectedQuestions:{},
 	testsQuestions:{},
+	testsUsers:{},
 	questionsCache:{},
 	usersCache:{}
     }
@@ -58,7 +59,7 @@ var tests = (function(){
     */
 
     // Mark question as selected 
-    var selectQuestion = function(element){
+    var selectItem = function(element){
 	if (element.hasClass("list-group-item-info")) {
             element.removeClass("list-group-item-info");
 	    delete data.selectedQuestions[$(this).attr("id")]
@@ -118,7 +119,7 @@ var tests = (function(){
     var selectQuestionHandler = function(event){
 	event.preventDefault()
 	var that = $(this).parents("li.list-group-item")
-	selectQuestion(that)
+	selectItem(that)
     }
 
 
@@ -128,7 +129,7 @@ var tests = (function(){
 	
 	// mark this question as selected and add all of them
 	var that = $(this).parents("li.list-group-item")
-	selectQuestion(that)
+	selectItem(that)
 	for (var id in data.selectedQuestions) {
 	    data.testsQuestions[id]=1
 	}
@@ -149,7 +150,7 @@ var tests = (function(){
 
 	// mark this question as selected and remove all of them
 	var that = $(this).parents("li.list-group-item")
-	selectQuestion(that)
+	selectItem(that)
 	for (var id in data.selectedQuestions) {
 	    delete data.testsQuestions[id]
 	}
@@ -220,8 +221,8 @@ var tests = (function(){
 <a class="item-text" href="/users/get?id='+u.Id+'" >'+u.Name+'</a>\
 </div>\
 </li>')
-			    //.on("click",".item-select",selectUserHandler)
-			    //.on("click",".item-add",addUserHandler)
+			    .on("click",".item-select",selectUserHandler)
+			    .on("click",".item-add",addUserHandler)
 		    )
 		
 		data.usersCache[u.Id]=u
@@ -239,6 +240,63 @@ var tests = (function(){
 	    })
 		}
     }
+
+
+    // Event handler to select a question
+    var selectUserHandler = function(event){
+	event.preventDefault()
+	var that = $(this).parents("li.list-group-item")
+	selectItem(that)
+    }
+
+
+    // Event handler to add questions to the tests collection
+    var addUserHandler = function(event){
+	event.preventDefault()
+	
+	// mark this question as selected and add all of them
+	var that = $(this).parents("li.list-group-item")
+	selectItem(that)
+	for (var id in data.selectedQuestions) {
+	    data.testsUsers[id]=1
+	}
+
+	// dump questions selected
+	data.selectedQuestions={}
+
+	listTestUsers()
+	$("#testAddedUserPanel").show()
+	$("#testSelectUserPanel").hide()
+    }
+
+
+    // List every users added
+    var listTestUsers = function(){
+	$("#testAddedUserPanel ul").empty()
+
+	for (var id in data.testsUsers) {
+	    u = data.usersCache[id]
+	    if (!u){
+		return
+	    }
+	    
+	    $("#testAddedUserPanel .results")
+		.append(
+		    $('<li id='+u.Id+' class="list-group-item col-md-12">')
+			.append('<div class="row icons col-md-2 text-center">\
+<a href="#" class="item-select glyphicon glyphicon-ok"></a>\
+<a href="#" class="item-remove glyphicon glyphicon-remove"></a>\
+</div>')
+			.on("click",".item-select",selectUserHandler)
+			//.on("click",".item-remove",removeUserHandler)
+
+			.append(
+			    $('<div class="col-md-10">')
+				.append('<a href="/users/get?id='+u.Id+'" class="item-link">'+u.Name+'</a>')
+			)
+		)
+	}
+    } 
 
 
 
