@@ -63,12 +63,13 @@ var tests = (function(){
     var selectItem = function(element,list){
 	if (element.hasClass("list-group-item-info")) {
             element.removeClass("list-group-item-info");
-	    delete list[$(this).attr("id")]
+	    delete list[element.attr("id")]
         }else{
 	    element.addClass("list-group-item-info");
 	    list[element.attr("id")]=1
 	}
     }
+
 
     // Listed the questions tags for search questions
     var listQuestionsTags = function(cb){
@@ -130,7 +131,9 @@ var tests = (function(){
 	
 	// mark this question as selected and add all of them
 	var that = $(this).parents("li.list-group-item")
-	selectItem(that,data.selectedQuestions)
+	if (!data.selectedQuestions[that.attr("id")]){
+	    selectItem(that,data.selectedQuestions)
+	}
 	for (var id in data.selectedQuestions) {
 	    data.testsQuestions[id]=1
 	}
@@ -151,7 +154,9 @@ var tests = (function(){
 
 	// mark this question as selected and remove all of them
 	var that = $(this).parents("li.list-group-item")
-	selectItem(that,data.selectedQuestions)
+	if (!data.selectedQuestions[that.attr("id")]){
+	    selectItem(that,data.selectedQuestions)
+	}
 	for (var id in data.selectedQuestions) {
 	    delete data.testsQuestions[id]
 	}
@@ -196,6 +201,14 @@ var tests = (function(){
     } 
 
 
+    // Event handler to select all questions listed
+    var selectAllQuestionsHandler = function(event){
+	//TODO
+    }
+
+
+
+
 
     // Listed the users tags for search questions
     var listUserTags = function(cb){
@@ -222,6 +235,7 @@ var tests = (function(){
 <a class="item-text" href="/users/get?id='+u.Id+'" >'+u.Name+'</a>\
 </div>\
 </li>')
+			    .on("dblclick",".item-select",selectAllUsersHandler)
 			    .on("click",".item-select",selectUserHandler)
 			    .on("click",".item-add",addUserHandler)
 		    )
@@ -257,7 +271,9 @@ var tests = (function(){
 	
 	// mark this user as selected and add all of them
 	var that = $(this).parents("li.list-group-item")
-	selectItem(that,data.selectedUsers)
+	if (!data.selectedUsers[that.attr("id")]){
+	    selectItem(that,data.selectedUsers)
+	}
 	for (var id in data.selectedUsers) {
 	    data.testsUsers[id]=1
 	}
@@ -288,6 +304,7 @@ var tests = (function(){
 <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
 <a href="#" class="item-remove glyphicon glyphicon-remove"></a>\
 </div>')
+			.on("dblclick",".item-select",selectAllUsersHandler)
 			.on("click",".item-select",selectUserHandler)
 			.on("click",".item-remove",removeUserHandler)
 
@@ -296,7 +313,7 @@ var tests = (function(){
 				.append('<a href="/users/get?id='+u.Id+'" class="item-link">'+u.Name+'</a>')
 			)
 		)
-	}
+	}	    
     } 
 
 
@@ -306,9 +323,10 @@ var tests = (function(){
 
 	// mark this user as selected and remove all of them
 	var that = $(this).parents("li.list-group-item")
-	selectItem(that,data.selectedUsers)
+	if (!data.selectedUsers[that.attr("id")]){
+	    selectItem(that,data.selectedUsers)
+	}
 	for (var id in data.selectedUsers) {
-	    console.log(id)
 	    delete data.testsUsers[id]
 	}
 
@@ -316,6 +334,19 @@ var tests = (function(){
 	data.selectedUsers={}
 	
 	listTestUsers()
+    }
+
+
+    // Event handler to select all users listed
+    var selectAllUsersHandler = function(event){
+	var panel = $(this).parents(".panel-selection").first()
+
+	$(panel).find(" .results li").each(function(i,item){
+	    var that=$(this)
+	    if (!data.selectedUsers[that.attr("id")]){
+		selectItem(that,data.selectedUsers)
+	    }
+	})
     }
 
 
@@ -393,6 +424,9 @@ var tests = (function(){
 		    users.list(tags,listUserResponse)
 		}
 	})
+
+	// Select All Users action
+	$("#selectAllUsers").click(selectAllUsersHandler)
     }
 
 
