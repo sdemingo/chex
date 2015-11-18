@@ -194,6 +194,9 @@ var users = (function(){
 
 	// List Users
 	$(settings.panel+" .tags").on("click",launchSearchByTag)
+	$(settings.panel+" .tags").on("click","*",function(e){
+	    $(this).toggleClass("label-primary")
+	})
     }
 
 

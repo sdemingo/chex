@@ -117,8 +117,8 @@ var questions = (function(){
 
 
     // Recover clicked tags and launch a search by these tags
-    var launchSearchByTag = function(){
-	tags=[]
+    var launchSearchByTag = function(event){
+	var tags=[]
 	$(settings.panel+" .results").empty()
 	$(settings.panel+" .tags").find(".label-primary").each(function(){
 	    tags.push($(this).html())
@@ -168,21 +168,9 @@ var questions = (function(){
 
 	// List Quests
 	$(settings.panel+" .tags").on("click",launchSearchByTag)
-	/*$(settings.panel+" .tags").on("click","*",function(e){
+	$(settings.panel+" .tags").on("click","*",function(e){
 	    $(this).toggleClass("label-primary")
 	})
-
-	$(settings.panel+" .tags").on("click",function(e){
-	    e.preventDefault()
-	    tags=[]
-	    $(settings.panel+" .results").empty()
-	    $(settings.panel+" .tags").find(".label-primary").each(function(){
-		tags.push($(this).html())
-	    })
-		if (tags.length>0){
-		    listQuests(tags,listQuestResponse)
-		}
-	})*/
     }
 
 
