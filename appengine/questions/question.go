@@ -133,7 +133,8 @@ func getQuestionByChecksum(wr srv.WrapperRequest, sum string) (Question, error) 
 	var qs []Question
 	var q Question
 
-	qry := datastore.NewQuery("questions").Filter("Checksum =", sum)
+	srv.AppWarning(wr, sum)
+	qry := datastore.NewQuery("questions").Filter("CheckSum =", sum)
 
 	keys, err := qry.GetAll(wr.C, &qs)
 	if (len(keys) == 0) || err != nil {
