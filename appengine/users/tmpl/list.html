@@ -10,17 +10,18 @@
 
 <div class="row col-md-12">
 
-  <div id="usersList" class="form-group col-md-6 col-md-offset-3">
-    <form id="userListForm" method="post">
-      <input type="text" class="form-control" name="Name" placeholder="..." value="Búsqueda">
-      <div class="panel label-panel tags">
-      </div>
-    </form>
+  <div id="usersList" class="col-md-6 col-md-offset-3">
+    <!--  <ul class="col-md-12 tags">
+    </ul>
 
-    <div class="panel list-group results">
-    </div>
+    <ul class="col-md-12 list-group results">
+    </ul>-->
   </div>
 
   
 </div>
+
+<script>
+ usersFinder.init({panel:"#usersList"})
+</script>
 {{end}}

@@ -16,7 +16,7 @@ var users = (function(){
 
     var settings={
 	form:"#userEditForm",
-	panel:"#usersList"
+	//panel:"#usersList"
     }
 
 
@@ -106,56 +106,6 @@ var users = (function(){
 	}
     }
 
-    // Callback after the list user tags request
-    var listTagsResponse = function(response){
-	if (response){
-	    $.each(response,function(i,e){
-		$(settings.panel+" .tags")
-		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
-		    .on("click",selectTag)
-	    })
-		}
-    }
-
-    // Callback after the list user request 
-    var listUsersResponse = function(response){
-	if ((!response) || (response.length==0)){
-	    $(settings.panel+" .results")
-		.append("<span class=\"list-group-item\">No hubo resultados</span>")
-	}else{
-	    response.forEach(function(e){
-		$(settings.panel+" .results")
-		    .append("<a href=\"/users/get?id="+e.Id+"\" class=\"list-group-item\">"+e.Name+"</a>")
-	    })
-	}
-    }
-    
-
-    // Mark tag as selected 
-    var selectTag = function(event){
-	event.preventDefault()
-
-	var element = $(this)
-	if (element.hasClass("label-primary")) {
-            element.removeClass("label-primary");
-        }else{
-	    element.addClass("label-primary");
-	}
-    }
-
-    // Recover clicked tags and launch a search by these tags
-    var launchSearchByTag = function(){
-	tags=[]
-	$(settings.panel+" .results").empty()
-	$(settings.panel+" .tags").find(".label-primary").each(function(){
-	    tags.push($(this).html())
-	})
-
-	    if (tags.length>0){
-		listUsers(tags,listUsersResponse)
-	    }
-    }
-
 
     var readForm = function(){
 	var u = $(settings.form).serializeObject()
@@ -191,20 +141,13 @@ var users = (function(){
 	    }
 	    editUser(u,editUserResponse)
 	})
-
-	// List Users
-	$(settings.panel+" .tags").on("click",launchSearchByTag)
-	$(settings.panel+" .tags").on("click","*",function(e){
-	    $(this).toggleClass("label-primary")
-	})
     }
 
 
     var init = function() {
-	listTags(listTagsResponse)
 	bindFunctions()
-	$(".alert").css("visibility", "hidden")
     }
+
 
     return{
 	init: init,
@@ -215,5 +158,97 @@ var users = (function(){
     }
 })()
 
+
+
+
+
+
+var usersFinder = (function(){
+
+    var settings={}
+
+    // Callback after the list user tags request
+    var listTagsResponse = function(response){
+	if (response){
+	    $.each(response,function(i,e){
+		$(settings.panel+" .tags")
+		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
+		    .on("click",selectTag)
+	    })
+		}
+    }
+
+    // Callback after the list user request 
+    var listUsersResponse = function(response){
+	if ((!response) || (response.length==0)){
+	    $(settings.panel+" .results")
+		.append("<span class=\"list-group-item\">No hubo resultados</span>")
+	}else{
+	    response.forEach(function(e){
+		$(settings.panel+" .results")
+		    .append("<a href=\"/users/get?id="+e.Id+"\" class=\"list-group-item\">"+e.Name+"</a>")
+	    })
+	}
+    }
+    
+
+    // Mark tag as selected 
+    var selectTag = function(event){
+	event.preventDefault()
+
+	var element = $(this)
+	if (element.is("li").hasClass("label-primary")) {
+            element.removeClass("label-primary");
+        }else{
+	    element.addClass("label-primary");
+	}
+    }
+
+    // Recover clicked tags and launch a search by these tags
+    var launchSearchByTag = function(){
+	tags=[]
+	$(settings.panel+" .results").empty()
+	$(settings.panel+" .tags").find(".label-primary").each(function(){
+	    tags.push($(this).html())
+	})
+
+	    if (tags.length>0){
+		users.list(tags,listUsersResponse)
+	    }
+    }
+
+
+    var bindFunctions = function(){
+	// List Users
+	$(settings.panel+" .tags").on("click",launchSearchByTag)
+	$(settings.panel+" .tags").on("click","*",function(e){
+	    $(this).toggleClass("label-primary")
+	})
+    }
+
+
+    var buildComponent = function(){
+	$(settings.panel)
+	    .append(
+		$('<ul class="col-md-12 tags">')
+	    )
+	    .append(
+		$('<ul class="col-md-12 list-group results">')
+	    )
+    }
+
+
+    var init = function(options){
+	settings=options
+	buildComponent()
+	users.tags(listTagsResponse)
+	bindFunctions()
+    }
+
+
+    return{
+	init: init
+    }
+})()
 
 
