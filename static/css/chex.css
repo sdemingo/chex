@@ -34,15 +34,11 @@ body {
 /*  Panel selection */
 
 .panel-selection{
-    min-height:500px;
-}
-
-.panel-selection-main{
     margin-bottom:0;
-    height:400px;
-    max-height:400px;
+    height:500px;
     overflow-y:auto;
 }
+
 
 .panel-selection .icons > a{
     margin-right:10px;
