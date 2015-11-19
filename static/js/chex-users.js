@@ -184,9 +184,43 @@ var usersFinder = (function(){
 	    $(settings.panel+" .results")
 		.append("<span class=\"list-group-item\">No hubo resultados</span>")
 	}else{
-	    response.forEach(function(e){
-		$(settings.panel+" .results")
-		    .append("<a href=\"/users/get?id="+e.Id+"\" class=\"list-group-item\">"+e.Name+"</a>")
+	    response.forEach(function(u){
+		var item = $('<li id='+u.Id+' class="list-group-item col-md-12">')
+		    //.append('<div class="icons col-md-2">')
+		    .append('<div class="text col-md-10">\
+<a class="item-text" href="/users/get?id='+u.Id+'" >'+u.Name+'</a>\
+</div>')
+		
+		if (settings.itemSelectHandler 
+		    || settings.itemAddHandler 
+		    || settings.itemRemoveHandler 
+		    || settings.itemEditHandler){
+
+		    item.prepend('<div class="icons col-md-2">')
+		}
+
+		if (settings.itemSelectHandler){
+		    item.find(".icons").prepend('<a href="#" class="item-select glyphicon glyphicon-ok"></a>')
+		    item.on("dblclick",".item-select",function(){alert("Seleccionas todos")})
+		    item.on("click",".item-select",settings.itemSelectHandler)
+		}
+
+		if (settings.itemAddHandler){
+		    item.find(".icons").prepend('<a href="#" class="item-add glyphicon glyphicon-plus"></a>')
+		    item.on("click",".item-add",settings.itemAddHandler)
+		}
+
+		if (settings.itemRemoveHandler){
+		    item.find(".icons").prepend('<a href="#" class="item-remove glyphicon glyphicon-remove"></a>')
+		    item.on("click",".item-remove",settings.itemRemoveHandler)
+		}
+
+		if (settings.itemEditHandler){
+		    item.find(".icons").prepend('<a href="#" class="item-edit glyphicon glyphicon-edit"></a>')
+		    item.on("click",".item-edit",settings.itemEditHandler)
+		}
+
+		$(settings.panel+" .results").append(item)
 	    })
 	}
     }
@@ -197,7 +231,10 @@ var usersFinder = (function(){
 	event.preventDefault()
 
 	var element = $(this)
-	if (element.is("li").hasClass("label-primary")) {
+	if (!element.is("li")){
+	    return
+	}
+	if (element.hasClass("label-primary")) {
             element.removeClass("label-primary");
         }else{
 	    element.addClass("label-primary");
@@ -235,12 +272,21 @@ var usersFinder = (function(){
 	    .append(
 		$('<ul class="col-md-12 list-group results">')
 	    )
+
+	if (settings.closeButton){
+	    $(settings.panel).prepend(
+		$('<button type="button" class="btn btn-default pull-right">Cerrar</button>')
+		.on("click",settings.closeButton)
+	    )
+	}
     }
 
 
     var init = function(options){
 	settings=options
 	buildComponent()
+
+	$(settings.panel+" .tags").empty()
 	users.tags(listTagsResponse)
 	bindFunctions()
     }
