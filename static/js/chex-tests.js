@@ -209,7 +209,7 @@ var tests = (function(){
 
 
 
-/*
+
     // Listed the users tags for search questions
     var listUserTags = function(cb){
 	$("#testSelectUserPanel .results").empty()
@@ -264,7 +264,7 @@ var tests = (function(){
 	selectItem(that,data.selectedUsers)
     }
 
-*/
+
     // Event handler to add users to the tests collection
     var addUserHandler = function(event){
 	event.preventDefault()
@@ -336,7 +336,7 @@ var tests = (function(){
 	listTestUsers()
     }
 
-/*
+
     // Event handler to select all users listed
     var selectAllUsersHandler = function(event){
 	var panel = $(this).parents(".panel-selection").first()
@@ -347,37 +347,19 @@ var tests = (function(){
 		selectItem(that,data.selectedUsers)
 	    }
 	})
-	    }
-*/
+    }
+
 
 
     var readForm = function(){
-	var tst = $("#testEditForm").serializeObject()
-	tst.Tags = tst.Tags.split(",").map(function(e){
-	    return e.trim()
-	})
-	tst.Tags.clean("")
-	tst.State = 1
-	tst.Exercises = Object.keys(data.testsQuestions).map(function(x){
-	    return parseInt(x,10)
-	})
-	tst.Ulist = Object.keys(data.testsUsers).map(function(x){
-	    return parseInt(x,10)
-	})
-	
-	return tst
+
     }
     
     var bindFunctions = function(){
 
 	// Add test button
 	$(settings.form+" #testNewSubmit").click(function(){
-	    var tst = readForm()
-	    if (!tst) {
-		return
-	    }
-	    //addTest(q,addTestResponse)
-	    alert(JSON.stringify(tst))
+	    
 	})
 
 	// Show questions for select them
@@ -418,14 +400,14 @@ var tests = (function(){
 	    $("#testSelectUserPanel").show()
 	    listUserTags(listUserTagsResponse)
 	})
-/*
+
 	// Cancel the select users action
 	$("#cancelSelectedUser").click(function(){
 	    $("#testAddedUserPanel").show()
 	    $("#testSelectUserPanel").hide()
 	})
-*/
-/*
+
+
 	// List Users Tags
 	$("#testSelectUserPanel .tags").on("click","*",function(e){
 	    $(this).toggleClass("label-primary")
@@ -444,7 +426,7 @@ var tests = (function(){
 	})
 
 	// Select All Users action
-	$("#selectAllUsers").click(selectAllUsersHandler)*/
+	$("#selectAllUsers").click(selectAllUsersHandler)
     }
 
 

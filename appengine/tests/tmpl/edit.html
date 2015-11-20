@@ -73,9 +73,17 @@
 
 	<div id="testSelectUserPanel" class="panel-selection">
 	  <!-- List of all question of this user to add them to a test -->
-	  
+	  <div class="panel panel-default panel-selection-main">
+	    <ul class="list-group results">
+
+
+
+	    </ul>
+	  </div>
+	  <button type="button" id="cancelSelectedUser" class="btn btn-default pull-right">Cancelar</button>
+	  <div class="panel label-panel tags">
+	  </div>
 	</div>
-	
 
 	<div id="testAddedUserPanel" class="panel-selection">
 	  <div class="panel panel-default panel-selection-main">
@@ -121,16 +129,4 @@
 
 
 </div>
-
-
-<script>
- var opt={
-   panel:"#testSelectUserPanel",
-   closeButton:function(){
-     $("#testAddedUserPanel").show()
-     $("#testSelectUserPanel").hide()
-   }
- }
- usersFinder.init(opt)
-</script>
 {{end}}
