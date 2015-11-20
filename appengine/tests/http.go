@@ -1,7 +1,7 @@
 package tests
 
 import (
-	//"encoding/json"
+	"encoding/json"
 	"errors"
 	//"fmt"
 
@@ -25,12 +25,12 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	wr.R.ParseForm()
 	/*
-		qs, err := getQuestions(wr, wr.R.Form)
-		if err != nil {
-			return listTmpl, err
-		}
+	 qs, err := getQuestions(wr, wr.R.Form)
+	 if err != nil {
+	 return listTmpl, err
+	 }
 
-		tc["Content"] = qs
+	 tc["Content"] = qs
 	*/
 	return listTmpl, nil
 }
@@ -44,25 +44,25 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	wr.R.ParseForm()
 	/*
-		qs, err = getQuestions(wr, wr.R.Form)
-		if len(qs) == 0 || err != nil {
-			return viewTmpl, errors.New(ERR_QUESTNOTFOUND)
-		}
-		q := &qs[0]
+	 qs, err = getQuestions(wr, wr.R.Form)
+	 if len(qs) == 0 || err != nil {
+	 return viewTmpl, errors.New(ERR_QUESTNOTFOUND)
+	 }
+	 q := &qs[0]
 
-		// if the question hasn't got a answer to render. It makes a
-		// blank anwser based on Atype of the question to render it
-		if q.Solution == nil {
-			q.Solution, err = answers.NewAnswerWithBody(-1, -1, q.AType)
-			if err != nil {
-				return viewTmpl, err
-			}
-		}
+	 // if the question hasn't got a answer to render. It makes a
+	 // blank anwser based on Atype of the question to render it
+	 if q.Solution == nil {
+	 q.Solution, err = answers.NewAnswerWithBody(-1, -1, q.AType)
+	 if err != nil {
+	 return viewTmpl, err
+	 }
+	 }
 
-		unSolved, solved, err := q.Solution.Body.GetHTML(q.Options)
-		tc["OptionsSolved"] = solved
-		tc["OptionsUnSolved"] = unSolved
-		tc["Content"] = q
+	 unSolved, solved, err := q.Solution.Body.GetHTML(q.Options)
+	 tc["OptionsSolved"] = solved
+	 tc["OptionsUnSolved"] = unSolved
+	 tc["Content"] = q
 	*/
 	return viewTmpl, nil
 }
@@ -73,12 +73,12 @@ func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, erro
 		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 	/*
-		tags, err := getAllQuestionsTags(wr)
-		if err != nil {
-			return infoTmpl, err
-		}
+	 tags, err := getAllQuestionsTags(wr)
+	 if err != nil {
+	 return infoTmpl, err
+	 }
 
-		tc["Content"] = tags
+	 tc["Content"] = tags
 	*/
 	return infoTmpl, nil
 }
@@ -92,21 +92,21 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if err != nil {
 		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
-	/*
-		var q Question
 
-		decoder := json.NewDecoder(wr.R.Body)
-		err = decoder.Decode(&q)
-		if err != nil {
-			return infoTmpl, err
-		}
+	var t Test
 
-		err = putQuestion(wr, &q)
-		if err != nil {
-			return infoTmpl, err
-		}
+	decoder := json.NewDecoder(wr.R.Body)
+	err = decoder.Decode(&t)
+	if err != nil {
+		return infoTmpl, err
+	}
 
-		tc["Content"] = q
-	*/
+	err = putTest(wr, &t)
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	tc["Content"] = t
+
 	return infoTmpl, nil
 }

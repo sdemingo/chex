@@ -34,7 +34,7 @@ var tests = (function(){
 	    url:DOMAIN+'/tests/add',
 	    type: 'post',
 	    dataType: 'json',
-	    data: JSON.stringify(q),
+	    data: JSON.stringify(test),
 	    success: cb,
 	    error: error
 	});
@@ -58,6 +58,19 @@ var tests = (function(){
       Private and Dom functions 
 
     */
+
+
+    // Callback after the add user request
+    var addTestResponse = function(response){
+	if (response.Error){
+	    showErrorMessage("Error al crear test")
+	    console.log(data.Error)
+	}else{
+	    showInfoMessage("Test creado con éxito")
+	    resetForm(settings.form)
+	}
+    }
+
 
     // Mark question as selected 
     var selectItem = function(element,list){
@@ -210,6 +223,7 @@ var tests = (function(){
 
 
 
+
     // Listed the users tags for search questions
     var listUserTags = function(cb){
 	$("#testSelectUserPanel .results").empty()
@@ -347,19 +361,36 @@ var tests = (function(){
 		selectItem(that,data.selectedUsers)
 	    }
 	})
-    }
+	    }
 
 
 
     var readForm = function(){
-
+	var tst = $("#testEditForm").serializeObject()
+	tst.Tags = tst.Tags.split(",").map(function(e){
+	    return e.trim()
+	})
+	tst.Tags.clean("")
+	tst.State = 1
+	tst.Exercises = Object.keys(data.testsQuestions).map(function(x){
+	    return parseInt(x,10)
+	})
+	tst.Ulist = Object.keys(data.testsUsers).map(function(x){
+	    return parseInt(x,10)
+	})
+	
+	return tst
     }
     
     var bindFunctions = function(){
 
 	// Add test button
-	$(settings.form+" #testNewSubmit").click(function(){
-	    
+	$("#testNewSubmit").click(function(){
+	    var tst = readForm()
+	    if (!tst) {
+		return
+	    }
+	    addTest(tst,addTestResponse)
 	})
 
 	// Show questions for select them
