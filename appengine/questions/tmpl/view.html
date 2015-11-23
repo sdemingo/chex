@@ -20,7 +20,7 @@
   <!-- Panel de avisos de pregunta -->
   <div class="row col-md-1 pull-right">
     
-  {{if not .Content.Solution}}
+  {{if .UnSolvedQuestion}}
     <a href="/help#no-solution" class="label label-danger">Sin Solución</a>
   {{end}}
   </div>
