@@ -134,6 +134,11 @@ var tests = (function(){
     var selectQuestionHandler = function(event){
 	event.preventDefault()
 	var that = $(this).parents("li.list-group-item")
+	var q = data.questionsCache[that.attr("id")]
+	if (q.SolutionId<0){
+	    showErrorMessage("Esta pregunta está sin solucionar por parte del autor y no puede ser seleccionada")
+	    return false
+	}
 	selectItem(that,data.selectedQuestions)
     }
 

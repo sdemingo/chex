@@ -167,7 +167,13 @@ func getQuestById(wr srv.WrapperRequest, s_id string) (Question, error) {
 	q.Tags, _ = getQuestTags(wr, q)
 
 	// search the solution. An answer for this quest from the same author
-	q.Solution, _ = answers.GetAnswer(wr, q.AuthorId, q.Id)
+	var errA error
+	q.Solution, errA = answers.GetAnswer(wr, q.AuthorId, q.Id)
+	if errA == nil {
+		q.SolutionId = q.Solution.Id
+	} else {
+		q.SolutionId = -1
+	}
 
 	return q, err
 }
