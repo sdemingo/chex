@@ -1,5 +1,5 @@
 
-files = chex-main.js chex-users.js chex-questions.js chex-answers.js chex-tests.js chex-utils.js 
+files = chex-main.js chex-users.js chex-questions.js chex-answers.js chex-panellist.js chex-tests.js chex-utils.js 
 target = chex.js
 target_min = chex.min.js
 

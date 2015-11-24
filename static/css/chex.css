@@ -36,48 +36,48 @@ body {
 
 /*  Panel selection */
 
-.panel-selection{
+.panel-list{
     min-height:500px;
 }
 
-.panel-selection-main{
+.panel-list-main{
     margin-bottom:0;
     height:400px;
     max-height:400px;
     overflow-y:auto;
 }
 
-.panel-selection .icons > a{
+.panel-list .icons > a{
     margin-right:10px;
 }
 
-.panel-selection .icons > input{
+.panel-list .icons > input{
     display:block;
     margin:10px 0 10px 0;
 }
 
 
-.panel-selection .item-text{
+.panel-list .item-text{
     margin-right:10px;
 }
 
-.panel-selection .item-input-value{
+.panel-list .item-input-value{
     font-size:0.8em;
     height:2em;
     padding:0 0 0 1em;
 }
 
-.panel-selection .item-link{
+.panel-list .item-link{
     margin-left:10px;
 }
 
 
-.panel-selection input.good-points{
+.panel-list input.good-points{
     background-color:#CCFF99;
     color:#336600;
 }
 
-.panel-selection input.bad-points{
+.panel-list input.bad-points{
     background-color:#FFE5CC;
     color:#990000;
 }

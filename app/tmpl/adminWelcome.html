@@ -1,35 +1,43 @@
 {{define "content"}}
 
 <div class="container" id="content">
-
+  <!--
   <div class="page-header ">
     <h1 class="text-left">Bienvenido {{.User.Name}}</h1>
     <div class="well well-sm entete"></div>
   </div>
-
+  -->
 
   <div class="panel panel-primary">
     <div class="panel-heading panel-title">Usuarios</div>
     <div class="panel-body">
 
       <div class="row col-md-6">
-	<div id="usersList" class="well panel-selection">
+	<div id="UserPanel" class="panel-list panel-select-users">
+	  
+	  <div class="panel panel-default panel-list-main">
+	    <ul class="list-group results">
+
+	    </ul>
+	  </div>
 	  <div class="panel label-panel tags">
 	  </div>
-	  <div class="list-group results">
-	  </div>
 	</div>
+
       </div>
 
 
       <div class="row col-md-5 pull-right">
 	<ul class="list-group">
-	  <li class="list-group-item"><span class="value">0</span> Usuarios creados</li>
-	  <li class="list-group-item"><span class="value">0</span> Usuarios conectados</li>
+	  <li class="list-group-item"><span class="badge">0</span>Usuarios creados</li>
+	  <li class="list-group-item"><span class="badge">0</span>Usuarios conectados</li>
 	</ul>
+
+	<div class="list-group">
+	  <a href="/users/new" class="list-group-item">Nuevo Usuario</a>
+	  <a href="#" id="deleteUsers" class="list-group-item">Borrar</a>
+	</div>
       </div>
-
-
 
     </div>
   </div>
@@ -43,7 +51,7 @@
   </div>
 
   <div class="panel panel-primary">
-    <div class="panel-heading panel-title">Tests</div>
+    <div class="panel-heading panel-title">Actividades</div>
     <div class="panel-body">
 
       
@@ -53,4 +61,14 @@
   
   
 </div>
+
+<script>
+  
+  $("#deleteUsers").on("click",function(){
+   console.log(panelList.getSelectedUsers())
+   
+ })
+
+</script>
+
 {{end}}

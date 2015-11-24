@@ -1,18 +1,8 @@
 
 
 
-/*
+var panelList = (function(){
 
-Modulo de tests
-
-*/
-
-var tests = (function(){
-  var settings={
-    form:"",
-    panel:""
-  }
-/*
   var data={
     selectedQuestions:{},
     selectedUsers:{},
@@ -21,37 +11,7 @@ var tests = (function(){
     questionsCache:{},
     usersCache:{}
   }
-*/
 
-  /*
-
-  Ajax Api
-
-  */
-
-  var addTest =  function(test,cb){
-    $.ajax({
-      url:DOMAIN+'/tests/add',
-      type: 'post',
-      dataType: 'json',
-      data: JSON.stringify(test),
-      success: cb,
-      error: error
-    });
-  }
-
-  var editTest = function(test,cb){
-
-  }
-
-  var listTests = function(tags,cb){
-    
-  }
-
-  var deleteTest = function(test,cb){
-
-  }
-  
 
   /*
 
@@ -60,18 +20,6 @@ var tests = (function(){
   */
 
 
-  // Callback after the add user request
-  var addTestResponse = function(response){
-    if (response.Error){
-      showErrorMessage("Error al crear test")
-      console.log(data.Error)
-    }else{
-      showInfoMessage("Test creado con éxito")
-      resetForm(settings.form)
-    }
-  }
-
-/*
   // Mark question as selected 
   var selectItem = function(element,list){
     if (element.hasClass("list-group-item-info")) {
@@ -367,37 +315,10 @@ var tests = (function(){
       }
     })
   }
-*/
 
 
-  var readForm = function(){
-    var tst = $("#testEditForm").serializeObject()
-    tst.Tags = tst.Tags.split(",").map(function(e){
-      return e.trim()
-    })
-    tst.Tags.clean("")
-    tst.State = 1
-    tst.Exercises = Object.keys(data.testsQuestions).map(function(x){
-      return parseInt(x,10)
-    })
-    tst.Ulist = Object.keys(data.testsUsers).map(function(x){
-      return parseInt(x,10)
-    })
-    
-    return tst
-  }
-  
   var bindFunctions = function(){
 
-    // Add test button
-    $("#testNewSubmit").click(function(){
-      var tst = readForm()
-      if (!tst) {
-	return
-      }
-      addTest(tst,addTestResponse)
-    })
-/*
     // Show questions for select them
     $("#addMoreQuests").click(function(){
       $("#testAddedQuestionPanel").hide()
@@ -464,25 +385,23 @@ var tests = (function(){
     // Select All Users action
     $("#selectAllUsers").click(selectAllUsersHandler)
 
-    listUserTags(listUserTagsResponse)*/
+    listUserTags(listUserTagsResponse)
   }
 
 
   var init = function() {
-    /*$("#testSelectQuestionPanel").hide()
+    $("#testSelectQuestionPanel").hide()
     $("#testAddedQuestionPanel ul").empty()
 
     $("#testSelectUserPanel").hide()
-    $("#testAddedUserPanel ul").empty()*/
+    $("#testAddedUserPanel ul").empty()
     bindFunctions()
   }
 
   return{
-    init: init
+    init: init,
+    getSelectedUsers:function(){return data.selectedUsers}
   }
 
 })()
-
-
-
 
