@@ -12,6 +12,7 @@ var panelList = (function(){
     usersCache:{}
   }
 
+  var settings={}
 
   /*
 
@@ -46,20 +47,21 @@ var panelList = (function(){
 						     .append("<span class=\"list-group-item\">No hubo resultados</span>")
     }else{
       response.forEach(function(q){
-	$(".panel-select-questions .results")
-	      .append(
-	  $('<li id='+q.Id+' class="list-group-item col-md-12">\
-	    <div class="icons row col-md-2">\
-	    <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
-	    <a href="#" class="item-add glyphicon glyphicon-plus"></a>\
-	    </div>\
-	    <div class="text col-md-10">\
-	    <a class="item-text" href="/questions/get?id='+q.Id+'" >'+resume(q.Text)+'</a>\
-	    </div>\
-	    </li>')
-									      .on("click",".item-select",selectQuestionHandler)
-									      .on("click",".item-add",addQuestionsHandler)
-	)
+	var li=$('<li id='+q.Id+' class="list-group-item col-md-12">\
+		 <div class="icons row col-md-2">\
+		 <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
+		 </div>\
+		 <div class="text col-md-10">\
+		 <a class="item-text" href="/questions/get?id='+q.Id+'" >'+resume(q.Text)+'</a>\
+		 </div>\
+		 </li>').on("click",".item-select",selectQuestionHandler)
+	
+	if (settings && settings.addItemIcon){
+	  li.find(".icons").append('<a href="#" class="item-add glyphicon glyphicon-plus"></a>')
+	  li.on("click",".item-add",addQuestionsHandler)
+	}
+
+	$(".panel-select-questions .results").append(li)
 	
 	data.questionsCache[q.Id]=q
 	1    })
@@ -145,26 +147,33 @@ var panelList = (function(){
       }
       
       $("#testAddedQuestionPanel .results")
-	      .append(
-	$('<li id='+q.Id+' class="list-group-item col-md-12">')
-		     .append('<div class="icons col-md-2 text-center">\
-			     <input type="text" class="form-control item-input-value good-points"/>\
-			     <input type="text" class="form-control item-input-value bad-points"/>\
-			     <div class="icons row">\
-			     <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
-			     <a href="#" class="item-remove glyphicon glyphicon-remove"></a>\
-			     </div>\
-			     </div>')
-		     .on("click",".item-select",selectQuestionHandler)
-		     .on("click",".item-remove",removeQuestionsHandler)
+      var li =$('<li id='+q.Id+' class="list-group-item col-md-12">')
+			   .append('<div class="icons col-md-2 text-center">\
+				   <input type="text" class="form-control item-input-value good-points"/>\
+				   <input type="text" class="form-control item-input-value bad-points"/>\
+				   <div class="icons row">\
+				   <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
+				   </div>\
+				   </div>')
+      
+      li.on("click",".item-select",selectQuestionHandler)
 
-		     .append(
-	  $('<div class="col-md-10">')
-		     .append('<a href="/questions/get?id='+q.Id+'" class="item-link">'+resume(q.Text)+'</a>')
-	)
+      if (settings && settings.removeItemIcon){
+	li.find(".icons.row").append('<a href="#" class="item-remove glyphicon glyphicon-remove"></a>')
+	li.on("click",".item-remove",removeQuestionsHandler)
+      }
+
+      li.append(
+	$('<div class="col-md-10">')
+	.append('<a href="/questions/get?id='+q.Id+'" class="item-link">'+resume(q.Text)+'</a>')
       )
+
+      
+      $("#testAddedQuestionPanel .results").append(li)
+
     }
   } 
+  
 
 
   // Event handler to select all questions listed
@@ -191,21 +200,23 @@ var panelList = (function(){
 						     .append("<span class=\"list-group-item\">No hubo resultados</span>")
     }else{
       response.forEach(function(u){
-	$(".panel-select-users .results")
-	      .append(
-	  $('<li id='+u.Id+' class="list-group-item col-md-12">\
-	    <div class="icons row col-md-2">\
-	    <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
-	    <a href="#" class="item-add glyphicon glyphicon-plus"></a>\
-	    </div>\
-	    <div class="text col-md-10">\
-	    <a class="item-text" href="/users/get?id='+u.Id+'" >'+u.Name+'</a>\
-	    </div>\
-	    </li>')
-								   .on("dblclick",".item-select",selectAllUsersHandler)
-								   .on("click",".item-select",selectUserHandler)
-								   .on("click",".item-add",addUserHandler)
-	)
+	var li=$('<li id='+u.Id+' class="list-group-item col-md-12">\
+		 <div class="icons row col-md-2">\
+		 <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
+		 </div>\
+		 <div class="text col-md-10">\
+		 <a class="item-text" href="/users/get?id='+u.Id+'" >'+u.Name+'</a>\
+		 </div>\
+		 </li>')
+									.on("dblclick",".item-select",selectAllUsersHandler)
+								 .on("click",".item-select",selectUserHandler)
+
+	if (settings && settings.addItemIcon){
+	  li.find(".icons").append('<a href="#" class="item-add glyphicon glyphicon-plus"></a>')
+	  li.on("click",".item-add",addUserHandler)
+	}
+
+	$(".panel-select-users .results").append(li)
 	
 	data.usersCache[u.Id]=u
 	1    })
@@ -263,23 +274,26 @@ var panelList = (function(){
       if (!u){
 	return
       }
-      
-      $("#testAddedUserPanel .results")
-	      .append(
-	$('<li id='+u.Id+' class="list-group-item col-md-12">')
-		     .append('<div class="row icons col-md-2">\
-			     <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
-			     <a href="#" class="item-remove glyphicon glyphicon-remove"></a>\
-			     </div>')
-		     .on("dblclick",".item-select",selectAllUsersHandler)
-		     .on("click",".item-select",selectUserHandler)
-		     .on("click",".item-remove",removeUserHandler)
 
-		     .append(
-	  $('<div class="col-md-10">')
-		     .append('<a href="/users/get?id='+u.Id+'" class="item-link">'+u.Name+'</a>')
-	)
+      var li = $('<li id='+u.Id+' class="list-group-item col-md-12">')
+			    .append('<div class="row icons col-md-2">\
+				    <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
+				    \
+				    </div>')
+      
+      li.on("dblclick",".item-select",selectAllUsersHandler)
+      li.on("click",".item-select",selectUserHandler)
+      if (settings && settings.removeItemIcon){
+	li.find(".icons").append('<a href="#" class="item-remove glyphicon glyphicon-remove"></a>')
+	li.on("click",".item-remove",removeUserHandler)
+      }
+      li.append(
+	$('<div class="col-md-10">')
+	.append('<a href="/users/get?id='+u.Id+'" class="item-link">'+u.Name+'</a>')
       )
+
+      $("#testAddedUserPanel .results").append(li)
+      
     }	    
   } 
 
@@ -389,7 +403,8 @@ var panelList = (function(){
   }
 
 
-  var init = function() {
+  var init = function(options) {
+    settings=options
     $("#testSelectQuestionPanel").hide()
     $("#testAddedQuestionPanel ul").empty()
 

@@ -7,6 +7,6 @@ $(document).ready(function () {
     users.init()
     questions.init()
     answers.init()
-    panelList.init()
+    //panelList.init()
     tests.init()
 })
