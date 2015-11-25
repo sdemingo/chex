@@ -84,11 +84,9 @@ var questionsList = (function(){
   var selectQuestionHandler = function(event){
     event.preventDefault()
     var that = $(this).parents("li.list-group-item")
-    var q = data.questionsCache[that.attr("id")]
-    if (q.SolutionId<0){
-      showErrorMessage("Esta pregunta está sin solucionar por parte del autor y no puede ser seleccionada")
-      return false
-    }
+
+ 
+
     selectItem(that,data.selectedQuestions)
   }
 
@@ -102,8 +100,18 @@ var questionsList = (function(){
     if (!data.selectedQuestions[that.attr("id")]){
       selectItem(that,data.selectedQuestions)
     }
+
+    // check if questions are solutioned
+      for (var id in data.selectedQuestions) {
+	  var q = data.questionsCache[id]
+	  if (q.SolutionId<0){
+	    showErrorMessage("Han sido seleccionadas preguntas sin solucionar. Estas no pueden ser añadidas a un test")
+	    return false
+	  }
+      }
+
     for (var id in data.selectedQuestions) {
-      data.testsQuestions[id]=1
+	data.testsQuestions[id]=1
     }
 
     // dump questions selected
@@ -189,7 +197,7 @@ var questionsList = (function(){
     $("#addMoreQuests").click(function(){
       $("#testAddedQuestionPanel").hide()
       $("#testSelectQuestionPanel").show()
-      listQuestionsTags(listQuestionsTagsResponse)
+      
     })
     
     // Cancel the select questions action
@@ -215,6 +223,8 @@ var questionsList = (function(){
 	questions.list(tags,listQuestionsResponse)
       }
     })
+
+      listQuestionsTags(listQuestionsTagsResponse)
   }
 
 
@@ -228,7 +238,7 @@ var questionsList = (function(){
 
   return{
     init: init,
-    getSelectedQuestions:function(){return data.selectedQuestions}
+    getSelected:function(){return data.selectedQuestions}
   }
 
 })()
@@ -478,7 +488,7 @@ var usersList = (function(){
 
   return{
     init: init,
-    getSelectedUsers:function(){return data.selectedUsers}
+    getSelected:function(){return data.selectedUsers}
   }
 
 })()

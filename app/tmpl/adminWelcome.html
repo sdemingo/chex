@@ -3,11 +3,11 @@
 <div class="container" id="content">
 
   <!-- Users panel  -->
-  <div class="panel panel-primary">
+  <div class="panel panel-default">
     <div class="panel-heading panel-title">Usuarios</div>
     <div class="panel-body">
 
-      <div class="row col-md-6">
+      <div class="row col-md-7">
 	<div id="UserPanel" class="panel-list panel-select-users">
 	  <div class="panel panel-default panel-list-main">
 	    <ul class="list-group results">
@@ -35,18 +35,48 @@
   </div><!-- End users -->
 
 
+
+
+
   <!-- Questions panel  -->
-  <div class="panel panel-primary">
+  <div class="panel panel-default">
     <div class="panel-heading panel-title">Preguntas</div>
     <div class="panel-body">
+
+      <div class="row col-md-7">
+	<div id="QuestionsPanel" class="panel-list panel-select-questions">
+	  <div class="panel panel-default panel-list-main">
+	    <ul class="list-group results">
+	    </ul>
+	  </div>
+	  <div class="panel label-panel tags">
+	  </div>
+	</div>
+      </div>
+
+
+      <div class="row col-md-5 pull-right">
+	<ul class="list-group">
+	  <li class="list-group-item"><span class="badge">0</span>Preguntas creadas</li>
+	</ul>
+
+	<div class="btn-group" role="group" aria-label="...">
+	  <a href="/questions/new" class="btn btn-default">Nueva</a>
+	  <button type="button" id="deleteQuestions" class="btn btn-default">Borrar</button>
+	</div>
+      </div>
+
 
 
     </div>
   </div>
 
 
+
+
+
   <!-- Tests panel  -->
-  <div class="panel panel-primary">
+  <div class="panel panel-default">
     <div class="panel-heading panel-title">Actividades</div>
     <div class="panel-body">
 
@@ -60,11 +90,16 @@
 
 <script>
  
- usersList.init()
- $("#deleteUsers").on("click",function(){
-   console.log(usersList.getSelectedUsers())
-   
- })
+usersList.init()
+questionsList.init()
+
+$("#deleteUsers").on("click",function(){
+  console.log(usersList.getSelected()) 
+})
+
+$("#deleteQuestions").on("click",function(){
+  console.log(questionsList.getSelected()) 
+})
 
 </script>
 
