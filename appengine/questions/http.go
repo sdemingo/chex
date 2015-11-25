@@ -12,26 +12,31 @@ import (
 
 // Templates
 
-var listTmpl = "appengine/questions/tmpl/list.html"
+//var listTmpl = "appengine/questions/tmpl/list.html"
 var newTmpl = "appengine/questions/tmpl/edit.html"
 var viewTmpl = "appengine/questions/tmpl/view.html"
 var infoTmpl = "appengine/questions/tmpl/info.html"
+var mainTmpl = "appengine/questions/tmpl/main.html"
+
+func Main(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	return mainTmpl, nil
+}
 
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	err := srv.CheckPerm(wr, users.OP_COMMITTER)
 	if err != nil {
-		return listTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
 	wr.R.ParseForm()
 	qs, err := getQuestions(wr, wr.R.Form)
 	if err != nil {
-		return listTmpl, err
+		return infoTmpl, err
 	}
 
 	tc["Content"] = qs
 
-	return listTmpl, nil
+	return infoTmpl, nil
 }
 
 func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {

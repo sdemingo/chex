@@ -1,0 +1,51 @@
+{{define "content"}}
+
+
+<div class="container" id="content">
+
+  <!-- Users panel  -->
+  <div class="panel panel-default">
+    <div class="panel-heading panel-title">Usuarios</div>
+    <div class="panel-body">
+
+      <div class="row col-md-7">
+	<div id="UserPanel" class="panel-list panel-select-users">
+	  <div class="panel panel-default panel-list-main">
+	    <ul class="list-group results">
+	    </ul>
+	  </div>
+	  <div class="panel label-panel tags">
+	  </div>
+	</div>
+      </div>
+
+
+      <div class="row col-md-5 pull-right">
+	<ul class="list-group">
+	  <li class="list-group-item"><span class="badge">0</span>Usuarios creados</li>
+	  <li class="list-group-item"><span class="badge">0</span>Usuarios conectados</li>
+	</ul>
+
+	<div class="btn-group" role="group" aria-label="...">
+	  <a href="/users/new" class="btn btn-default">Nuevo</a>
+	  <button type="button" id="deleteUsers" class="btn btn-default">Borrar</button>
+	</div>
+      </div>
+
+    </div>
+  </div><!-- End users -->
+</div>
+
+
+
+<script>
+ 
+usersList.init()
+
+$("#deleteUsers").on("click",function(){
+  console.log(usersList.getSelected()) 
+})
+
+</script>
+
+{{end}}

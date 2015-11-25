@@ -21,6 +21,9 @@ func init() {
 	http.HandleFunc("/logout", srv.AppLogout)
 
 	// Questions
+	http.HandleFunc("/questions/main", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, questions.Main)
+	})
 	http.HandleFunc("/questions/list", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, questions.GetList)
 	})
@@ -52,6 +55,9 @@ func init() {
 
 	// Users routes
 
+	http.HandleFunc("/users/main", func(w http.ResponseWriter, r *http.Request) {
+		srv.AppHandler(w, r, users.Main)
+	})
 	http.HandleFunc("/users/get", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, users.GetOne)
 	})
