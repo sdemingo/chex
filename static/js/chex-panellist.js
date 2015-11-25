@@ -1,15 +1,15 @@
 
 
 
-var panelList = (function(){
+
+
+
+var questionsList = (function(){
 
   var data={
     selectedQuestions:{},
-    selectedUsers:{},
     testsQuestions:{},
-    testsUsers:{},
-    questionsCache:{},
-    usersCache:{}
+    questionsCache:{}
   }
 
   var settings={}
@@ -183,6 +183,103 @@ var panelList = (function(){
 
 
 
+  var bindFunctions = function(){
+
+    // Show questions for select them
+    $("#addMoreQuests").click(function(){
+      $("#testAddedQuestionPanel").hide()
+      $("#testSelectQuestionPanel").show()
+      listQuestionsTags(listQuestionsTagsResponse)
+    })
+    
+    // Cancel the select questions action
+    $("#cancelSelectedQuests").click(function(){
+      $("#testAddedQuestionPanel").show()
+      $("#testSelectQuestionPanel").hide()
+    })
+    
+
+    // List Questions Tags
+    $(".panel-select-questions .tags").on("click","*",function(e){
+      $(this).toggleClass("label-primary")
+    })
+
+    $(".panel-select-questions .tags").on("click",function(e){
+      e.preventDefault()
+      var tags=[]
+      $(".panel-select-questions .results").empty()
+      $(".panel-select-questions .tags").find(".label-primary").each(function(){
+	tags.push($(this).html())
+      })
+      if (tags.length>0){
+	questions.list(tags,listQuestionsResponse)
+      }
+    })
+  }
+
+
+  var init = function(options) {
+    settings=options
+    $("#testSelectQuestionPanel").hide()
+    $("#testAddedQuestionPanel ul").empty()
+
+    bindFunctions()
+  }
+
+  return{
+    init: init,
+    getSelectedQuestions:function(){return data.selectedQuestions}
+  }
+
+})()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var usersList = (function(){
+
+  var data={
+    selectedUsers:{},
+    testsUsers:{},
+    usersCache:{}
+  }
+
+  var settings={}
+
+  /*
+
+  Private and Dom functions 
+
+  */
+
+
+  // Mark question as selected 
+  var selectItem = function(element,list){
+    if (element.hasClass("list-group-item-info")) {
+      element.removeClass("list-group-item-info");
+      delete list[element.attr("id")]
+    }else{
+      element.addClass("list-group-item-info");
+      list[element.attr("id")]=1
+    }
+  }
+
 
 
 
@@ -333,38 +430,6 @@ var panelList = (function(){
 
   var bindFunctions = function(){
 
-    // Show questions for select them
-    $("#addMoreQuests").click(function(){
-      $("#testAddedQuestionPanel").hide()
-      $("#testSelectQuestionPanel").show()
-      listQuestionsTags(listQuestionsTagsResponse)
-    })
-    
-    // Cancel the select questions action
-    $("#cancelSelectedQuests").click(function(){
-      $("#testAddedQuestionPanel").show()
-      $("#testSelectQuestionPanel").hide()
-    })
-    
-
-    // List Questions Tags
-    $(".panel-select-questions .tags").on("click","*",function(e){
-      $(this).toggleClass("label-primary")
-    })
-
-    $(".panel-select-questions .tags").on("click",function(e){
-      e.preventDefault()
-      var tags=[]
-      $(".panel-select-questions .results").empty()
-      $(".panel-select-questions .tags").find(".label-primary").each(function(){
-	tags.push($(this).html())
-      })
-      if (tags.length>0){
-	questions.list(tags,listQuestionsResponse)
-      }
-    })
-
-
     // Show users for select them
     $("#addMoreUsers").click(function(){
       $("#testAddedUserPanel").hide()
@@ -405,8 +470,6 @@ var panelList = (function(){
 
   var init = function(options) {
     settings=options
-    $("#testSelectQuestionPanel").hide()
-    $("#testAddedQuestionPanel ul").empty()
 
     $("#testSelectUserPanel").hide()
     $("#testAddedUserPanel ul").empty()
