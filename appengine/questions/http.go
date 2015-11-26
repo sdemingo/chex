@@ -12,7 +12,6 @@ import (
 
 // Templates
 
-//var listTmpl = "appengine/questions/tmpl/list.html"
 var newTmpl = "appengine/questions/tmpl/edit.html"
 var viewTmpl = "appengine/questions/tmpl/view.html"
 var infoTmpl = "appengine/questions/tmpl/info.html"
