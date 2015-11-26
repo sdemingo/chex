@@ -3,8 +3,6 @@ var DOMAIN=""
 
 
 $(document).ready(function () {
-    
-    CHEX={}  //global object
 
     $(".dropdown-toggle").dropdown()
     users.init()
@@ -12,4 +10,9 @@ $(document).ready(function () {
     answers.init()
     //panelList.init()
     tests.init()
+
+    CHEX={
+	userTags:{},
+	questionTags:{}
+    }
 })

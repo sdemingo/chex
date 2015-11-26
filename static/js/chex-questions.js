@@ -94,16 +94,14 @@ var questions = (function(){
 
     // Callback after the list quests tags request
     var listTagsResponse = function(response){
-	var tagsMap={}
 	if (response){
 	    $.each(response,function(i,e){
 		$(settings.panel+" .tags")
 		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
 		    .on("click",selectTag)
-		tagsMap[e]=1
+		CHEX.questionTags[e]=1
 	    })
 		}
-	CHEX.autocompleteTags=Object.keys(tagsMap)
     }
 
 

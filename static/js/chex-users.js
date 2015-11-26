@@ -108,16 +108,14 @@ var users = (function(){
 
     // Callback after the list user tags request
     var listTagsResponse = function(response){
-	var tagsMap={}
 	if (response){
 	    $.each(response,function(i,e){
 		$(settings.panel+" .tags")
 		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
 		    .on("click",selectTag)
-		tagsMap[e]=1
+		CHEX.userTags[e]=1
 	    })
 		}
-	CHEX.autocompleteTags=Object.keys(tagsMap)
     }
 
     // Callback after the list user request 

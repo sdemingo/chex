@@ -235,8 +235,8 @@ $(function() {
 	return split( term ).pop();
     }
 
+    // Common functions for all input-tags
     $( "input.input-tags" )
-    // don't navigate away from the field on tab when selecting an item
 	.bind( "keydown", function( event ) {
 	    if ( event.keyCode === $.ui.keyCode.TAB &&
 		 $( this ).autocomplete( "instance" ).menu.active ) {
@@ -246,24 +246,41 @@ $(function() {
 	.autocomplete({
 	    minLength: 1,
 	    source: function( request, response ) {
-		// delegate back to autocomplete, but extract the last term
 		response( $.ui.autocomplete.filter(
-		    CHEX.autocompleteTags, extractLast( request.term ) ) );
+		    autocompleteTags, extractLast( request.term ) ) );
 	    },
 	    focus: function() {
-		// prevent value inserted on focus
 		return false;
 	    },
 	    select: function( event, ui ) {
 		var terms = split( this.value );
-		// remove the current input
 		terms.pop();
-		// add the selected item
 		terms.push( ui.item.value );
-		// add placeholder to get the comma-and-space at the end
 		terms.push( "" );
 		this.value = terms.join( ", " );
 		return false;
 	    }
 	});
+
+    // Source callback for the users input-tags
+    $("#userEditForm input.input-tags" )
+	.autocomplete({
+	    minLength: 1,
+	    source: function( request, response ) {
+		response( $.ui.autocomplete.filter(
+		    Object.keys(CHEX.userTags), extractLast( request.term ) ) );
+	    }
+	});
+
+    // Source callback for the questions input-tags
+    $("#questEditForm input.input-tags" )
+	.autocomplete({
+	    minLength: 1,
+	    source: function( request, response ) {
+		response( $.ui.autocomplete.filter(
+		    Object.keys(CHEX.questionTags), extractLast( request.term ) ) );
+	    }
+	});
 });
+
+
