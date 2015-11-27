@@ -180,8 +180,12 @@ func getQuestById(wr srv.WrapperRequest, s_id string) (Question, error) {
 func getQuestByAuthor(wr srv.WrapperRequest, authorId string) ([]Question, error) {
 	var qs []Question
 
-	qry := datastore.NewQuery("questions").Filter("AuthorId =", authorId)
+	id, err := strconv.ParseInt(authorId, 10, 64)
+	if err != nil {
+		return qs, errors.New(ERR_QUESTNOTFOUND)
+	}
 
+	qry := datastore.NewQuery("questions").Filter("AuthorId =", id)
 	keys, err := qry.GetAll(wr.C, &qs)
 	if (len(keys) == 0) || err != nil {
 		return qs, errors.New(ERR_QUESTNOTFOUND)
@@ -290,7 +294,7 @@ func getAllQuestionsTags(wr srv.WrapperRequest) ([]string, error) {
 func getQuestionsTagsFromUser(wr srv.WrapperRequest, authorId int64) ([]string, error) {
 
 	var tagsMap = make(map[string]int, 0)
-	userQuests, err := getQuestByAuthor(wr, fmt.Sprintf("%s", authorId))
+	userQuests, err := getQuestByAuthor(wr, fmt.Sprintf("%d", authorId))
 
 	tags := make([]string, 0)
 	for _, q := range userQuests {
