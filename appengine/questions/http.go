@@ -80,7 +80,13 @@ func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, erro
 		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
-	tags, err := getAllQuestionsTags(wr)
+	var tags []string
+	if wr.NU.IsAdmin() {
+		tags, err = getAllQuestionsTags(wr)
+	} else {
+		tags, err = getQuestionsTagsFromUser(wr, wr.NU.Id)
+	}
+
 	if err != nil {
 		return infoTmpl, err
 	}

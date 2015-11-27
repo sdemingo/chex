@@ -111,7 +111,7 @@ func putQuestion(wr srv.WrapperRequest, q *Question) error {
 	q.SetCheckSum()
 	q.AuthorId = wr.NU.Id
 
-	_, err := getQuestionByChecksum(wr, q.CheckSum)
+	_, err := getQuestByChecksum(wr, q.CheckSum)
 	if err == nil {
 		return errors.New(ERR_DUPLICATEDQUEST)
 	}
@@ -129,11 +129,10 @@ func putQuestion(wr srv.WrapperRequest, q *Question) error {
 	return nil
 }
 
-func getQuestionByChecksum(wr srv.WrapperRequest, sum string) (Question, error) {
+func getQuestByChecksum(wr srv.WrapperRequest, sum string) (Question, error) {
 	var qs []Question
 	var q Question
 
-	srv.AppWarning(wr, sum)
 	qry := datastore.NewQuery("questions").Filter("CheckSum =", sum)
 
 	keys, err := qry.GetAll(wr.C, &qs)
@@ -176,6 +175,24 @@ func getQuestById(wr srv.WrapperRequest, s_id string) (Question, error) {
 	}
 
 	return q, err
+}
+
+func getQuestByAuthor(wr srv.WrapperRequest, authorId string) ([]Question, error) {
+	var qs []Question
+
+	qry := datastore.NewQuery("questions").Filter("AuthorId =", authorId)
+
+	keys, err := qry.GetAll(wr.C, &qs)
+	if (len(keys) == 0) || err != nil {
+		return qs, errors.New(ERR_QUESTNOTFOUND)
+	}
+
+	for i := range qs {
+		qs[i].Id = keys[i].IntID()
+		qs[i].Tags, _ = getQuestTags(wr, qs[i])
+	}
+
+	return qs, nil
 }
 
 func getQuestByTags(wr srv.WrapperRequest, tags []string) ([]Question, error) {
@@ -268,4 +285,22 @@ func getAllQuestionsTags(wr srv.WrapperRequest) ([]string, error) {
 	}
 
 	return tags, nil
+}
+
+func getQuestionsTagsFromUser(wr srv.WrapperRequest, authorId int64) ([]string, error) {
+
+	var tagsMap = make(map[string]int, 0)
+	userQuests, err := getQuestByAuthor(wr, fmt.Sprintf("%s", authorId))
+
+	tags := make([]string, 0)
+	for _, q := range userQuests {
+		for _, tag := range q.Tags {
+			if _, ok := tagsMap[tag]; !ok {
+				tagsMap[tag] = 1
+				tags = append(tags, tag)
+			}
+		}
+	}
+
+	return tags, err
 }
