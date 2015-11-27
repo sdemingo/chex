@@ -55,6 +55,11 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 	q := &qs[0]
 
+	// A question only can be viewed by and admin or by their writer
+	if !wr.NU.IsAdmin() && q.AuthorId != wr.NU.Id {
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
 	// if the question hasn't got a answer to render. It makes a
 	// blank anwser based on Atype of the question to render it
 	if q.Solution == nil {
