@@ -13,6 +13,7 @@ import (
 	"github.com/russross/blackfriday"
 
 	"app/users"
+
 	"appengine/answers"
 	"appengine/datastore"
 	"appengine/srv"
@@ -230,7 +231,7 @@ func getQuestByTags(wr srv.WrapperRequest, tags []string) ([]Question, error) {
 			}
 
 			// only append the questions of the session user
-			if q.AuthorId == wr.NU.Id {
+			if wr.NU.IsAdmin() || q.AuthorId == wr.NU.Id {
 				qs = append(qs, q)
 			}
 		}
