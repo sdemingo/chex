@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"app/users"
+
 	"appengine/srv"
 )
 
@@ -41,7 +42,7 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
-	var nus []users.NUser
+	var nus []*users.NUser
 
 	if strings.HasSuffix(wr.R.URL.Path, "/me") {
 		filters := map[string][]string{"id": []string{fmt.Sprintf("%d", wr.NU.Id)}}

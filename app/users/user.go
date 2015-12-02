@@ -96,3 +96,11 @@ func (n NUser) IsValid() (err error) {
 
 	return
 }
+
+func (n NUser) ID() int64 {
+	return n.Id
+}
+
+func (n *NUser) SetID(id int64) {
+	n.Id = id
+}

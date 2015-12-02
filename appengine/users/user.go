@@ -1,14 +1,14 @@
 package users
 
 import (
+	"app/users"
 	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
-	"app/users"
-	"appengine/datastore"
+	"appengine/data"
 	"appengine/srv"
 )
 
@@ -18,18 +18,62 @@ type UserTag struct {
 	Tag    string
 }
 
-func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []users.NUser, err error) {
+func (ut UserTag) ID() int64 {
+	return ut.Id
+}
+
+func (ut *UserTag) SetID(id int64) {
+	ut.Id = id
+}
+
+type UserTagBuffer []*UserTag
+
+func NewUserTagBuffer() UserTagBuffer {
+	return make([]*UserTag, 0)
+}
+
+func (v UserTagBuffer) At(i int) data.DataItem {
+	return data.DataItem(v[i])
+}
+
+func (v UserTagBuffer) Set(i int, t data.DataItem) {
+	v[i] = t.(*UserTag)
+}
+
+func (v UserTagBuffer) Len() int {
+	return len(v)
+}
+
+type NUserBuffer []*users.NUser
+
+func NewNUserBuffer() NUserBuffer {
+	return make([]*users.NUser, 0)
+}
+
+func (v NUserBuffer) At(i int) data.DataItem {
+	return data.DataItem(v[i])
+}
+
+func (v NUserBuffer) Set(i int, t data.DataItem) {
+	v[i] = t.(*users.NUser)
+}
+
+func (v NUserBuffer) Len() int {
+	return len(v)
+}
+
+func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []*users.NUser, err error) {
 
 	if filters["id"] != nil {
 		nu, err := getUserById(wr, filters["id"][0])
-		nus := make([]users.NUser, 1)
+		nus := make([]*users.NUser, 1)
 		nus[0] = nu
 		return nus, err
 	}
 
 	if filters["mail"] != nil {
 		nu, err := getUserByMail(wr, filters["mail"][0])
-		nus := make([]users.NUser, 1)
+		nus := make([]*users.NUser, 1)
 		nus[0] = nu
 		return nus, err
 	}
@@ -55,12 +99,8 @@ func putUser(wr srv.WrapperRequest, nu users.NUser) error {
 		return errors.New(users.ERR_DUPLICATEDUSER)
 	}
 
-	key := datastore.NewKey(wr.C, "users", "", 0, nil)
-	key, err = datastore.Put(wr.C, key, &nu)
-	if err != nil {
-		return err
-	}
-	nu.Id = key.IntID()
+	q := data.NewConn(wr, "users")
+	q.Put(&nu)
 
 	// Add a UserTags entry for each tag for this user
 	addUserTags(wr, nu)
@@ -80,21 +120,23 @@ func updateUser(wr srv.WrapperRequest, nu users.NUser) error {
 	}
 
 	nu.Mail = old.Mail
-	key := datastore.NewKey(wr.C, "users", "", old.Id, nil)
-	key, err = datastore.Put(wr.C, key, &nu)
-	if err != nil {
-		return err
-	}
+	nu.Id = old.Id
+
+	q := data.NewConn(wr, "users")
+	q.Put(&nu)
 
 	// Delete all users-tags
-	deleteUserTags(wr, nu)
+	err = deleteUserTags(wr, &nu)
+	if err != nil {
+		srv.AppWarning(wr, err.Error())
+	}
 	// Add a UserTags entry for each tag for this user
 	addUserTags(wr, nu)
 
 	return nil
 }
 
-func deleteUser(wr srv.WrapperRequest, nu users.NUser) error {
+func deleteUser(wr srv.WrapperRequest, nu *users.NUser) error {
 	if err := nu.IsValid(); err != nil {
 		return err
 	}
@@ -105,56 +147,48 @@ func deleteUser(wr srv.WrapperRequest, nu users.NUser) error {
 		return err
 	}
 
-	key := datastore.NewKey(wr.C, "users", "", nu.Id, nil)
-	return datastore.Delete(wr.C, key)
+	q := data.NewConn(wr, "users")
+	return q.Delete(nu)
 }
 
-func getUserByMail(wr srv.WrapperRequest, email string) (users.NUser, error) {
-	var nus []users.NUser
-	var nu users.NUser
+func getUserByMail(wr srv.WrapperRequest, email string) (*users.NUser, error) {
+	nus := NewNUserBuffer()
+	nu := new(users.NUser)
 
-	q := datastore.NewQuery("users").Filter("Mail =", email)
-
-	keys, err := q.GetAll(wr.C, &nus)
-	if (len(keys) == 0) || err != nil {
+	q := data.NewConn(wr, "users")
+	q.AddFilter("Mail =", email)
+	q.GetMany(&nus)
+	if len(nus) == 0 {
 		return nu, errors.New(users.ERR_USERNOTFOUND)
 	}
 	nu = nus[0]
-	nu.Id = keys[0].IntID()
 	nu.Tags, _ = getUserTags(wr, nu)
 
 	return nu, nil
 }
 
-func getUserById(wr srv.WrapperRequest, s_id string) (users.NUser, error) {
-
-	var nu users.NUser
+func getUserById(wr srv.WrapperRequest, s_id string) (*users.NUser, error) {
+	nu := new(users.NUser)
 
 	id, err := strconv.ParseInt(s_id, 10, 64)
 	if err != nil {
 		return nu, errors.New(users.ERR_USERNOTFOUND)
 	}
 
-	if id != 0 {
-		k := datastore.NewKey(wr.C, "users", "", id, nil)
-		datastore.Get(wr.C, k, &nu)
-	} else {
-		return nu, errors.New(users.ERR_USERNOTFOUND)
-	}
-
 	nu.Id = id
+	q := data.NewConn(wr, "users")
+	q.Get(nu)
 	nu.Tags, _ = getUserTags(wr, nu)
 
 	return nu, nil
 }
 
-func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]users.NUser, error) {
-	var nus []users.NUser
-	var uTagsAll []UserTag
+func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]*users.NUser, error) {
+	nus := NewNUserBuffer()
+	uTagsAll := NewUserTagBuffer()
 
-	q := datastore.NewQuery("users-tags")
-	_, err := q.GetAll(wr.C, &uTagsAll)
-	if err != nil {
+	q := data.NewConn(wr, "users-tags")
+	if q.GetMany(&uTagsAll) != nil {
 		return nus, errors.New(users.ERR_USERNOTFOUND)
 	}
 
@@ -188,15 +222,14 @@ func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]users.NUser, error)
 	return nus, nil
 }
 
-func getUserTags(wr srv.WrapperRequest, nu users.NUser) ([]string, error) {
+func getUserTags(wr srv.WrapperRequest, nu *users.NUser) ([]string, error) {
+	tags := make([]string, 0)
+	userTags := NewUserTagBuffer()
 
-	var tags []string
-	var userTags []UserTag
-
-	q := datastore.NewQuery("users-tags").Filter("UserId =", nu.Id)
-	_, err := q.GetAll(wr.C, &userTags)
-	if err != nil {
-		return tags, err
+	q := data.NewConn(wr, "users-tags")
+	q.AddFilter("UserId =", nu.Id)
+	if q.GetMany(&userTags) != nil {
+		return tags, errors.New(users.ERR_USERNOTFOUND)
 	}
 
 	tags = make([]string, 0)
@@ -209,10 +242,10 @@ func getUserTags(wr srv.WrapperRequest, nu users.NUser) ([]string, error) {
 }
 
 func addUserTags(wr srv.WrapperRequest, nu users.NUser) error {
+	q := data.NewConn(wr, "users-tags")
 	for _, tag := range nu.Tags {
-		key := datastore.NewKey(wr.C, "users-tags", "", 0, nil)
-		ut := UserTag{UserId: nu.Id, Tag: tag}
-		key, err := datastore.Put(wr.C, key, &ut)
+		ut := &UserTag{UserId: nu.Id, Tag: tag}
+		err := q.Put(ut)
 		if err != nil {
 			return err
 		}
@@ -220,21 +253,16 @@ func addUserTags(wr srv.WrapperRequest, nu users.NUser) error {
 	return nil
 }
 
-func deleteUserTags(wr srv.WrapperRequest, nu users.NUser) error {
-	var userTags []UserTag
+func deleteUserTags(wr srv.WrapperRequest, nu *users.NUser) error {
+	userTags := NewUserTagBuffer()
 
-	q := datastore.NewQuery("users-tags").Filter("UserId =", nu.Id)
-	keys, err := q.GetAll(wr.C, &userTags)
-	if err != nil {
-		return err
-	}
-	for i := 0; i < len(userTags); i++ {
-		userTags[i].Id = keys[i].IntID()
-	}
+	q := data.NewConn(wr, "users-tags")
+	q.AddFilter("UserId =", nu.Id)
+	q.GetMany(&userTags)
 
 	for _, utag := range userTags {
-		key := datastore.NewKey(wr.C, "users-tags", "", utag.Id, nil)
-		err = datastore.Delete(wr.C, key)
+		srv.AppWarning(wr, fmt.Sprintf("Borramos utag con id %d", utag.Id))
+		err := q.Delete(utag)
 		if err != nil {
 			return err
 		}
@@ -243,15 +271,16 @@ func deleteUserTags(wr srv.WrapperRequest, nu users.NUser) error {
 }
 
 func getAllUserTags(wr srv.WrapperRequest) ([]string, error) {
-	var tagsMap = make(map[string]int, 0)
-	var userTags []UserTag
-	var tags = make([]string, 0)
+	tagsMap := make(map[string]int, 0)
+	userTags := NewUserTagBuffer()
+	tags := make([]string, 0)
 
-	q := datastore.NewQuery("users-tags")
-	_, err := q.GetAll(wr.C, &userTags)
+	q := data.NewConn(wr, "users-tags")
+	err := q.GetMany(&userTags)
 	if err != nil {
 		return tags, err
 	}
+
 	tags = make([]string, len(userTags))
 	for _, utag := range userTags {
 		if _, ok := tagsMap[utag.Tag]; !ok {
