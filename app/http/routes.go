@@ -1,13 +1,13 @@
 package http
 
 import (
+	"model/users"
 	"net/http"
 
 	"appengine/answers"
 	"appengine/questions"
 	"appengine/srv"
 	"appengine/tests"
-	"appengine/users"
 )
 
 func init() {

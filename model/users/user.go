@@ -12,6 +12,24 @@ import (
 	"appengine/srv"
 )
 
+type NUserBuffer []*users.NUser
+
+func NewNUserBuffer() NUserBuffer {
+	return make([]*users.NUser, 0)
+}
+
+func (v NUserBuffer) At(i int) data.DataItem {
+	return data.DataItem(v[i])
+}
+
+func (v NUserBuffer) Set(i int, t data.DataItem) {
+	v[i] = t.(*users.NUser)
+}
+
+func (v NUserBuffer) Len() int {
+	return len(v)
+}
+
 type UserTag struct {
 	Id     int64 `json:",string" datastore:"-"`
 	UserId int64
@@ -41,24 +59,6 @@ func (v UserTagBuffer) Set(i int, t data.DataItem) {
 }
 
 func (v UserTagBuffer) Len() int {
-	return len(v)
-}
-
-type NUserBuffer []*users.NUser
-
-func NewNUserBuffer() NUserBuffer {
-	return make([]*users.NUser, 0)
-}
-
-func (v NUserBuffer) At(i int) data.DataItem {
-	return data.DataItem(v[i])
-}
-
-func (v NUserBuffer) Set(i int, t data.DataItem) {
-	v[i] = t.(*users.NUser)
-}
-
-func (v NUserBuffer) Len() int {
 	return len(v)
 }
 

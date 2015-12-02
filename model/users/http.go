@@ -1,23 +1,21 @@
 package users
 
 import (
+	"app/users"
 	"encoding/json"
 	"errors"
 	"fmt"
-	//"io/ioutil"
 	"strings"
-
-	"app/users"
 
 	"appengine/srv"
 )
 
 // Templates
 
-var newTmpl = "appengine/users/tmpl/edit.html"
-var viewTmpl = "appengine/users/tmpl/view.html"
-var infoTmpl = "appengine/users/tmpl/info.html"
-var mainTmpl = "appengine/users/tmpl/main.html"
+var newTmpl = "model/users/tmpl/edit.html"
+var viewTmpl = "model/users/tmpl/view.html"
+var infoTmpl = "model/users/tmpl/info.html"
+var mainTmpl = "model/users/tmpl/main.html"
 
 func Main(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	return mainTmpl, nil
