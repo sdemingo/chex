@@ -59,11 +59,7 @@ func (op *DataConn) GetMany(items BufferItems) error {
 	if err != nil {
 		return err
 	}
-	/*
-		for i := range keys {
-			op.Ids = append(op.Ids, keys[i].IntID())
-		}
-	*/
+
 	for i := range keys {
 		it := items.At(i)
 		it.SetID(keys[i].IntID())
