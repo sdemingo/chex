@@ -1,23 +1,9 @@
 package data
 
 import (
-	"reflect"
-
 	"appengine"
 	"appengine/datastore"
 )
-
-/*
-var registry = map[string]reflect.Type{
-	"TipoA": reflect.TypeOf(TipoA{}),
-}
-*/
-
-var registry map[string]reflect.Type
-
-func RegistryModel(name string, prot interface{}) {
-
-}
 
 type DataItem interface {
 	ID() int64
@@ -25,20 +11,10 @@ type DataItem interface {
 	Kind() string
 }
 
-func Put(c appengine.Context, obj DataItem) (int64, error) {
-
-	var key *datastore.Key
-	dsKind := obj.Kind()
-	if id := obj.ID(); id != 0 {
-		key = datastore.NewKey(c, dsKind, "", obj.ID(), nil)
-	} else {
-		key = datastore.NewIncompleteKey(c, dsKind, nil)
-	}
-
-	key, err := datastore.Put(c, key, obj)
-	obj.SetID(key.IntID())
-
-	return key.IntID(), err
+type VectorItems interface {
+	At(i int) DataItem
+	Set(i int, d DataItem)
+	Len() int
 }
 
 type DataConn struct {
@@ -50,6 +26,22 @@ type DataConn struct {
 
 func (op *DataConn) AddFilter(filter string, value interface{}) {
 	op.Query = op.Query.Filter(filter, value)
+}
+
+func (op *DataConn) Put(c appengine.Context, obj DataItem) (int64, error) {
+
+	var key *datastore.Key
+
+	if id := obj.ID(); id != 0 {
+		key = datastore.NewKey(c, op.Entity, "", obj.ID(), nil)
+	} else {
+		key = datastore.NewIncompleteKey(c, op.Entity, nil)
+	}
+
+	key, err := datastore.Put(c, key, obj)
+	obj.SetID(key.IntID())
+
+	return key.IntID(), err
 }
 
 func (op *DataConn) GetMany(c appengine.Context, items interface{}) error {
@@ -66,8 +58,7 @@ func (op *DataConn) GetMany(c appengine.Context, items interface{}) error {
 	return err
 }
 
-func (op *DataConn) Get(c appengine.Context, id int64) (DataItem, error) {
-
-	key = datastore.NewKey(c, dsKind, "", id, nil)
-	return err
+func (op *DataConn) Get(c appengine.Context, item DataItem) error {
+	key := datastore.NewKey(c, op.Entity, "", item.ID(), nil)
+	return datastore.Get(c, key, item)
 }
