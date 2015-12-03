@@ -20,8 +20,6 @@ type DataConn struct {
 	Entity string
 	Query  *datastore.Query
 	Wreq   srv.WrapperRequest
-	Ids    []int64
-	Items  []DataItem
 }
 
 func NewConn(wr srv.WrapperRequest, entity string) *DataConn {

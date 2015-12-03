@@ -136,10 +136,10 @@ func Update(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
-	var nu users.NUser
+	nu := new(users.NUser)
 
 	decoder := json.NewDecoder(wr.R.Body)
-	err = decoder.Decode(&nu)
+	err = decoder.Decode(nu)
 	if err != nil {
 		return infoTmpl, err
 	}
@@ -160,10 +160,10 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
-	var nu users.NUser
+	nu := new(users.NUser)
 
 	decoder := json.NewDecoder(wr.R.Body)
-	err = decoder.Decode(&nu)
+	err = decoder.Decode(nu)
 	if err != nil {
 		return infoTmpl, err
 	}
@@ -189,7 +189,8 @@ func Import(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return infoTmpl, err
 	}
 
-	var nus []users.NUser
+	//var nus []users.NUser
+	nus := NewNUserBuffer()
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&nus)
 	if err != nil {

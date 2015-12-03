@@ -86,7 +86,7 @@ func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []*users.
 	return
 }
 
-func putUser(wr srv.WrapperRequest, nu users.NUser) error {
+func putUser(wr srv.WrapperRequest, nu *users.NUser) error {
 
 	if err := nu.IsValid(); err != nil {
 		return err
@@ -100,7 +100,7 @@ func putUser(wr srv.WrapperRequest, nu users.NUser) error {
 	}
 
 	q := data.NewConn(wr, "users")
-	q.Put(&nu)
+	q.Put(nu)
 
 	// Add a UserTags entry for each tag for this user
 	addUserTags(wr, nu)
@@ -108,7 +108,7 @@ func putUser(wr srv.WrapperRequest, nu users.NUser) error {
 	return nil
 }
 
-func updateUser(wr srv.WrapperRequest, nu users.NUser) error {
+func updateUser(wr srv.WrapperRequest, nu *users.NUser) error {
 
 	if err := nu.IsValid(); err != nil {
 		return err
@@ -119,14 +119,16 @@ func updateUser(wr srv.WrapperRequest, nu users.NUser) error {
 		return errors.New(users.ERR_USERNOTFOUND)
 	}
 
+	// invariant fields
 	nu.Mail = old.Mail
 	nu.Id = old.Id
+	nu.TimeStamp = old.TimeStamp
 
 	q := data.NewConn(wr, "users")
-	q.Put(&nu)
+	q.Put(nu)
 
 	// Delete all users-tags
-	err = deleteUserTags(wr, &nu)
+	err = deleteUserTags(wr, nu)
 	if err != nil {
 		srv.AppWarning(wr, err.Error())
 	}
@@ -241,7 +243,7 @@ func getUserTags(wr srv.WrapperRequest, nu *users.NUser) ([]string, error) {
 
 }
 
-func addUserTags(wr srv.WrapperRequest, nu users.NUser) error {
+func addUserTags(wr srv.WrapperRequest, nu *users.NUser) error {
 	q := data.NewConn(wr, "users-tags")
 	for _, tag := range nu.Tags {
 		ut := &UserTag{UserId: nu.Id, Tag: tag}
