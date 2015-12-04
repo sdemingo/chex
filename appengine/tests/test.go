@@ -5,9 +5,10 @@ import (
 	"time"
 
 	"app/users"
+	"model/questions"
+
 	"appengine/answers"
 	"appengine/datastore"
-	"appengine/questions"
 	"appengine/srv"
 )
 

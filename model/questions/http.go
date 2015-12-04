@@ -3,19 +3,19 @@ package questions
 import (
 	"encoding/json"
 	"errors"
-	//	"fmt"
 
 	"app/users"
+
 	"appengine/answers"
 	"appengine/srv"
 )
 
 // Templates
 
-var newTmpl = "appengine/questions/tmpl/edit.html"
-var viewTmpl = "appengine/questions/tmpl/view.html"
-var infoTmpl = "appengine/questions/tmpl/info.html"
-var mainTmpl = "appengine/questions/tmpl/main.html"
+var newTmpl = "model/questions/tmpl/edit.html"
+var viewTmpl = "model/questions/tmpl/view.html"
+var infoTmpl = "model/questions/tmpl/info.html"
+var mainTmpl = "model/questions/tmpl/main.html"
 
 func Main(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	return mainTmpl, nil
@@ -39,7 +39,7 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var qs []Question
+	//var qs []*Question
 
 	// only teacher must entry to the question throught this
 	// handler. A student or other should use test handlers
@@ -49,11 +49,11 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 
 	wr.R.ParseForm()
-	qs, err = getQuestions(wr, wr.R.Form)
+	qs, err := getQuestions(wr, wr.R.Form)
 	if len(qs) == 0 || err != nil {
 		return viewTmpl, errors.New(ERR_QUESTNOTFOUND)
 	}
-	q := &qs[0]
+	q := qs[0]
 
 	// A question only can be viewed by and admin or by their writer
 	if !wr.NU.IsAdmin() && q.AuthorId != wr.NU.Id {
