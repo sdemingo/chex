@@ -2,13 +2,12 @@ package answers
 
 import (
 	"errors"
-	//"fmt"
+	"fmt"
 	"html/template"
 	"strconv"
 	"time"
 
-	//"app/users"
-	"appengine/datastore"
+	"appengine/data"
 	"appengine/srv"
 )
 
@@ -44,7 +43,6 @@ type Answer struct {
 type AnswerBodyType int
 
 type AnswerBody interface {
-	GetId() int64
 	GetType() AnswerBodyType
 	Equals(master AnswerBody) bool
 	GetHTML(options []string) (template.HTML, template.HTML, error)
@@ -98,117 +96,129 @@ func (a *Answer) BuildBody() error {
 
 func (a *Answer) SetBody(abody AnswerBody) {
 	a.Body = abody
-	a.BodyId = abody.GetId()
 	a.BodyType = abody.GetType()
 }
 
+func (a Answer) ID() int64 {
+	return a.Id
+}
+
+func (a *Answer) SetID(id int64) {
+	a.Id = id
+}
+
+type AnswerBuffer []*Answer
+
+func NewAnswerBuffer() AnswerBuffer {
+	return make([]*Answer, 0)
+}
+
+func (v AnswerBuffer) At(i int) data.DataItem {
+	return data.DataItem(v[i])
+}
+
+func (v AnswerBuffer) Set(i int, t data.DataItem) {
+	v[i] = t.(*Answer)
+}
+
+func (v AnswerBuffer) Len() int {
+	return len(v)
+}
+
 func GetAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*Answer, error) {
+	as := NewAnswerBuffer()
+	a := new(Answer)
 
-	var as []Answer
-	var a Answer
-
-	q := datastore.NewQuery("answers").Filter("AuthorId =", authorId).Filter("QuestId =", questId)
-
-	keys, err := q.GetAll(wr.C, &as)
-	if (len(keys) == 0) || err != nil {
+	q := data.NewConn(wr, "answers")
+	q.AddFilter("QuestId =", questId)
+	err := q.GetMany(&as)
+	if err != nil || len(as) == 0 {
 		return nil, errors.New(ERR_ANSWERNOTFOUND)
 	}
-	a = as[0]
-	a.Id = keys[0].IntID()
 
-	err = getAnswerBody(wr, &a)
+	err = getAnswerBody(wr, a)
 	if err != nil {
 		return nil, errors.New(ERR_ANSWERNOTFOUND)
 	}
 
-	return &a, err
+	return a, err
 }
 
 // Create or update an answer
 func putAnswer(wr srv.WrapperRequest, a *Answer) error {
-
 	if a.BodyType < 0 {
 		return errors.New(ERR_ANSWERWITHOUTBODY)
 	}
 
-	var key *datastore.Key
+	srv.AppWarning(wr, fmt.Sprintf("Guardamos respuesta con cuerpo %d", a.Body.GetType()))
 
 	a2, err := GetAnswer(wr, a.AuthorId, a.QuestId)
+	qry := data.NewConn(wr, "answers")
+
 	if err != nil { // New
-		key = datastore.NewKey(wr.C, "answers", "", 0, nil)
 		a.AuthorId = wr.NU.Id
-		a.BodyType = a.Body.GetType()
 		a.TimeStamp = time.Now()
 
-		err = putAnswerBody(wr, a, 0)
+		err = putAnswerBody(wr, a)
 		if err != nil {
 			return err
 		}
-
-		_, err := datastore.Put(wr.C, key, a)
-		if err != nil {
-			return err
-		}
-		a.Id = key.IntID()
 
 	} else { // Updated
 		a.BodyId = a2.BodyId
-		key = datastore.NewKey(wr.C, "answers", "", a2.Id, nil)
 		a.TimeStamp = time.Now()
+		a.Id = a2.Id
 
-		err = putAnswerBody(wr, a, a.BodyId)
+		err = putAnswerBody(wr, a)
 		if err != nil {
 			return err
 		}
-
-		_, err := datastore.Put(wr.C, key, a)
-		if err != nil {
-			return err
-		}
-		a.Id = key.IntID()
 	}
+
+	qry.Put(a)
 
 	return nil
 }
 
-func putAnswerBody(wr srv.WrapperRequest, a *Answer, id int64) error {
+func putAnswerBody(wr srv.WrapperRequest, a *Answer) error {
 
 	bodyTable := bodiesTable[a.BodyType]
-	bkey := datastore.NewKey(wr.C, bodyTable, "", id, nil)
-
+	q := data.NewConn(wr, bodyTable)
 	var err error
-	switch body := a.Body.(type) {
-	case TestSingleBody:
-		bkey, err = datastore.Put(wr.C, bkey, &body)
+
+	switch a.Body.GetType() {
+	case TYPE_TESTSINGLE:
+		tbody := a.Body.(*TestSingleBody)
+		q.Put(tbody)
+		a.BodyId = tbody.ID()
+	default:
+		err = errors.New(ERR_ANSWERWITHOUTBODY)
 	}
-	a.BodyId = bkey.IntID()
 	return err
 }
 
 func getAnswerBody(wr srv.WrapperRequest, a *Answer) error {
 
 	bodyTable := bodiesTable[a.BodyType]
-	bkey := datastore.NewKey(wr.C, bodyTable, "", a.BodyId, nil)
 
+	q := data.NewConn(wr, bodyTable)
 	var err error
 	switch a.BodyType {
 	case TYPE_TESTSINGLE:
-		var body TestSingleBody
-		err = datastore.Get(wr.C, bkey, &body)
-		body.Id = bkey.IntID()
+		body := NewTestSingleAnswer(-1)
+		body.Id = a.BodyId
+		err = q.Get(body)
 		a.Body = body
 	}
 	return err
 }
 
-func getAnswers(wr srv.WrapperRequest, filters map[string][]string) ([]Answer, error) {
-
-	var as []Answer
+func getAnswers(wr srv.WrapperRequest, filters map[string][]string) (AnswerBuffer, error) {
+	as := NewAnswerBuffer()
 	var err error
 
 	if filters["id"] != nil {
 		a, err := getAnswersById(wr, filters["id"][0])
-		as := make([]Answer, 1)
 		as[0] = a
 		return as, err
 	}
@@ -216,29 +226,25 @@ func getAnswers(wr srv.WrapperRequest, filters map[string][]string) ([]Answer, e
 	return as, err
 }
 
-func getAnswersById(wr srv.WrapperRequest, s_id string) (Answer, error) {
-
-	var a Answer
+func getAnswersById(wr srv.WrapperRequest, s_id string) (*Answer, error) {
+	a := NewAnswer(-1, -1)
 
 	id, err := strconv.ParseInt(s_id, 10, 64)
 	if err != nil {
 		return a, errors.New(ERR_ANSWERNOTFOUND)
 	}
 
+	qry := data.NewConn(wr, "answers")
+	a.Id = id
 	if id != 0 {
-		k := datastore.NewKey(wr.C, "answers", "", id, nil)
-		datastore.Get(wr.C, k, &a)
+		qry.Get(a)
+
 	} else {
 		return a, errors.New(ERR_ANSWERNOTFOUND)
 	}
 
-	a.Id = id
-
 	// falta el answer body
-	var b AnswerBody
-	bodyTable := bodiesTable[a.BodyType]
-	k := datastore.NewKey(wr.C, bodyTable, "", id, nil)
-	datastore.Get(wr.C, k, &b)
-	a.Body = b
-	return a, nil
+	getAnswerBody(wr, a)
+
+	return a, err
 }

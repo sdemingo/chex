@@ -13,12 +13,16 @@ type TestSingleBody struct {
 	Solution int
 }
 
-func NewTestSingleAnswer(sol int) TestSingleBody {
-	return TestSingleBody{-1, TYPE_TESTSINGLE, sol}
+func NewTestSingleAnswer(sol int) *TestSingleBody {
+	return &TestSingleBody{-1, TYPE_TESTSINGLE, sol}
 }
 
-func (a TestSingleBody) GetId() int64 {
+func (a TestSingleBody) ID() int64 {
 	return a.Id
+}
+
+func (a *TestSingleBody) SetID(id int64) {
+	a.Id = id
 }
 
 func (a TestSingleBody) GetType() AnswerBodyType {

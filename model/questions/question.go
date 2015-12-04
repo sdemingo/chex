@@ -11,10 +11,10 @@ import (
 	"time"
 
 	"app/users"
+	"model/answers"
 
 	"github.com/russross/blackfriday"
 
-	"appengine/answers"
 	"appengine/data"
 	"appengine/srv"
 )
