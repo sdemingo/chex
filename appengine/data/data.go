@@ -39,7 +39,7 @@ func (op *DataConn) Put(obj DataItem) error {
 	var key *datastore.Key
 	c := op.Wreq.C
 
-	if id := obj.ID(); id != 0 {
+	if id := obj.ID(); id > 0 {
 		key = datastore.NewKey(c, op.Entity, "", obj.ID(), nil)
 	} else {
 		key = datastore.NewIncompleteKey(c, op.Entity, nil)
