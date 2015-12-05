@@ -5,10 +5,10 @@ import (
 
 	"model/answers"
 	"model/questions"
+	"model/tests"
 	"model/users"
 
 	"appengine/srv"
-	"appengine/tests"
 )
 
 func init() {
