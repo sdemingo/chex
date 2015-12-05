@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	TYPE_TESTSINGLE   = 1
-	TYPE_TESTMULTIPLE = iota
+	TYPE_TESTSINGLE   = iota + 1
+	TYPE_TESTMULTIPLE = iota + 1
 
 	ERR_ANSWERNOTFOUND    = "Respuesta no encontrada"
 	ERR_BADRENDEREDANSWER = "Respuesta renderizada erroneamente"
@@ -21,9 +21,9 @@ const (
 	ERR_BADANSWERTYPE     = "Respuesta con tipo de cuerpo desconocido"
 )
 
-var bodiesTable = []string{"",
-	"testsingles-bodies",
-	"testmultiples-bodies"}
+var bodiesTable = []string{
+	TYPE_TESTSINGLE:   "testsingles-bodies",
+	TYPE_TESTMULTIPLE: "testmultiples-bodies"}
 
 type Answer struct {
 	Id      int64  `json:",string" datastore:"-"`
