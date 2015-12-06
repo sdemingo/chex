@@ -2,17 +2,23 @@ package http
 
 import (
 	"app/users"
-	"appengine/srv"
 	"errors"
 	"net/http"
+
+	"appengine/srv"
 )
 
 func init() {
 	http.HandleFunc("/", root)
+	http.HandleFunc("/logout", logout)
 }
 
 func root(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/welcome", http.StatusMovedPermanently)
+}
+
+func logout(w http.ResponseWriter, r *http.Request) {
+	srv.RedirectUserLogin(w, r)
 }
 
 var adminTmpl = "app/tmpl/adminWelcome.html"

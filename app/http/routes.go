@@ -19,8 +19,6 @@ func init() {
 		srv.AppHandler(w, r, Help)
 	})
 
-	http.HandleFunc("/logout", srv.AppLogout)
-
 	// Questions
 	http.HandleFunc("/questions/main", func(w http.ResponseWriter, r *http.Request) {
 		srv.AppHandler(w, r, questions.Main)
