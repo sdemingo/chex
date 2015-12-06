@@ -44,7 +44,6 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	if strings.HasSuffix(wr.R.URL.Path, "/me") {
 		filters := map[string][]string{"id": []string{fmt.Sprintf("%d", wr.NU.Id)}}
-		srv.AppWarning(wr, fmt.Sprintf("%s", filters))
 		nus, err := getUsers(wr, filters)
 		if len(nus) == 0 || err != nil {
 			return viewTmpl, errors.New(users.ERR_USERNOTFOUND)

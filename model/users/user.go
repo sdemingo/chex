@@ -130,7 +130,7 @@ func updateUser(wr srv.WrapperRequest, nu *users.NUser) error {
 	// Delete all users-tags
 	err = deleteUserTags(wr, nu)
 	if err != nil {
-		srv.AppWarning(wr, err.Error())
+		srv.Log(wr, err.Error())
 	}
 	// Add a UserTags entry for each tag for this user
 	addUserTags(wr, nu)
@@ -263,7 +263,6 @@ func deleteUserTags(wr srv.WrapperRequest, nu *users.NUser) error {
 	q.GetMany(&userTags)
 
 	for _, utag := range userTags {
-		srv.AppWarning(wr, fmt.Sprintf("Borramos utag con id %d", utag.Id))
 		err := q.Delete(utag)
 		if err != nil {
 			return err

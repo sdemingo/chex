@@ -2,7 +2,6 @@ package answers
 
 import (
 	"errors"
-	"fmt"
 	"html/template"
 	"strconv"
 	"time"
@@ -149,8 +148,6 @@ func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 	if a.BodyType < 0 {
 		return errors.New(ERR_ANSWERWITHOUTBODY)
 	}
-
-	srv.AppWarning(wr, fmt.Sprintf("Guardamos respuesta con cuerpo %d", a.Body.GetType()))
 
 	a2, err := GetAnswer(wr, a.AuthorId, a.QuestId)
 	qry := data.NewConn(wr, "answers")
