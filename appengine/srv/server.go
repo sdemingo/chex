@@ -1,86 +1,13 @@
 package srv
 
 import (
-	"encoding/json"
+	"app/users"
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
-	"strings"
-
-	"app/users"
 
 	"appengine/user"
 )
-
-const (
-	JSON_ACCEPT_HEADER = "application/json"
-)
-
-type WrapperHandler func(wr WrapperRequest, tc map[string]interface{}) (string, error)
-
-func AppHandler(w http.ResponseWriter, r *http.Request, whandler WrapperHandler) {
-	wr := NewWrapperRequest(r)
-	err := wr.GetCurrentUser()
-	if err != nil {
-		RedirectUserLogin(w, wr.R)
-		return
-	}
-
-	rformat := r.Header.Get("Accept")
-	wr.JsonResponse = (strings.Index(rformat, JSON_ACCEPT_HEADER) >= 0)
-
-	// Perform the Handler
-	rdata := make(map[string]interface{})
-	rdata["User"] = wr.NU
-	tmplName, err := whandler(wr, rdata)
-	if err != nil {
-		errorResponse(wr, w, err)
-		return
-	}
-
-	if wr.JsonResponse {
-		// Json Response
-		jbody, err := json.Marshal(rdata["Content"])
-		if err != nil {
-			errorResponse(wr, w, err)
-			return
-		}
-		fmt.Fprintf(w, "%s", string(jbody[:len(jbody)]))
-
-	} else {
-		// HTML Response
-		tmpl := template.Must(template.ParseFiles("app/tmpl/base.html",
-			tmplName))
-
-		if err := tmpl.Execute(w, rdata); err != nil {
-			errorResponse(wr, w, err)
-			return
-		}
-	}
-
-}
-
-func errorResponse(wr WrapperRequest, w http.ResponseWriter, err error) {
-	wr.C.Errorf("%v", err)
-
-	if wr.JsonResponse {
-		// Json Response
-		jbody, err := json.Marshal(ErrorResponse{err.Error()})
-		if err != nil {
-			wr.C.Errorf("%v", err)
-			return
-		}
-		fmt.Fprintf(w, "%s", string(jbody[:len(jbody)]))
-	} else {
-		// HTML Response
-		errorTmpl := template.Must(template.ParseFiles("app/tmpl/error.html"))
-		if err := errorTmpl.Execute(w, err.Error()); err != nil {
-			wr.C.Errorf("%v", err)
-			return
-		}
-	}
-}
 
 func Log(wr WrapperRequest, msg string) {
 	wr.C.Infof("%s", msg)
@@ -96,7 +23,7 @@ func RedirectUserLogin(w http.ResponseWriter, r *http.Request) {
 		url, err = user.LoginURL(wr.C, wr.R.URL.String())
 	}
 	if err != nil {
-		errorResponse(wr, w, err)
+		//errorResponse(wr, w, err)
 		return
 	}
 	w.Header().Set("Location", url)

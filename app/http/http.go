@@ -21,6 +21,10 @@ func logout(w http.ResponseWriter, r *http.Request) {
 	srv.RedirectUserLogin(w, r)
 }
 
+func RedirectToLogin(w http.ResponseWriter, r *http.Request) {
+	srv.RedirectUserLogin(w, r)
+}
+
 var adminTmpl = "app/tmpl/adminWelcome.html"
 var studentTmpl = "app/tmpl/studentWelcome.html"
 var teacherTmpl = "app/tmpl/teacherWelcome.html"
