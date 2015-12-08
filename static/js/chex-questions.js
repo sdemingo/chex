@@ -96,10 +96,12 @@ var questions = (function(){
     var listTagsResponse = function(response){
 	if (response){
 	    $.each(response,function(i,e){
-		$(settings.panel+" .tags")
-		    .append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
-		    .on("click",selectTag)
-		CHEX.questionTags[e]=1
+		if (e.trim().length > 0){
+		    $(settings.panel+" .tags")
+			.append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
+			.on("click",selectTag)
+		    CHEX.questionTags[e]=1
+		}
 	    })
 		}
     }
