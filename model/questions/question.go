@@ -58,6 +58,10 @@ func (q *Question) SetSolution(sol *answers.Answer) {
 	}
 }
 
+func (q Question) IsSolved() bool {
+	return q.Solution != nil && q.SolutionId > 0
+}
+
 func (q *Question) SetAuthor(author *users.NUser) {
 	if author != nil {
 		q.Author = author

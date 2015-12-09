@@ -39,7 +39,6 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	//var qs []*Question
 
 	// only teacher must entry to the question throught this
 	// handler. A student or other should use test handlers
@@ -62,7 +61,7 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	// if the question hasn't got a answer to render. It makes a
 	// blank anwser based on Atype of the question to render it
-	if q.Solution == nil {
+	if !q.IsSolved() {
 		q.SolutionId = -1
 		q.Solution, err = answers.NewAnswerWithBody(-1, -1, q.AType)
 		if err != nil {
