@@ -110,6 +110,8 @@ func getCurrentUser(wr *srv.WrapperRequest) error {
 		} else {
 			return errors.New("No user id found")
 		}
+	} else {
+		nu = *nus[0]
 	}
 
 	wr.NU = &nu

@@ -2,6 +2,7 @@ package answers
 
 import (
 	"errors"
+	"fmt"
 	"html/template"
 	"strconv"
 	"time"
@@ -46,6 +47,7 @@ type AnswerBody interface {
 	Equals(master AnswerBody) bool
 	GetHTML(options []string) (template.HTML, template.HTML, error)
 	IsUnsolved() bool
+	data.DataItem
 }
 
 // Return an answer wihtout a body
@@ -135,6 +137,8 @@ func GetAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*Answer, e
 		return nil, errors.New(ERR_ANSWERNOTFOUND)
 	}
 
+	a = as[0]
+
 	err = getAnswerBody(wr, a)
 	if err != nil {
 		return nil, errors.New(ERR_ANSWERNOTFOUND)
@@ -153,6 +157,7 @@ func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 	qry := data.NewConn(wr, "answers")
 
 	if err != nil { // New
+		srv.Log(wr, err.Error())
 		a.AuthorId = wr.NU.Id
 		a.TimeStamp = time.Now()
 
@@ -160,19 +165,23 @@ func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 		if err != nil {
 			return err
 		}
+		qry.Put(a)
 
 	} else { // Updated
-		a.BodyId = a2.BodyId
-		a.TimeStamp = time.Now()
-		a.Id = a2.Id
 
-		err = putAnswerBody(wr, a)
+		a2.TimeStamp = time.Now()
+		a2.BodyType = a.BodyType
+		a2.Body = a.Body
+		// store the new body in the older id
+		a2.Body.SetID(a2.BodyId)
+
+		err = putAnswerBody(wr, a2)
 		if err != nil {
 			return err
 		}
-	}
 
-	qry.Put(a)
+		qry.Put(a2)
+	}
 
 	return nil
 }
@@ -206,6 +215,7 @@ func getAnswerBody(wr srv.WrapperRequest, a *Answer) error {
 		body.Id = a.BodyId
 		err = q.Get(body)
 		a.Body = body
+		srv.Log(wr, fmt.Sprintf("%v", body))
 	}
 	return err
 }

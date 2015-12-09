@@ -3,19 +3,18 @@ package tests
 import (
 	"encoding/json"
 	"errors"
-	//"fmt"
 
 	"app/users"
-	//"appengine/answers"
+
 	"appengine/srv"
 )
 
 // Templates
 
 //var listTmpl = "appengine/tests/tmpl/list.html"
-var newTmpl = "appengine/tests/tmpl/edit.html"
-var viewTmpl = "appengine/tests/tmpl/view.html"
-var infoTmpl = "appengine/tests/tmpl/info.html"
+var newTmpl = "model/tests/tmpl/edit.html"
+var viewTmpl = "model/tests/tmpl/view.html"
+var infoTmpl = "model/tests/tmpl/info.html"
 
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	err := srv.CheckPerm(wr, users.OP_COMMITTER)

@@ -59,7 +59,7 @@ func (a TestSingleBody) GetHTML(options []string) (template.HTML, template.HTML,
 
 func (a TestSingleBody) Equals(master AnswerBody) bool {
 	if master.GetType() == TYPE_TESTSINGLE {
-		sol := master.(TestSingleBody)
+		sol := master.(*TestSingleBody)
 		return a.Solution == sol.Solution
 	}
 	return false
