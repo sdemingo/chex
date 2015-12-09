@@ -43,12 +43,16 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	var nus []*users.NUser
 
 	if strings.HasSuffix(wr.R.URL.Path, "/me") {
-		filters := map[string][]string{"id": []string{fmt.Sprintf("%d", wr.NU.Id)}}
-		nus, err := getUsers(wr, filters)
-		if len(nus) == 0 || err != nil {
-			return viewTmpl, errors.New(users.ERR_USERNOTFOUND)
+		if wr.NU.Id > 0 {
+			filters := map[string][]string{"id": []string{fmt.Sprintf("%d", wr.NU.Id)}}
+			nus, err := getUsers(wr, filters)
+			if len(nus) == 0 || err != nil {
+				return viewTmpl, errors.New(users.ERR_USERNOTFOUND)
+			}
+			tc["Content"] = nus[0]
+		} else {
+			tc["Content"] = wr.NU
 		}
-		tc["Content"] = nus[0]
 
 	} else {
 		err := srv.CheckPerm(wr, users.OP_ADMIN)
