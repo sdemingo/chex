@@ -157,14 +157,15 @@ func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 	qry := data.NewConn(wr, "answers")
 
 	if err != nil { // New
-		srv.Log(wr, err.Error())
-		a.AuthorId = wr.NU.Id
+
 		a.TimeStamp = time.Now()
+		a.AuthorId = wr.NU.Id
 
 		err = putAnswerBody(wr, a)
 		if err != nil {
 			return err
 		}
+
 		qry.Put(a)
 
 	} else { // Updated
