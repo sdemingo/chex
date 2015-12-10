@@ -14,21 +14,20 @@ var answers = (function(){
     }
 
 
-    var addAnswer =  function(a){
+    /*
+
+      Ajax Api
+
+    */
+
+
+    var addAnswer =  function(a,cb){
 	$.ajax({
 	    url:DOMAIN+'/answers/add',
 	    type: 'post',
 	    dataType: 'json',
 	    data: JSON.stringify(a),
-	    success: function(data){
-		if (data.Error){
-		    showErrorMessage("Error al crear respuesta")
-		    console.log(data.Error)
-		}else{
-		    showInfoMessage("Respuesta creada con éxito")
-		    //resetForm()
-		}
-	    },
+	    success: cb,
 	    error: error
 	});
     }
@@ -46,9 +45,25 @@ var answers = (function(){
 
     }
 
-    var resetForm = function(){
-	$(settings.form).each(function(){this.reset()})
-	    }
+
+
+    /*
+
+      Dom functions 
+
+    */
+
+    // Callback after the add quest request
+    var addAnswerResponse = function(response){
+	if (response.Error){
+	    showErrorMessage("Error al crear respuesta")
+	    console.log(data.Error)
+	}else{
+	    window.setTimeout(function(){location.reload()}, 2000)
+	}
+    }
+
+
     
     var readForm = function(){
 	var a = $(settings.form).serializeObject()
@@ -84,8 +99,7 @@ var answers = (function(){
 	    if (!a) {
 		return
 	    }
-	    addAnswer(a)
-	    location.reload()
+	    addAnswer(a,addAnswerResponse)
 	})
     }
 
