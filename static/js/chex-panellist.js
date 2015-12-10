@@ -85,8 +85,6 @@ var questionsList = (function(){
     event.preventDefault()
     var that = $(this).parents("li.list-group-item")
 
- 
-
     selectItem(that,data.selectedQuestions)
   }
 
@@ -238,7 +236,8 @@ var questionsList = (function(){
 
   return{
     init: init,
-    getSelected:function(){return data.selectedQuestions}
+    getSelected:function(){return data.selectedQuestions},
+    getAdded:function(){return data.testsQuestions}
   }
 
 })()
@@ -488,7 +487,8 @@ var usersList = (function(){
 
   return{
     init: init,
-    getSelected:function(){return data.selectedUsers}
+    getSelected:function(){return data.selectedUsers},
+    getAdded:function(){return data.testsUsers}
   }
 
 })()

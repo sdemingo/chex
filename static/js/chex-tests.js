@@ -69,10 +69,10 @@ var tests = (function(){
     })
     tst.Tags.clean("")
     tst.State = 1
-    tst.Exercises = Object.keys(data.testsQuestions).map(function(x){
+    tst.Exercises = Object.keys(questionsList.getAdded()).map(function(x){
       return parseInt(x,10)
     })
-    tst.Ulist = Object.keys(data.testsUsers).map(function(x){
+    tst.Ulist = Object.keys(usersList.getAdded()).map(function(x){
       return parseInt(x,10)
     })
     
@@ -87,7 +87,8 @@ var tests = (function(){
       if (!tst) {
 	return
       }
-      addTest(tst,addTestResponse)
+      alert(JSON.stringify(tst))
+      //addTest(tst,addTestResponse)
     })
   }
 
