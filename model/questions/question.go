@@ -28,13 +28,12 @@ const (
 // Question Model
 
 type Question struct {
-	Id         int64           `json:",string" datastore:"-"`
-	AuthorId   int64           `json:",string"`
-	Author     *users.NUser    `datastore:"-"`
-	SolutionId int64           `json:",string"`
-	Solution   *answers.Answer `datastore:"-"`
-	TimeStamp  time.Time       `json:"`
-	CheckSum   string          `json:"`
+	Id        int64           `json:",string" datastore:"-"`
+	Author    *users.NUser    `datastore:"-"`
+	Solution  *answers.Answer `datastore:"-"`
+	AuthorId  int64           `json:",string"`
+	TimeStamp time.Time       `json:"`
+	CheckSum  string          `json:"`
 
 	AType   answers.AnswerBodyType `json:",string"`
 	Text    string
@@ -49,17 +48,6 @@ func NewQuestion() *Question {
 	q.Options = make([]string, 0)
 	q.Tags = make([]string, 0)
 	return q
-}
-
-func (q *Question) SetSolution(sol *answers.Answer) {
-	if sol != nil {
-		q.Solution = sol
-		q.SolutionId = sol.Id
-	}
-}
-
-func (q Question) IsSolved() bool {
-	return q.Solution != nil && q.SolutionId > 0
 }
 
 func (q *Question) SetAuthor(author *users.NUser) {
@@ -228,13 +216,7 @@ func getQuestById(wr srv.WrapperRequest, s_id string) (*Question, error) {
 	q.Tags, _ = getQuestTags(wr, q)
 
 	// search the solution. An answer for this quest from the same author
-	var errA error
-	q.Solution, errA = answers.GetSolutionAnswer(wr, q.AuthorId, q.Id)
-	if errA == nil {
-		q.SolutionId = q.Solution.Id
-	} else {
-		q.SolutionId = -1
-	}
+	q.Solution, _ = answers.GetSolutionAnswer(wr, q.AuthorId, q.Id)
 
 	return q, err
 }
