@@ -23,7 +23,7 @@ var answers = (function(){
 
     var addAnswer =  function(a,cb){
 	$.ajax({
-	    url:DOMAIN+'/answers/add',
+	    url:DOMAIN+'/answers/solve',
 	    type: 'post',
 	    dataType: 'json',
 	    data: JSON.stringify(a),

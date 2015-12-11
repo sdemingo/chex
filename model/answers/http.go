@@ -6,6 +6,7 @@ import (
 	//"fmt"
 
 	"app/users"
+
 	"appengine/srv"
 )
 
@@ -31,6 +32,32 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	a.AuthorId = wr.NU.Id
 
 	err = putAnswer(wr, a)
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	tc["Content"] = a
+	return infoTmpl, nil
+}
+
+func Solve(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	err := srv.CheckPerm(wr, users.OP_COMMITTER)
+	if err != nil {
+		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	var a *Answer
+
+	decoder := json.NewDecoder(wr.R.Body)
+	err = decoder.Decode(&a)
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	a.BuildBody()
+	a.AuthorId = wr.NU.Id
+
+	err = putSolutionAnswer(wr, a)
 	if err != nil {
 		return infoTmpl, err
 	}

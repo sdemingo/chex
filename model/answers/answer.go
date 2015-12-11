@@ -29,9 +29,10 @@ type Answer struct {
 	Id      int64  `json:",string" datastore:"-"`
 	RawBody string `datastore:"-"`
 
-	QuestId   int64 `json:",string"`
-	AuthorId  int64 `json:",string"`
-	TimeStamp time.Time
+	QuestId    int64 `json:",string"`
+	ExerciseId int64 `json:",string"`
+	AuthorId   int64 `json:",string"`
+	TimeStamp  time.Time
 	//Author    *users.NUser
 
 	BodyType AnswerBodyType `json:",string"`
@@ -55,6 +56,7 @@ func NewAnswer(questionId int64, authorId int64) *Answer {
 	a := new(Answer)
 	a.Id = 0
 	a.QuestId = questionId
+	a.ExerciseId = 0
 	a.AuthorId = authorId
 	a.Comment = ""
 	a.BodyType = -1
@@ -126,12 +128,14 @@ func (v AnswerBuffer) Len() int {
 	return len(v)
 }
 
-func GetAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*Answer, error) {
+// Get the answers for a question with questId from an author with authorId
+func GetSolutionAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*Answer, error) {
 	as := NewAnswerBuffer()
 	a := new(Answer)
 
 	q := data.NewConn(wr, "answers")
 	q.AddFilter("QuestId =", questId)
+	q.AddFilter("AuthorId =", authorId)
 	err := q.GetMany(&as)
 	if err != nil || len(as) == 0 {
 		return nil, errors.New(ERR_ANSWERNOTFOUND)
@@ -147,13 +151,41 @@ func GetAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*Answer, e
 	return a, err
 }
 
-// Create or update an answer
+func GetAnswersById(wr srv.WrapperRequest, s_id string) (*Answer, error) {
+	a := NewAnswer(-1, -1)
+
+	id, err := strconv.ParseInt(s_id, 10, 64)
+	if err != nil {
+		return a, errors.New(ERR_ANSWERNOTFOUND)
+	}
+
+	qry := data.NewConn(wr, "answers")
+	a.Id = id
+	if id != 0 {
+		qry.Get(a)
+
+	} else {
+		return a, errors.New(ERR_ANSWERNOTFOUND)
+	}
+
+	// falta el answer body
+	getAnswerBody(wr, a)
+
+	return a, err
+}
+
+// Create or update an answer for an exercise
 func putAnswer(wr srv.WrapperRequest, a *Answer) error {
+	return nil
+}
+
+// Create or update an solution answer
+func putSolutionAnswer(wr srv.WrapperRequest, a *Answer) error {
 	if a.BodyType < 0 {
 		return errors.New(ERR_ANSWERWITHOUTBODY)
 	}
 
-	a2, err := GetAnswer(wr, a.AuthorId, a.QuestId)
+	a2, err := GetSolutionAnswer(wr, a.AuthorId, a.QuestId)
 	qry := data.NewConn(wr, "answers")
 
 	if err != nil { // New
@@ -221,38 +253,17 @@ func getAnswerBody(wr srv.WrapperRequest, a *Answer) error {
 	return err
 }
 
+/*
 func getAnswers(wr srv.WrapperRequest, filters map[string][]string) (AnswerBuffer, error) {
 	as := NewAnswerBuffer()
 	var err error
 
 	if filters["id"] != nil {
-		a, err := getAnswersById(wr, filters["id"][0])
+		a, err := GetAnswersById(wr, filters["id"][0])
 		as[0] = a
 		return as, err
 	}
 
 	return as, err
 }
-
-func getAnswersById(wr srv.WrapperRequest, s_id string) (*Answer, error) {
-	a := NewAnswer(-1, -1)
-
-	id, err := strconv.ParseInt(s_id, 10, 64)
-	if err != nil {
-		return a, errors.New(ERR_ANSWERNOTFOUND)
-	}
-
-	qry := data.NewConn(wr, "answers")
-	a.Id = id
-	if id != 0 {
-		qry.Get(a)
-
-	} else {
-		return a, errors.New(ERR_ANSWERNOTFOUND)
-	}
-
-	// falta el answer body
-	getAnswerBody(wr, a)
-
-	return a, err
-}
+*/

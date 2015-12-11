@@ -229,7 +229,7 @@ func getQuestById(wr srv.WrapperRequest, s_id string) (*Question, error) {
 
 	// search the solution. An answer for this quest from the same author
 	var errA error
-	q.Solution, errA = answers.GetAnswer(wr, q.AuthorId, q.Id)
+	q.Solution, errA = answers.GetSolutionAnswer(wr, q.AuthorId, q.Id)
 	if errA == nil {
 		q.SolutionId = q.Solution.Id
 	} else {
