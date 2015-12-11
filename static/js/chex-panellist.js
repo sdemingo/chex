@@ -109,7 +109,7 @@ var questionsList = (function(){
       }
 
     for (var id in data.selectedQuestions) {
-	data.testsQuestions[id]=1
+	data.testsQuestions[id]=data.questionsCache[id]
     }
 
     // dump questions selected
@@ -359,7 +359,7 @@ var usersList = (function(){
       selectItem(that,data.selectedUsers)
     }
     for (var id in data.selectedUsers) {
-      data.testsUsers[id]=1
+      data.testsUsers[id]=data.usersCache[id]
     }
 
     // dump users selected

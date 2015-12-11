@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"app/users"
-	"model/answers"
 	"model/questions"
 
 	"appengine/data"
@@ -30,14 +29,14 @@ type Test struct {
 	Desc      string
 	Alias     string
 	State     int
-	Exercises []int64 // all exercises
-	UList     []int64 // users allowed
+	Exercises []*Exercise // all exercises
+	UList     []int64     // users allowed
 	Tags      []string
 }
 
 func NewTest() *Test {
 	t := new(Test)
-	t.Exercises = make([]int64, 0)
+	t.Exercises = make([]*Exercise, 0)
 	t.UList = make([]int64, 0)
 	t.Tags = make([]string, 0)
 	return t
@@ -114,14 +113,10 @@ type Exercise struct {
 	Quest     questions.Question `datastore:"-"`
 	BadPoint  int
 	GoodPoint int
-	AnswersId []int64           // list of answers
-	Answers   []*answers.Answer `datastore:"-"`
 }
 
 func NewExercise() *Exercise {
 	e := new(Exercise)
-	e.AnswersId = make([]int64, 0)
-	e.Answers = make([]*answers.Answer, 0)
 	return e
 }
 
