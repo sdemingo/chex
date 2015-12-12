@@ -14,6 +14,7 @@ import (
 
 var infoTmpl = ""
 
+// It must be rename to solve and move to exercises/http.go
 func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	err := srv.CheckPerm(wr, users.OP_MAKER)
 	if err != nil {

@@ -3,6 +3,7 @@ package questions
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"app/users"
 	"model/answers"
@@ -144,6 +145,16 @@ func Solve(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	a.BuildBody()
 	a.AuthorId = wr.NU.Id
+
+	quest, err := getQuestById(wr, fmt.Sprintf("%d", a.QuestId))
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	// Only que teacher author of the quest can add the solution
+	if quest.AuthorId != a.AuthorId {
+		return infoTmpl, errors.New(answers.ERR_AUTHORID)
+	}
 
 	err = answers.PutSolutionAnswer(wr, a)
 	if err != nil {

@@ -19,6 +19,7 @@ const (
 	ERR_BADRENDEREDANSWER = "Respuesta renderizada erroneamente"
 	ERR_ANSWERWITHOUTBODY = "Respuesta sin cuerpo definido"
 	ERR_BADANSWERTYPE     = "Respuesta con tipo de cuerpo desconocido"
+	ERR_AUTHORID          = "Respuesta con autor incorrecto"
 )
 
 var bodiesTable = []string{
