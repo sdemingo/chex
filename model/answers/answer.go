@@ -151,36 +151,8 @@ func GetSolutionAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*A
 	return a, err
 }
 
-func GetAnswersById(wr srv.WrapperRequest, s_id string) (*Answer, error) {
-	a := NewAnswer(-1, -1)
-
-	id, err := strconv.ParseInt(s_id, 10, 64)
-	if err != nil {
-		return a, errors.New(ERR_ANSWERNOTFOUND)
-	}
-
-	qry := data.NewConn(wr, "answers")
-	a.Id = id
-	if id != 0 {
-		qry.Get(a)
-
-	} else {
-		return a, errors.New(ERR_ANSWERNOTFOUND)
-	}
-
-	// falta el answer body
-	getAnswerBody(wr, a)
-
-	return a, err
-}
-
-// Create or update an answer for an exercise
-func putAnswer(wr srv.WrapperRequest, a *Answer) error {
-	return nil
-}
-
 // Create or update an solution answer
-func putSolutionAnswer(wr srv.WrapperRequest, a *Answer) error {
+func PutSolutionAnswer(wr srv.WrapperRequest, a *Answer) error {
 	if a.BodyType < 0 {
 		return errors.New(ERR_ANSWERWITHOUTBODY)
 	}
@@ -216,6 +188,34 @@ func putSolutionAnswer(wr srv.WrapperRequest, a *Answer) error {
 		qry.Put(a2)
 	}
 
+	return nil
+}
+
+func GetAnswersById(wr srv.WrapperRequest, s_id string) (*Answer, error) {
+	a := NewAnswer(-1, -1)
+
+	id, err := strconv.ParseInt(s_id, 10, 64)
+	if err != nil {
+		return a, errors.New(ERR_ANSWERNOTFOUND)
+	}
+
+	qry := data.NewConn(wr, "answers")
+	a.Id = id
+	if id != 0 {
+		qry.Get(a)
+
+	} else {
+		return a, errors.New(ERR_ANSWERNOTFOUND)
+	}
+
+	// falta el answer body
+	getAnswerBody(wr, a)
+
+	return a, err
+}
+
+// Create or update an answer for an exercise
+func putAnswer(wr srv.WrapperRequest, a *Answer) error {
 	return nil
 }
 

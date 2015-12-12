@@ -36,13 +36,13 @@ func init() {
 	http.HandleFunc("/questions/tags/list", func(w http.ResponseWriter, r *http.Request) {
 		AppHandler(w, r, questions.GetTagsList)
 	})
+	http.HandleFunc("/questions/solve", func(w http.ResponseWriter, r *http.Request) {
+		AppHandler(w, r, questions.Solve)
+	})
 
 	// Answers
 	http.HandleFunc("/answers/add", func(w http.ResponseWriter, r *http.Request) {
 		AppHandler(w, r, answers.Add)
-	})
-	http.HandleFunc("/answers/solve", func(w http.ResponseWriter, r *http.Request) {
-		AppHandler(w, r, answers.Solve)
 	})
 
 	// Tests

@@ -23,7 +23,18 @@ var answers = (function(){
 
     var addAnswer =  function(a,cb){
 	$.ajax({
-	    url:DOMAIN+'/answers/solve',
+	    url:DOMAIN+'/exercises/solve',
+	    type: 'post',
+	    dataType: 'json',
+	    data: JSON.stringify(a),
+	    success: cb,
+	    error: error
+	});
+    }
+
+    var addSolutionAnswer =  function(a,cb){
+	$.ajax({
+	    url:DOMAIN+'/questions/solve',
 	    type: 'post',
 	    dataType: 'json',
 	    data: JSON.stringify(a),
@@ -99,7 +110,9 @@ var answers = (function(){
 	    if (!a) {
 		return
 	    }
-	    addAnswer(a,addAnswerResponse)
+	    
+	    addSolutionAnswer(a,addAnswerResponse)
+
 	})
     }
 

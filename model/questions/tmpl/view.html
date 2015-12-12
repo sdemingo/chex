@@ -42,6 +42,7 @@
 
     <div id="unSolvedPanel">
       <form id="answerEditForm" class="form-group" method="post" action="/answers/solve">
+	<input type="hidden" name="AuthorId" value="{{ .User.Id }}">
 	<input type="hidden" name="QuestId" value="{{ .Content.Id }}">
 	<input type="hidden" name="BodyType" value="{{ .Content.AType }}">
         {{.OptionsUnSolved}}

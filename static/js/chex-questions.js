@@ -30,6 +30,16 @@ var questions = (function(){
 	});
     }
 
+    var getQuest =  function(id,cb){
+	$.ajax({
+	    url:DOMAIN+'/questions/get?id='+id,
+	    type: 'post',
+	    dataType: 'json',
+	    success: cb,
+	    error: error
+	});
+    }
+
     var editQuest = function(q,cb){
 
     }
@@ -198,6 +208,7 @@ var questions = (function(){
 	list: listQuests,
 	tags: listTags,
 	add: addQuest,
+	get: getQuest,
 	del: deleteQuest
     }
 
