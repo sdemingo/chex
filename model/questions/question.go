@@ -39,7 +39,7 @@ type Question struct {
 	Text    string
 	Hint    string
 	Options []string
-	Tags    []string
+	Tags    []string `datastore:"-"`
 }
 
 func NewQuestion() *Question {
@@ -232,6 +232,10 @@ func getQuestByAuthor(wr srv.WrapperRequest, authorId string) (QuestionBuffer, e
 	qry := data.NewConn(wr, "questions")
 	qry.AddFilter("AuthorId =", id)
 	qry.GetMany(&qs)
+
+	for i := range qs {
+		qs[i].Tags, _ = getQuestTags(wr, qs[i])
+	}
 
 	return qs, nil
 }
