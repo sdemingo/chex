@@ -27,11 +27,10 @@ type Test struct {
 
 	Title     string
 	Desc      string
-	Alias     string
 	State     int
-	Exercises []*Exercise // all exercises
+	Exercises []*Exercise `datastore:"-"` // all exercises
 	UList     []int64     // users allowed
-	Tags      []string
+	Tags      []string    `datastore:"-"`
 }
 
 func NewTest() *Test {
@@ -157,12 +156,23 @@ func putTest(wr srv.WrapperRequest, t *Test) error {
 	q := data.NewConn(wr, "tests")
 	q.Put(t)
 
-	// Now, all questions  must be add. Checksums must be check
-	// to avoid insert duplicated questions
+	// Add the exercises
+	err := addExercises(wr, t)
 
 	// Add a TestsTags entry for each tag for this questions
-	addTestTags(wr, t)
+	err = addTestTags(wr, t)
 
+	return err
+}
+
+func addExercises(wr srv.WrapperRequest, t *Test) error {
+	q := data.NewConn(wr, "exercises")
+	for _, ex := range t.Exercises {
+		err := q.Put(ex)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
