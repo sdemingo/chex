@@ -55,7 +55,7 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		}
 
 	} else {
-		err := srv.CheckPerm(wr, users.OP_ADMIN)
+		err := srv.CheckPerm(wr, users.OP_COMMITTER)
 		if err != nil {
 			return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 		}
