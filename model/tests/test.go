@@ -25,10 +25,11 @@ type Test struct {
 	TimeStamp time.Time    `json:"`
 
 	Title     string
+	Course    string
 	Desc      string
 	State     int
 	Exercises []*Exercise `datastore:"-"` // all exercises
-	UList     []int64     // users allowed
+	UList     []int64     `datastore:"-"` // users allowed
 	Tags      []string    `datastore:"-"`
 }
 

@@ -54,7 +54,7 @@ var tests = (function(){
     var addTestResponse = function(response){
 	if (response.Error){
 	    showErrorMessage("Error al crear test")
-	    console.log(data.Error)
+	    console.log(response.Error)
 	}else{
 	    showInfoMessage("Test creado con éxito")
 	    resetForm(settings.form)
@@ -70,14 +70,15 @@ var tests = (function(){
 
 	for (var i=0;i<questIds.length;i++){
 	    var e={}
+	    e.Id=0
 	    e.QuestId=questIds[i]
-	    e.BadPoint=parseInt($("#testAddedQuestionPanel #"+questIds[i]+" .bad-points").first().val(),10)
+	    e.BadPoint=parseFloat($("#testAddedQuestionPanel #"+questIds[i]+" .bad-points").first().val())
 	    if (!e.BadPoint){
-		e.BadPoint="0"
+		e.BadPoint=0
 	    }
-	    e.GoodPoint=parseInt($("#testAddedQuestionPanel #"+questIds[i]+" .good-points").first().val(),10)
+	    e.GoodPoint=parseFloat($("#testAddedQuestionPanel #"+questIds[i]+" .good-points").first().val())
 	    if (!e.GoodPoint){
-		e.GoodPoint="0"
+		e.GoodPoint=0
 	    }
 	    exercises.push(e)
 	}
@@ -110,8 +111,7 @@ var tests = (function(){
 	    if (!tst) {
 		return
 	    }
-	    alert(JSON.stringify(tst))
-	    //addTest(tst,addTestResponse)
+	    addTest(tst,addTestResponse)
 	})
     }
 

@@ -22,7 +22,7 @@ func Main(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_ADMIN)
+	err := srv.CheckPerm(wr, users.OP_COMMITTER)
 	if err != nil {
 		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}

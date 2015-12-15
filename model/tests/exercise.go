@@ -8,11 +8,11 @@ import (
 )
 
 type Exercise struct {
-	Id        int64              `json:",string" datastore:"-"`
-	QuestId   int64              `json:",string"`
-	Quest     questions.Question `datastore:"-"`
-	BadPoint  int
-	GoodPoint int
+	Id        int64 `datastore:"-"`
+	QuestId   int64
+	Quest     questions.Question `json:","datastore:"-"`
+	BadPoint  float32
+	GoodPoint float32
 }
 
 func NewExercise() *Exercise {
@@ -47,7 +47,7 @@ func (v ExerciseBuffer) Len() int {
 }
 
 func addExercises(wr srv.WrapperRequest, t *Test) error {
-	q := data.NewConn(wr, "exercises")
+	q := data.NewConn(wr, "tests-exercises")
 	for _, ex := range t.Exercises {
 		err := q.Put(ex)
 		if err != nil {

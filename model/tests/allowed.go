@@ -39,8 +39,9 @@ func (v TestUserBuffer) Len() int {
 
 func addUsersAllowed(wr srv.WrapperRequest, t *Test) error {
 	q := data.NewConn(wr, "tests-users")
-	for _, ex := range t.Exercises {
-		err := q.Put(ex)
+	for _, uid := range t.UList {
+		tu := &TestUser{Id: 0, TestId: t.Id, UserId: uid}
+		err := q.Put(tu)
 		if err != nil {
 			return err
 		}
