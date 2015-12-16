@@ -23,14 +23,14 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 
 	wr.R.ParseForm()
-	/*
-	 qs, err := getQuestions(wr, wr.R.Form)
-	 if err != nil {
-	 return listTmpl, err
-	 }
 
-	 tc["Content"] = qs
-	*/
+	tests, err := getTests(wr, wr.R.Form)
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	tc["Content"] = tests
+
 	return infoTmpl, nil
 }
 

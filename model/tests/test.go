@@ -2,6 +2,7 @@ package tests
 
 import (
 	"errors"
+	"strconv"
 	"time"
 
 	"app/users"
@@ -90,4 +91,46 @@ func putTest(wr srv.WrapperRequest, t *Test) error {
 	err = addTestTags(wr, t)
 
 	return err
+}
+
+func getTests(wr srv.WrapperRequest, filters map[string][]string) (TestBuffer, error) {
+	ts := NewTestBuffer()
+	var err error
+
+	if filters["id"] != nil {
+		// q, err := getQuestById(wr, filters["id"][0])
+		// qs = append(qs, q)
+		return ts, err
+	}
+
+	if filters["tags"] != nil {
+		//qs, err := getQuestByTags(wr, strings.Split(filters["tags"][0], ","))
+		return ts, err
+	}
+
+	if filters["author"] != nil {
+		ts, err = getTestsByAuthor(wr, filters["author"][0])
+		return ts, err
+	}
+
+	return ts, err
+}
+
+func getTestsByAuthor(wr srv.WrapperRequest, authorId string) (TestBuffer, error) {
+	ts := NewTestBuffer()
+
+	id, err := strconv.ParseInt(authorId, 10, 64)
+	if err != nil {
+		return ts, errors.New(ERR_TESTNOTFOUND)
+	}
+
+	qry := data.NewConn(wr, "tests")
+	qry.AddFilter("AuthorId =", id)
+	qry.GetMany(&ts)
+
+	// for i := range qs {
+	// 	qs[i].Tags, _ = getQuestTags(wr, qs[i])
+	// }
+
+	return ts, nil
 }
