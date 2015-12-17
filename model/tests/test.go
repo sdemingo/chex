@@ -134,3 +134,20 @@ func getTestsByAuthor(wr srv.WrapperRequest, authorId string) (TestBuffer, error
 
 	return ts, nil
 }
+
+func getTestById(wr srv.WrapperRequest, authorId string) (*Test, error) {
+	t := NewTest()
+	var err error
+
+	t.Id, err = strconv.ParseInt(authorId, 10, 64)
+	if err != nil {
+		return t, errors.New(ERR_TESTNOTFOUND)
+	}
+
+	qry := data.NewConn(wr, "tests")
+	qry.Get(t)
+
+	//q.Tags, _ = getQuestTags(wr, q)
+
+	return t, err
+}

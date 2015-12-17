@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"fmt"
+
 	"appengine/data"
 	"appengine/srv"
 )
@@ -47,4 +49,60 @@ func addTestTags(wr srv.WrapperRequest, t *Test) error {
 		}
 	}
 	return nil
+}
+
+func getAllTestsTags(wr srv.WrapperRequest) ([]string, error) {
+	var tagsMap = make(map[string]int, 0)
+	var tags = make([]string, 0)
+	testTags := NewTestTagBuffer()
+
+	qry := data.NewConn(wr, "tests-tags")
+	qry.GetMany(&testTags)
+
+	tags = make([]string, len(testTags))
+	for _, qtag := range testTags {
+		if _, ok := tagsMap[qtag.Tag]; !ok {
+			tagsMap[qtag.Tag] = 1
+			tags = append(tags, qtag.Tag)
+		}
+	}
+
+	return tags, nil
+}
+
+func getTestsByTags(wr srv.WrapperRequest, tags []string) (TestBuffer, error) {
+	ts := NewTestBuffer()
+	ttagsAll := NewTestTagBuffer()
+
+	qry := data.NewConn(wr, "tests-tags")
+	qry.GetMany(&ttagsAll)
+
+	filtered := make(map[int64]int)
+	for _, tag := range tags {
+		for _, tt := range ttagsAll {
+			if tt.Tag == tag {
+				if _, ok := filtered[tt.TestId]; !ok {
+					filtered[tt.TestId] = 1
+				} else {
+					filtered[tt.TestId]++
+				}
+			}
+		}
+	}
+
+	for id, _ := range filtered {
+		if filtered[id] == len(tags) {
+			q, err := getTestById(wr, fmt.Sprintf("%d", id))
+			if err != nil {
+				return ts, err
+			}
+
+			// only append the questions of the session user
+			if wr.NU.IsAdmin() || q.AuthorId == wr.NU.Id {
+				ts = append(ts, q)
+			}
+		}
+	}
+
+	return ts, nil
 }

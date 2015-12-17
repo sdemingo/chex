@@ -41,7 +41,16 @@
     <div class="panel-heading panel-title">Exámenes</div>
     <div class="panel-body">
 
-      
+      <div class="row col-md-7">
+	<div id="TestsPanel" class="panel-list panel-select-tests">
+	  <div class="panel panel-default panel-list-main">
+	    <ul class="list-group results">
+	    </ul>
+	  </div>
+	  <div class="panel label-panel tags">
+	  </div>
+	</div>
+      </div>
 
     </div>
   </div>
@@ -66,6 +75,7 @@
 <script>
  
 questionsList.init()
+testsList.init()
 
 $("#deleteQuestions").on("click",function(){
   console.log(questionsList.getSelected()) 

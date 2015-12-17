@@ -71,14 +71,14 @@ func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, erro
 	if err != nil {
 		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
-	/*
-	 tags, err := getAllQuestionsTags(wr)
-	 if err != nil {
-	 return infoTmpl, err
-	 }
 
-	 tc["Content"] = tags
-	*/
+	tags, err := getAllTestsTags(wr)
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	tc["Content"] = tags
+
 	return infoTmpl, nil
 }
 

@@ -55,6 +55,9 @@ func init() {
 	http.HandleFunc("/tests/list", func(w http.ResponseWriter, r *http.Request) {
 		AppHandler(w, r, tests.GetList)
 	})
+	http.HandleFunc("/tests/tags/list", func(w http.ResponseWriter, r *http.Request) {
+		AppHandler(w, r, tests.GetTagsList)
+	})
 
 	// Users routes
 

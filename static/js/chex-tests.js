@@ -35,7 +35,25 @@ var tests = (function(){
     }
 
     var listTests = function(tags,cb){
-	
+	$.ajax({
+	    url:DOMAIN+'/tests/list',
+	    type: 'get',
+	    dataType: 'json',
+	    data: {tags:tags.join(",")},
+	    success: cb,
+	    error: error
+	});
+    }
+
+
+    var listTags = function(cb){
+	$.ajax({
+	    url:DOMAIN+'/tests/tags/list',
+	    type: 'get',
+	    dataType: 'json',
+	    success: cb,
+	    error: error
+	})
     }
 
     var deleteTest = function(test,cb){
@@ -121,7 +139,9 @@ var tests = (function(){
     }
 
     return{
-	init: init
+	init: init,
+	tags: listTags,
+	list: listTests
     }
 
 })()
