@@ -544,17 +544,17 @@ var testsList = (function(){
 	    $(".panel-select-tests .results")
 		.append("<span class=\"list-group-item\">No hubo resultados</span>")
 	}else{
-	    response.forEach(function(u){
-		var li=$('<li id='+u.Id+' class="list-group-item col-md-12">\
+	    response.forEach(function(t){
+		var li=$('<li id='+t.Id+' class="list-group-item col-md-12">\
 <div class="icons row col-md-2">\
 <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
 </div>\
 <div class="text col-md-10">\
-<a class="item-text" href="/tests/get?id='+u.Id+'" >'+u.Name+'</a>\
+<a class="item-text" href="/tests/get?id='+t.Id+'" >'+t.Title+'</a>\
 </div>\
 </li>')
-		    .on("dblclick",".item-select",selectAllUsersHandler)
-		    .on("click",".item-select",selectUserHandler)
+		    .on("dblclick",".item-select",selectAllTestsHandler)
+		    .on("click",".item-select",selectTestHandler)
 
 		if (settings && settings.addItemIcon){
 		    li.find(".icons").append('<a href="#" class="item-add glyphicon glyphicon-plus"></a>')
@@ -563,7 +563,7 @@ var testsList = (function(){
 
 		$(".panel-select-tests .results").append(li)
 		
-		data.testsCache[u.Id]=u
+		data.testsCache[t.Id]=t
 		1    })
 	}
     }

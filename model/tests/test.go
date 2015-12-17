@@ -3,6 +3,7 @@ package tests
 import (
 	"errors"
 	"strconv"
+	"strings"
 	"time"
 
 	"app/users"
@@ -104,7 +105,7 @@ func getTests(wr srv.WrapperRequest, filters map[string][]string) (TestBuffer, e
 	}
 
 	if filters["tags"] != nil {
-		//qs, err := getQuestByTags(wr, strings.Split(filters["tags"][0], ","))
+		ts, err := getTestsByTags(wr, strings.Split(filters["tags"][0], ","))
 		return ts, err
 	}
 
