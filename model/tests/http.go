@@ -48,7 +48,7 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if len(ts) == 0 || err != nil {
 		return viewTmpl, errors.New(ERR_TESTNOTFOUND)
 	}
-	t := &ts[0]
+	t := ts[0]
 
 	tc["Content"] = t
 

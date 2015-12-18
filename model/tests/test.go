@@ -148,9 +148,8 @@ func getTestById(wr srv.WrapperRequest, authorId string) (*Test, error) {
 	qry := data.NewConn(wr, "tests")
 	qry.Get(t)
 
-	//q.Tags, _ = getQuestTags(wr, q)
-	// getTags
-	// getExercises
+	getTestTags(wr, t)
+	getExercises(wr, t)
 	// getAllowed
 
 	return t, err

@@ -33,9 +33,9 @@
   
   <div id="answerPanel" class="row col-md-11 col-md-offset-1">
 
-    {{ if .OptionsSolved }}
+    {{ if not .UnSolvedQuestion }}
     <div id="solvedPanel">
-       {{.OptionsSolved}}
+       {{.Content.GetHTMLSolution}}
       <input type="button" class="btn btn-default pull-right" id="answerUpdateButton" value="Actualizar" />
     </div>
     {{end}}
@@ -45,9 +45,9 @@
 	<input type="hidden" name="AuthorId" value="{{ .User.Id }}">
 	<input type="hidden" name="QuestId" value="{{ .Content.Id }}">
 	<input type="hidden" name="BodyType" value="{{ .Content.AType }}">
-        {{.OptionsUnSolved}}
+        {{.Content.GetHTMLAnswer}}
 	<input type="button" class="btn btn-default pull-right" id="answerNewSubmit" value="Contestar" />
-	{{ if .OptionsSolved }}
+        {{ if not .UnSolvedQuestion }}
 	<input type="button" class="btn btn-default pull-right" id="answerNewCancel" value="Cancelar" />
         {{end}}
       </form>

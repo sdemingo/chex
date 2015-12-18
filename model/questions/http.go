@@ -59,19 +59,7 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
-	// if the question hasn't got a answer to render. It makes a
-	// blank anwser based on Atype of the question to render it
-	if q.Solution == nil {
-		tc["UnSolvedQuestion"] = true
-		q.Solution, err = answers.NewAnswerWithBody(-1, -1, q.AType)
-		if err != nil {
-			return viewTmpl, err
-		}
-	}
-
-	unSolved, solved, err := q.Solution.Body.GetHTML(q.Options)
-	tc["OptionsSolved"] = solved
-	tc["OptionsUnSolved"] = unSolved
+	tc["UnSolvedQuestion"] = q.Solution.Body.IsUnsolved()
 	tc["Content"] = q
 
 	return viewTmpl, nil

@@ -86,6 +86,22 @@ func (q *Question) GetHTMLText() template.HTML {
 	return template.HTML(string(blackfriday.MarkdownBasic(in)))
 }
 
+func (q *Question) GetHTMLSolution() template.HTML {
+	if q.Solution != nil {
+		_, solved, _ := q.Solution.Body.GetHTML(q.Options)
+		return solved
+	}
+	return template.HTML("")
+}
+
+func (q *Question) GetHTMLAnswer() template.HTML {
+	if q.Solution != nil {
+		unSolved, _, _ := q.Solution.Body.GetHTML(q.Options)
+		return unSolved
+	}
+	return template.HTML("")
+}
+
 type QuestionBuffer []*Question
 
 func NewQuestionBuffer() QuestionBuffer {
@@ -115,8 +131,14 @@ func GetQuestById(wr srv.WrapperRequest, id int64) (*Question, error) {
 
 	q.Tags, _ = getQuestTags(wr, q)
 
-	// search the solution. An answer for this quest from the same author
+	// search the solution. An answer for this quest from the same
+	// author. If not exits we create a dummy answer body of
+	// questions Atype. A dummy answer body always must return false
+	// in its UnSolved method
 	q.Solution, _ = answers.GetSolutionAnswer(wr, q.AuthorId, q.Id)
+	if q.Solution == nil {
+		q.Solution, err = answers.NewAnswerWithBody(-1, -1, q.AType)
+	}
 
 	return q, err
 }

@@ -2,7 +2,6 @@ package answers
 
 import (
 	"errors"
-	"fmt"
 	"html/template"
 	"strconv"
 	"time"
@@ -192,27 +191,20 @@ func PutSolutionAnswer(wr srv.WrapperRequest, a *Answer) error {
 	return nil
 }
 
-func GetAnswersById(wr srv.WrapperRequest, s_id string) (*Answer, error) {
+func GetAnswersById(wr srv.WrapperRequest, id int64) (*Answer, error) {
 	a := NewAnswer(-1, -1)
 
-	id, err := strconv.ParseInt(s_id, 10, 64)
+	qry := data.NewConn(wr, "answers")
+	a.Id = id
+
+	err := qry.Get(a)
 	if err != nil {
 		return a, errors.New(ERR_ANSWERNOTFOUND)
 	}
 
-	qry := data.NewConn(wr, "answers")
-	a.Id = id
-	if id != 0 {
-		qry.Get(a)
-
-	} else {
-		return a, errors.New(ERR_ANSWERNOTFOUND)
-	}
-
-	// falta el answer body
 	getAnswerBody(wr, a)
 
-	return a, err
+	return a, nil
 }
 
 // Create or update an answer for an exercise
@@ -249,7 +241,6 @@ func getAnswerBody(wr srv.WrapperRequest, a *Answer) error {
 		body.Id = a.BodyId
 		err = q.Get(body)
 		a.Body = body
-		srv.Log(wr, fmt.Sprintf("%v", body))
 	}
 	return err
 }

@@ -9,8 +9,9 @@ import (
 
 type Exercise struct {
 	Id        int64 `datastore:"-"`
+	TestId    int64
 	QuestId   int64
-	Quest     questions.Question `json:","datastore:"-"`
+	Quest     *questions.Question `json:","datastore:"-"`
 	BadPoint  float32
 	GoodPoint float32
 }
@@ -49,10 +50,32 @@ func (v ExerciseBuffer) Len() int {
 func addExercises(wr srv.WrapperRequest, t *Test) error {
 	q := data.NewConn(wr, "tests-exercises")
 	for _, ex := range t.Exercises {
+		ex.TestId = t.Id
 		err := q.Put(ex)
 		if err != nil {
 			return err
 		}
 	}
+	return nil
+}
+
+func getExercises(wr srv.WrapperRequest, t *Test) error {
+	testEx := NewExerciseBuffer()
+
+	qry := data.NewConn(wr, "tests-exercises")
+	qry.AddFilter("TestId =", t.Id)
+	err := qry.GetMany(&testEx)
+	if err != nil {
+		return err
+	}
+
+	t.Exercises = testEx
+
+	// now, load the questions struct for each exercise
+	for i := range t.Exercises {
+		q, _ := questions.GetQuestById(wr, t.Exercises[i].QuestId)
+		t.Exercises[i].Quest = q
+	}
+
 	return nil
 }
