@@ -3,6 +3,7 @@ package tests
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 
 	"app/users"
 
@@ -42,27 +43,15 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 
 	wr.R.ParseForm()
-	/*
-	 qs, err = getQuestions(wr, wr.R.Form)
-	 if len(qs) == 0 || err != nil {
-	 return viewTmpl, errors.New(ERR_QUESTNOTFOUND)
-	 }
-	 q := &qs[0]
 
-	 // if the question hasn't got a answer to render. It makes a
-	 // blank anwser based on Atype of the question to render it
-	 if q.Solution == nil {
-	 q.Solution, err = answers.NewAnswerWithBody(-1, -1, q.AType)
-	 if err != nil {
-	 return viewTmpl, err
-	 }
-	 }
+	ts, err := getTests(wr, wr.R.Form)
+	if len(ts) == 0 || err != nil {
+		return viewTmpl, errors.New(ERR_TESTNOTFOUND)
+	}
+	t := &ts[0]
 
-	 unSolved, solved, err := q.Solution.Body.GetHTML(q.Options)
-	 tc["OptionsSolved"] = solved
-	 tc["OptionsUnSolved"] = unSolved
-	 tc["Content"] = q
-	*/
+	tc["Content"] = t
+
 	return viewTmpl, nil
 }
 
@@ -99,6 +88,9 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if err != nil {
 		return infoTmpl, err
 	}
+
+	// clean fields
+	t.Desc = strings.Trim(t.Desc, " \t\n")
 
 	err = putTest(wr, &t)
 	if err != nil {

@@ -99,13 +99,13 @@ func getTests(wr srv.WrapperRequest, filters map[string][]string) (TestBuffer, e
 	var err error
 
 	if filters["id"] != nil {
-		// q, err := getQuestById(wr, filters["id"][0])
-		// qs = append(qs, q)
+		t, err := getTestById(wr, filters["id"][0])
+		ts = append(ts, t)
 		return ts, err
 	}
 
 	if filters["tags"] != nil {
-		ts, err := getTestsByTags(wr, strings.Split(filters["tags"][0], ","))
+		ts, err = getTestsByTags(wr, strings.Split(filters["tags"][0], ","))
 		return ts, err
 	}
 
@@ -149,6 +149,9 @@ func getTestById(wr srv.WrapperRequest, authorId string) (*Test, error) {
 	qry.Get(t)
 
 	//q.Tags, _ = getQuestTags(wr, q)
+	// getTags
+	// getExercises
+	// getAllowed
 
 	return t, err
 }

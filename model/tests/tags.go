@@ -51,6 +51,25 @@ func addTestTags(wr srv.WrapperRequest, t *Test) error {
 	return nil
 }
 
+func getTestTags(wr srv.WrapperRequest, t *Test) ([]string, error) {
+	var tags []string
+	questionTags := NewQuestionTagBuffer()
+
+	qry := data.NewConn(wr, "test-tags")
+	qry.AddFilter("QuestId =", q.Id)
+	err := qry.GetMany(&questionTags)
+	if err != nil {
+		return tags, err
+	}
+
+	tags = make([]string, 0)
+	for _, qtag := range questionTags {
+		tags = append(tags, qtag.Tag)
+	}
+
+	return tags, nil
+}
+
 func getAllTestsTags(wr srv.WrapperRequest) ([]string, error) {
 	var tagsMap = make(map[string]int, 0)
 	var tags = make([]string, 0)

@@ -55,6 +55,9 @@ func init() {
 	http.HandleFunc("/tests/list", func(w http.ResponseWriter, r *http.Request) {
 		AppHandler(w, r, tests.GetList)
 	})
+	http.HandleFunc("/tests/get", func(w http.ResponseWriter, r *http.Request) {
+		AppHandler(w, r, tests.GetOne)
+	})
 	http.HandleFunc("/tests/tags/list", func(w http.ResponseWriter, r *http.Request) {
 		AppHandler(w, r, tests.GetTagsList)
 	})
