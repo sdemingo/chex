@@ -1,8 +1,6 @@
 package questions
 
 import (
-	"fmt"
-
 	"appengine/data"
 	"appengine/srv"
 )
@@ -62,7 +60,7 @@ func getQuestByTags(wr srv.WrapperRequest, tags []string) (QuestionBuffer, error
 
 	for id, _ := range filtered {
 		if filtered[id] == len(tags) {
-			q, err := getQuestById(wr, fmt.Sprintf("%d", id))
+			q, err := GetQuestById(wr, id)
 			if err != nil {
 				return qs, err
 			}
@@ -130,7 +128,7 @@ func getAllQuestionsTags(wr srv.WrapperRequest) ([]string, error) {
 
 func getQuestionsTagsFromUser(wr srv.WrapperRequest, authorId int64) ([]string, error) {
 	var tagsMap = make(map[string]int, 0)
-	userQuests, err := getQuestByAuthor(wr, fmt.Sprintf("%d", authorId))
+	userQuests, err := getQuestByAuthor(wr, authorId)
 
 	tags := make([]string, 0)
 	for _, q := range userQuests {

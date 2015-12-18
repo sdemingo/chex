@@ -104,13 +104,33 @@ func (v QuestionBuffer) Len() int {
 	return len(v)
 }
 
-// Data backend access functions
+func GetQuestById(wr srv.WrapperRequest, id int64) (*Question, error) {
+	q := NewQuestion()
+	var err error
+
+	q.Id = id
+
+	qry := data.NewConn(wr, "questions")
+	qry.Get(q)
+
+	q.Tags, _ = getQuestTags(wr, q)
+
+	// search the solution. An answer for this quest from the same author
+	q.Solution, _ = answers.GetSolutionAnswer(wr, q.AuthorId, q.Id)
+
+	return q, err
+}
+
 func getQuestions(wr srv.WrapperRequest, filters map[string][]string) (QuestionBuffer, error) {
 	qs := NewQuestionBuffer()
 	var err error
 
 	if filters["id"] != nil {
-		q, err := getQuestById(wr, filters["id"][0])
+		id, err := strconv.ParseInt(filters["id"][0], 10, 64)
+		if err != nil {
+			return qs, errors.New(ERR_NOTVALIDQUEST)
+		}
+		q, err := GetQuestById(wr, id)
 		qs = append(qs, q)
 		return qs, err
 	}
@@ -165,36 +185,11 @@ func getQuestByChecksum(wr srv.WrapperRequest, sum string) (*Question, error) {
 	return q, nil
 }
 
-func getQuestById(wr srv.WrapperRequest, s_id string) (*Question, error) {
-	q := NewQuestion()
-	var err error
-
-	q.Id, err = strconv.ParseInt(s_id, 10, 64)
-	if err != nil {
-		return q, errors.New(ERR_QUESTNOTFOUND)
-	}
-
-	qry := data.NewConn(wr, "questions")
-	qry.Get(q)
-
-	q.Tags, _ = getQuestTags(wr, q)
-
-	// search the solution. An answer for this quest from the same author
-	q.Solution, _ = answers.GetSolutionAnswer(wr, q.AuthorId, q.Id)
-
-	return q, err
-}
-
-func getQuestByAuthor(wr srv.WrapperRequest, authorId string) (QuestionBuffer, error) {
+func getQuestByAuthor(wr srv.WrapperRequest, authorId int64) (QuestionBuffer, error) {
 	qs := NewQuestionBuffer()
 
-	id, err := strconv.ParseInt(authorId, 10, 64)
-	if err != nil {
-		return qs, errors.New(ERR_QUESTNOTFOUND)
-	}
-
 	qry := data.NewConn(wr, "questions")
-	qry.AddFilter("AuthorId =", id)
+	qry.AddFilter("AuthorId =", authorId)
 	qry.GetMany(&qs)
 
 	for i := range qs {

@@ -3,7 +3,6 @@ package questions
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	"app/users"
 	"model/answers"
@@ -146,7 +145,7 @@ func Solve(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	a.BuildBody()
 	a.AuthorId = wr.NU.Id
 
-	quest, err := getQuestById(wr, fmt.Sprintf("%d", a.QuestId))
+	quest, err := GetQuestById(wr, a.QuestId)
 	if err != nil {
 		return infoTmpl, err
 	}
