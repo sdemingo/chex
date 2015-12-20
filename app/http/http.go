@@ -39,11 +39,13 @@ func Welcome(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	// añadir más información a tc
 
-	if wr.NU.IsAdmin() {
+	//if wr.NU.IsAdmin() {
+	if wr.NU.GetRole() == users.ROLE_ADMIN {
 		return adminTmpl, nil
 	}
 
-	if wr.NU.IsTeacher() {
+	//if wr.NU.IsTeacher() {
+	if wr.NU.GetRole() == users.ROLE_TEACHER {
 		return teacherTmpl, nil
 	}
 

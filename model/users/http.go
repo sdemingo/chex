@@ -43,8 +43,8 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	var nus []*users.NUser
 
 	if strings.HasSuffix(wr.R.URL.Path, "/me") {
-		if wr.NU.Id > 0 {
-			filters := map[string][]string{"id": []string{fmt.Sprintf("%d", wr.NU.Id)}}
+		if wr.NU.ID() > 0 {
+			filters := map[string][]string{"id": []string{fmt.Sprintf("%d", wr.NU.ID())}}
 			nus, err := getUsers(wr, filters)
 			if len(nus) == 0 || err != nil {
 				return viewTmpl, errors.New(users.ERR_USERNOTFOUND)
@@ -200,12 +200,12 @@ func Import(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return infoTmpl, err
 	}
 
-	for _, nu := range nus {
+	/*for _, nu := range nus {
 		err = nu.IsValid()
 		if err != nil {
 			return infoTmpl, err
 		}
-	}
+	}*/
 
 	for _, nu := range nus {
 		err = putUser(wr, nu)

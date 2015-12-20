@@ -90,7 +90,8 @@ func errorResponse(wr srv.WrapperRequest, w http.ResponseWriter, err error) {
 
 func getCurrentUser(wr *srv.WrapperRequest) error {
 
-	var nu nusers.NUser
+	//var nu nusers.NUser
+	var nu nusers.AppUser
 
 	nus := users.NewNUserBuffer()
 	u := wr.U
@@ -106,14 +107,15 @@ func getCurrentUser(wr *srv.WrapperRequest) error {
 		// If the session users not in the datastore we use de admin
 		// users of the app
 		if wr.IsAdminRequest() {
-			nu = nusers.New(u.Email, "Administrador", nusers.ROLE_ADMIN)
+			//nu = nusers.New(u.Email, "Administrador", nusers.ROLE_ADMIN)
+			nu = nusers.GetDefaultUser(u.Email)
 		} else {
 			return errors.New("No user id found")
 		}
 	} else {
-		nu = *nus[0]
+		nu = nus[0]
 	}
 
-	wr.NU = &nu
+	wr.NU = nu
 	return err
 }

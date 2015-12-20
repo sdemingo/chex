@@ -56,9 +56,9 @@ func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []*users.
 
 func putUser(wr srv.WrapperRequest, nu *users.NUser) error {
 
-	if err := nu.IsValid(); err != nil {
+	/*if err := nu.IsValid(); err != nil {
 		return err
-	}
+	}*/
 
 	nu.TimeStamp = time.Now()
 
@@ -78,9 +78,9 @@ func putUser(wr srv.WrapperRequest, nu *users.NUser) error {
 
 func updateUser(wr srv.WrapperRequest, nu *users.NUser) error {
 
-	if err := nu.IsValid(); err != nil {
+	/*if err := nu.IsValid(); err != nil {
 		return err
-	}
+	}*/
 
 	old, err := getUserById(wr, fmt.Sprintf("%d", nu.Id))
 	if err != nil {
@@ -107,9 +107,9 @@ func updateUser(wr srv.WrapperRequest, nu *users.NUser) error {
 }
 
 func deleteUser(wr srv.WrapperRequest, nu *users.NUser) error {
-	if err := nu.IsValid(); err != nil {
+	/*if err := nu.IsValid(); err != nil {
 		return err
-	}
+	}*/
 
 	// Delete all users-tags
 	err := deleteUserTags(wr, nu)

@@ -10,10 +10,12 @@ import (
 )
 
 type WrapperRequest struct {
-	R            *http.Request
-	C            appengine.Context
-	U            *user.User
-	NU           *users.NUser
+	R  *http.Request
+	C  appengine.Context
+	U  *user.User
+	NU users.AppUser
+	//NU           *users.NUser
+
 	JsonResponse bool
 }
 

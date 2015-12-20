@@ -1,17 +1,17 @@
 package users
 
 import (
-	"errors"
 	"strings"
 	"time"
 )
 
 const (
-	ROLE_ADMIN   = 15
-	ROLE_TEACHER = 7
-	ROLE_STUDENT = 3
-	ROLE_GUEST   = 1
+	ROLE_GUEST   = iota
+	ROLE_STUDENT = iota
+	ROLE_TEACHER = iota
+	ROLE_ADMIN   = iota
 
+	//deprecated:
 	OP_VIEWER    = 1 // ver tests
 	OP_MAKER     = 2 // hacer tests
 	OP_COMMITTER = 4 // crear tests
@@ -25,6 +25,19 @@ const (
 	ERR_NOTOPERATIONALLOWED = "Operación no permitida"
 )
 
+var roleNames = []string{
+	ROLE_GUEST:   "Invitado",
+	ROLE_STUDENT: "Estudiante",
+	ROLE_TEACHER: "Profesor",
+	ROLE_ADMIN:   "Administrador"}
+
+type AppUser interface {
+	ID() int64
+	GetInfo() map[string]string
+	GetRole() int8
+	GetEmail() string
+}
+
 type NUser struct {
 	Id        int64 `json:",string" datastore:"-"`
 	Mail      string
@@ -33,6 +46,68 @@ type NUser struct {
 	Tags      []string  `datastore:"-"`
 	TimeStamp time.Time `json:"`
 }
+
+func (n *NUser) GetRole() int8 {
+	return n.Role
+}
+
+func (n *NUser) GetEmail() string {
+	return n.Mail
+}
+
+func (n *NUser) GetInfo() map[string]string {
+	info := make(map[string]string)
+
+	info["Username"] = n.Name
+	if int(n.Role) < len(roleNames) {
+		info["RoleName"] = roleNames[n.Role]
+	} else {
+		info["RoleName"] = ""
+	}
+	info["Tags"] = strings.Join(n.Tags, ",")
+	info["TimeStamp"] = n.TimeStamp.Format("02/01/2006")
+
+	return info
+}
+
+func (n *NUser) ID() int64 {
+	return n.Id
+}
+
+func (n *NUser) SetID(id int64) {
+	n.Id = id
+}
+
+func GetDefaultUser(email string) AppUser {
+	n := new(NUser)
+	n.Id = -1
+	n.Mail = email
+	n.Name = "Administrador"
+	n.Role = ROLE_ADMIN
+
+	return n
+}
+
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ */
+
+/*
 
 func IsAllowed(userPerm int8, opMask byte) bool {
 	return opMask == byte(userPerm)&opMask
@@ -53,10 +128,6 @@ func (n NUser) IsTeacher() bool {
 
 func (n NUser) IsStudent() bool {
 	return n.Role == ROLE_STUDENT
-}
-
-func (n NUser) GetEmail() string {
-	return n.Mail
 }
 
 func (n NUser) GetStringTags() string {
@@ -96,11 +167,4 @@ func (n NUser) IsValid() (err error) {
 
 	return
 }
-
-func (n NUser) ID() int64 {
-	return n.Id
-}
-
-func (n *NUser) SetID(id int64) {
-	n.Id = id
-}
+*/
