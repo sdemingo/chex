@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"app/users"
-
 	"appengine/data"
 	"appengine/srv"
 )
@@ -42,13 +40,13 @@ func (v UserTagBuffer) Len() int {
 	return len(v)
 }
 
-func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]*users.NUser, error) {
+func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]*NUser, error) {
 	nus := NewNUserBuffer()
 	uTagsAll := NewUserTagBuffer()
 
 	q := data.NewConn(wr, "users-tags")
 	if q.GetMany(&uTagsAll) != nil {
-		return nus, errors.New(users.ERR_USERNOTFOUND)
+		return nus, errors.New(ERR_USERNOTFOUND)
 	}
 
 	// After recover all UserTags it makes a homemade filtering
@@ -81,14 +79,14 @@ func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]*users.NUser, error
 	return nus, nil
 }
 
-func getUserTags(wr srv.WrapperRequest, nu *users.NUser) ([]string, error) {
+func getUserTags(wr srv.WrapperRequest, nu *NUser) ([]string, error) {
 	tags := make([]string, 0)
 	userTags := NewUserTagBuffer()
 
 	q := data.NewConn(wr, "users-tags")
 	q.AddFilter("UserId =", nu.Id)
 	if q.GetMany(&userTags) != nil {
-		return tags, errors.New(users.ERR_USERNOTFOUND)
+		return tags, errors.New(ERR_USERNOTFOUND)
 	}
 
 	tags = make([]string, 0)
@@ -100,7 +98,7 @@ func getUserTags(wr srv.WrapperRequest, nu *users.NUser) ([]string, error) {
 
 }
 
-func addUserTags(wr srv.WrapperRequest, nu *users.NUser) error {
+func addUserTags(wr srv.WrapperRequest, nu *NUser) error {
 	q := data.NewConn(wr, "users-tags")
 	for _, tag := range nu.Tags {
 		ut := &UserTag{UserId: nu.Id, Tag: tag}
@@ -112,7 +110,7 @@ func addUserTags(wr srv.WrapperRequest, nu *users.NUser) error {
 	return nil
 }
 
-func deleteUserTags(wr srv.WrapperRequest, nu *users.NUser) error {
+func deleteUserTags(wr srv.WrapperRequest, nu *NUser) error {
 	userTags := NewUserTagBuffer()
 
 	q := data.NewConn(wr, "users-tags")

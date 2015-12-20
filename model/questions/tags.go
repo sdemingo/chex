@@ -1,6 +1,8 @@
 package questions
 
 import (
+	"model/users"
+
 	"appengine/data"
 	"appengine/srv"
 )
@@ -66,7 +68,8 @@ func getQuestByTags(wr srv.WrapperRequest, tags []string) (QuestionBuffer, error
 			}
 
 			// only append the questions of the session user
-			if wr.NU.IsAdmin() || q.AuthorId == wr.NU.Id {
+			//if wr.NU.IsAdmin() || q.AuthorId == wr.NU.Id {
+			if wr.NU.GetRole() == users.ROLE_ADMIN || q.AuthorId == wr.NU.ID() {
 				qs = append(qs, q)
 			}
 		}

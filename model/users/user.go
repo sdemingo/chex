@@ -1,7 +1,6 @@
 package users
 
 import (
-	"app/users"
 	"errors"
 	"fmt"
 	"strconv"
@@ -12,10 +11,70 @@ import (
 	"appengine/srv"
 )
 
-type NUserBuffer []*users.NUser
+const (
+	ROLE_GUEST   = iota
+	ROLE_STUDENT = iota
+	ROLE_TEACHER = iota
+	ROLE_ADMIN   = iota
+
+	MAXSZUSERNAME = 100
+
+	ERR_NOTVALIDUSER        = "Usuario no valido"
+	ERR_DUPLICATEDUSER      = "Usuario duplicado"
+	ERR_USERNOTFOUND        = "Usuario no encontrado"
+	ERR_NOTOPERATIONALLOWED = "Operación no permitida"
+)
+
+var roleNames = []string{
+	ROLE_GUEST:   "Invitado",
+	ROLE_STUDENT: "Estudiante",
+	ROLE_TEACHER: "Profesor",
+	ROLE_ADMIN:   "Administrador"}
+
+type NUser struct {
+	Id        int64 `json:",string" datastore:"-"`
+	Mail      string
+	Name      string
+	Role      int8      `json:",string"`
+	Tags      []string  `datastore:"-"`
+	TimeStamp time.Time `json:"`
+}
+
+func (n *NUser) GetRole() int8 {
+	return n.Role
+}
+
+func (n *NUser) GetEmail() string {
+	return n.Mail
+}
+
+func (n *NUser) GetInfo() map[string]string {
+	info := make(map[string]string)
+
+	info["Username"] = n.Name
+	if int(n.Role) < len(roleNames) {
+		info["RoleName"] = roleNames[n.Role]
+	} else {
+		info["RoleName"] = ""
+	}
+	info["Tags"] = strings.Join(n.Tags, ",")
+	info["TimeStamp"] = n.TimeStamp.Format("02/01/2006")
+
+	return info
+}
+
+func (n *NUser) ID() int64 {
+	return n.Id
+}
+
+func (n *NUser) SetID(id int64) {
+	n.Id = id
+}
+
+type NUserBuffer []*NUser
 
 func NewNUserBuffer() NUserBuffer {
-	return make([]*users.NUser, 0)
+	return make([]*NUser, 0)
 }
 
 func (v NUserBuffer) At(i int) data.DataItem {
@@ -23,25 +82,25 @@ func (v NUserBuffer) At(i int) data.DataItem {
 }
 
 func (v NUserBuffer) Set(i int, t data.DataItem) {
-	v[i] = t.(*users.NUser)
+	v[i] = t.(*NUser)
 }
 
 func (v NUserBuffer) Len() int {
 	return len(v)
 }
 
-func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []*users.NUser, err error) {
+func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []*NUser, err error) {
 
 	if filters["id"] != nil {
 		nu, err := getUserById(wr, filters["id"][0])
-		nus := make([]*users.NUser, 1)
+		nus := make([]*NUser, 1)
 		nus[0] = nu
 		return nus, err
 	}
 
 	if filters["mail"] != nil {
 		nu, err := getUserByMail(wr, filters["mail"][0])
-		nus := make([]*users.NUser, 1)
+		nus := make([]*NUser, 1)
 		nus[0] = nu
 		return nus, err
 	}
@@ -54,7 +113,7 @@ func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []*users.
 	return
 }
 
-func putUser(wr srv.WrapperRequest, nu *users.NUser) error {
+func putUser(wr srv.WrapperRequest, nu *NUser) error {
 
 	/*if err := nu.IsValid(); err != nil {
 		return err
@@ -64,7 +123,7 @@ func putUser(wr srv.WrapperRequest, nu *users.NUser) error {
 
 	_, err := getUserByMail(wr, nu.Mail)
 	if err == nil {
-		return errors.New(users.ERR_DUPLICATEDUSER)
+		return errors.New(ERR_DUPLICATEDUSER)
 	}
 
 	q := data.NewConn(wr, "users")
@@ -76,7 +135,7 @@ func putUser(wr srv.WrapperRequest, nu *users.NUser) error {
 	return nil
 }
 
-func updateUser(wr srv.WrapperRequest, nu *users.NUser) error {
+func updateUser(wr srv.WrapperRequest, nu *NUser) error {
 
 	/*if err := nu.IsValid(); err != nil {
 		return err
@@ -84,7 +143,7 @@ func updateUser(wr srv.WrapperRequest, nu *users.NUser) error {
 
 	old, err := getUserById(wr, fmt.Sprintf("%d", nu.Id))
 	if err != nil {
-		return errors.New(users.ERR_USERNOTFOUND)
+		return errors.New(ERR_USERNOTFOUND)
 	}
 
 	// invariant fields
@@ -106,7 +165,7 @@ func updateUser(wr srv.WrapperRequest, nu *users.NUser) error {
 	return nil
 }
 
-func deleteUser(wr srv.WrapperRequest, nu *users.NUser) error {
+func deleteUser(wr srv.WrapperRequest, nu *NUser) error {
 	/*if err := nu.IsValid(); err != nil {
 		return err
 	}*/
@@ -121,15 +180,15 @@ func deleteUser(wr srv.WrapperRequest, nu *users.NUser) error {
 	return q.Delete(nu)
 }
 
-func getUserByMail(wr srv.WrapperRequest, email string) (*users.NUser, error) {
+func getUserByMail(wr srv.WrapperRequest, email string) (*NUser, error) {
 	nus := NewNUserBuffer()
-	nu := new(users.NUser)
+	nu := new(NUser)
 
 	q := data.NewConn(wr, "users")
 	q.AddFilter("Mail =", email)
 	q.GetMany(&nus)
 	if len(nus) == 0 {
-		return nu, errors.New(users.ERR_USERNOTFOUND)
+		return nu, errors.New(ERR_USERNOTFOUND)
 	}
 	nu = nus[0]
 	nu.Tags, _ = getUserTags(wr, nu)
@@ -137,12 +196,12 @@ func getUserByMail(wr srv.WrapperRequest, email string) (*users.NUser, error) {
 	return nu, nil
 }
 
-func getUserById(wr srv.WrapperRequest, s_id string) (*users.NUser, error) {
-	nu := new(users.NUser)
+func getUserById(wr srv.WrapperRequest, s_id string) (*NUser, error) {
+	nu := new(NUser)
 
 	id, err := strconv.ParseInt(s_id, 10, 64)
 	if err != nil {
-		return nu, errors.New(users.ERR_USERNOTFOUND)
+		return nu, errors.New(ERR_USERNOTFOUND)
 	}
 
 	nu.Id = id

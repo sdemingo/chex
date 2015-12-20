@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"app/users"
 	"model/answers"
+	"model/users"
 
 	"github.com/russross/blackfriday"
 
@@ -172,7 +172,7 @@ func putQuestion(wr srv.WrapperRequest, q *Question) error {
 
 	q.TimeStamp = time.Now()
 	q.SetCheckSum()
-	q.AuthorId = wr.NU.Id
+	q.AuthorId = wr.NU.ID()
 
 	_, err := getQuestByChecksum(wr, q.CheckSum)
 	if err == nil {

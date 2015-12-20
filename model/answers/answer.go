@@ -163,7 +163,7 @@ func PutSolutionAnswer(wr srv.WrapperRequest, a *Answer) error {
 	if err != nil { // New
 
 		a.TimeStamp = time.Now()
-		a.AuthorId = wr.NU.Id
+		a.AuthorId = wr.NU.ID()
 
 		err = putAnswerBody(wr, a)
 		if err != nil {

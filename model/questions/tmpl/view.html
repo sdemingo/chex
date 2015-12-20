@@ -5,6 +5,8 @@
   <div class="row col-md-12 ">
     <ul class="nav nav-pills text-right">
       <li role="presentation" class="active"><a href="#" onclick="window.history.back()" >Volver</a></li>
+      <li role="presentation" ><a href="/questions/edit?id={{.Content.Id}}">Editar</a></li>
+      <li role="presentation" ><a href="/questions/delete?id={{.Content.Id}}">Borrar</a></li>
     </ul>
   </div>
 </div>
@@ -20,7 +22,7 @@
   <!-- Panel de avisos de pregunta -->
   <div class="row col-md-1 pull-right">
     
-  {{if .UnSolvedQuestion}}
+  {{ if .Content.Solution.Body.IsUnsolved }}
     <a href="/help#no-solution" class="label label-danger">Sin Solución</a>
   {{end}}
   </div>
@@ -33,7 +35,7 @@
   
   <div id="answerPanel" class="row col-md-11 col-md-offset-1">
 
-    {{ if not .UnSolvedQuestion }}
+    {{ if not .Content.Solution.Body.IsUnsolved }}
     <div id="solvedPanel">
        {{.Content.GetHTMLSolution}}
       <input type="button" class="btn btn-default pull-right" id="answerUpdateButton" value="Actualizar" />

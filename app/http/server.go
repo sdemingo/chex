@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	nusers "app/users"
+	appusers "app/users"
 	"model/users"
 
 	"appengine/data"
@@ -91,7 +91,7 @@ func errorResponse(wr srv.WrapperRequest, w http.ResponseWriter, err error) {
 func getCurrentUser(wr *srv.WrapperRequest) error {
 
 	//var nu nusers.NUser
-	var nu nusers.AppUser
+	var nu appusers.AppUser
 
 	nus := users.NewNUserBuffer()
 	u := wr.U
@@ -108,7 +108,7 @@ func getCurrentUser(wr *srv.WrapperRequest) error {
 		// users of the app
 		if wr.IsAdminRequest() {
 			//nu = nusers.New(u.Email, "Administrador", nusers.ROLE_ADMIN)
-			nu = nusers.GetDefaultUser(u.Email)
+			nu = GetDefaultUser(u.Email)
 		} else {
 			return errors.New("No user id found")
 		}
@@ -118,4 +118,14 @@ func getCurrentUser(wr *srv.WrapperRequest) error {
 
 	wr.NU = nu
 	return err
+}
+
+func GetDefaultUser(email string) appusers.AppUser {
+	n := new(users.NUser)
+	n.Id = -1
+	n.Mail = email
+	n.Name = "Administrador"
+	n.Role = users.ROLE_ADMIN
+
+	return n
 }

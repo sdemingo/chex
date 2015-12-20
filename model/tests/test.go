@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"app/users"
+	"model/users"
 
 	"appengine/data"
 	"appengine/srv"
@@ -82,7 +82,7 @@ func putTest(wr srv.WrapperRequest, t *Test) error {
 	}
 
 	t.TimeStamp = time.Now()
-	t.AuthorId = wr.NU.Id
+	t.AuthorId = wr.NU.ID()
 
 	q := data.NewConn(wr, "tests")
 	q.Put(t)

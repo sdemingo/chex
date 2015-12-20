@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"app/users"
 	"model/answers"
+	"model/users"
 
 	"appengine/srv"
 )
@@ -22,10 +22,11 @@ func Main(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	wr.R.ParseForm()
 	qs, err := getQuestions(wr, wr.R.Form)
@@ -39,13 +40,13 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-
+	var err error
 	// only teacher must entry to the question throught this
 	// handler. A student or other should use test handlers
-	err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	if err != nil {
-		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
+	// if err != nil {
+	// 	return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	wr.R.ParseForm()
 	qs, err := getQuestions(wr, wr.R.Form)
@@ -55,27 +56,25 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	q := qs[0]
 
 	// A question only can be viewed by and admin or by their writer
-	if !wr.NU.IsAdmin() && q.AuthorId != wr.NU.Id {
-		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	// TODO
 
-	tc["UnSolvedQuestion"] = q.Solution.Body.IsUnsolved()
 	tc["Content"] = q
 
 	return viewTmpl, nil
 }
 
 func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_VIEWER)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_VIEWER)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	var tags []string
-	if wr.NU.IsAdmin() {
+	if wr.NU.GetRole() == users.ROLE_ADMIN {
 		tags, err = getAllQuestionsTags(wr)
 	} else {
-		tags, err = getQuestionsTagsFromUser(wr, wr.NU.Id)
+		tags, err = getQuestionsTagsFromUser(wr, wr.NU.ID())
 	}
 
 	if err != nil {
@@ -92,11 +91,37 @@ func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	return newTmpl, nil
 }
 
-func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
+	// if err != nil {
+	// 	return newTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
+
+	wr.R.ParseForm()
+	qs, err := getQuestions(wr, wr.R.Form)
+	if len(qs) == 0 || err != nil {
+		return viewTmpl, errors.New(ERR_QUESTNOTFOUND)
 	}
+	q := qs[0]
+
+	// Chequear tambien la autoria de la pregunta
+	// solo puede actualizarla el autor
+
+	// Chequear que no haya sido añadida a examenes o ya
+	//contestada. En ese caso no se puede actualizar
+
+	tc["Content"] = q
+
+	return newTmpl, nil
+}
+
+func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	var q Question
 
@@ -117,10 +142,11 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Solve(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	var a *answers.Answer
 
@@ -131,7 +157,7 @@ func Solve(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 
 	a.BuildBody()
-	a.AuthorId = wr.NU.Id
+	a.AuthorId = wr.NU.ID()
 
 	quest, err := GetQuestById(wr, a.QuestId)
 	if err != nil {

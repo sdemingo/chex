@@ -1,9 +1,9 @@
 package http
 
 import (
-	"app/users"
-	"errors"
 	"net/http"
+
+	"model/users"
 
 	"appengine/srv"
 )
@@ -31,11 +31,10 @@ var teacherTmpl = "app/tmpl/teacherWelcome.html"
 var helpTmpl = "app/tmpl/help.html"
 
 func Welcome(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-
-	err := srv.CheckPerm(wr, users.OP_VIEWER)
-	if err != nil {
-		return "", errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	// err := srv.CheckPerm(wr, users.OP_VIEWER)
+	// if err != nil {
+	// 	return "", errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	// añadir más información a tc
 

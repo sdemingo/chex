@@ -2,10 +2,7 @@ package answers
 
 import (
 	"encoding/json"
-	"errors"
 	//"fmt"
-
-	"app/users"
 
 	"appengine/srv"
 )
@@ -16,10 +13,11 @@ var infoTmpl = ""
 
 // It must be rename to solve and move to exercises/http.go
 func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_MAKER)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_MAKER)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	var a *Answer
 
@@ -30,7 +28,7 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 
 	a.BuildBody()
-	a.AuthorId = wr.NU.Id
+	a.AuthorId = wr.NU.ID()
 
 	err = putAnswer(wr, a)
 	if err != nil {

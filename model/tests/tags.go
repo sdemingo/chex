@@ -3,6 +3,8 @@ package tests
 import (
 	"fmt"
 
+	"model/users"
+
 	"appengine/data"
 	"appengine/srv"
 )
@@ -119,7 +121,8 @@ func getTestsByTags(wr srv.WrapperRequest, tags []string) (TestBuffer, error) {
 			}
 
 			// only append the questions of the session user
-			if wr.NU.IsAdmin() || q.AuthorId == wr.NU.Id {
+			//if wr.NU.IsAdmin() || q.AuthorId == wr.NU.Id {
+			if wr.NU.GetRole() == users.ROLE_ADMIN || q.AuthorId == wr.NU.ID() {
 				ts = append(ts, q)
 			}
 		}

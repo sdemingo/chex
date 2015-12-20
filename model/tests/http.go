@@ -5,8 +5,6 @@ import (
 	"errors"
 	"strings"
 
-	"app/users"
-
 	"appengine/srv"
 )
 
@@ -18,10 +16,11 @@ var viewTmpl = "model/tests/tmpl/view.html"
 var infoTmpl = "model/tests/tmpl/info.html"
 
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	wr.R.ParseForm()
 
@@ -36,11 +35,11 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-
-	err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	if err != nil {
-		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
+	// if err != nil {
+	// 	return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	wr.R.ParseForm()
 
@@ -56,10 +55,11 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_VIEWER)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_VIEWER)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	tags, err := getAllTestsTags(wr)
 	if err != nil {
@@ -76,10 +76,11 @@ func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	var t Test
 

@@ -1,7 +1,6 @@
 package users
 
 import (
-	"app/users"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -22,10 +21,11 @@ func Main(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
+	// if err != nil {
+	// 	return viewTmpl, errors.New(ERR_NOTOPERATIONALLOWED)
+	// }
 
 	wr.R.ParseForm()
 	nus, err := getUsers(wr, wr.R.Form)
@@ -39,15 +39,15 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-
-	var nus []*users.NUser
+	var err error
+	var nus []*NUser
 
 	if strings.HasSuffix(wr.R.URL.Path, "/me") {
 		if wr.NU.ID() > 0 {
 			filters := map[string][]string{"id": []string{fmt.Sprintf("%d", wr.NU.ID())}}
 			nus, err := getUsers(wr, filters)
 			if len(nus) == 0 || err != nil {
-				return viewTmpl, errors.New(users.ERR_USERNOTFOUND)
+				return viewTmpl, errors.New(ERR_USERNOTFOUND)
 			}
 			tc["Content"] = nus[0]
 		} else {
@@ -55,15 +55,15 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		}
 
 	} else {
-		err := srv.CheckPerm(wr, users.OP_COMMITTER)
-		if err != nil {
-			return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-		}
+		// err := srv.CheckPerm(wr, users.OP_COMMITTER)
+		// if err != nil {
+		// 	return viewTmpl, errors.New(ERR_NOTOPERATIONALLOWED)
+		// }
 
 		wr.R.ParseForm()
 		nus, err = getUsers(wr, wr.R.Form)
 		if len(nus) == 0 || err != nil {
-			return viewTmpl, errors.New(users.ERR_USERNOTFOUND)
+			return viewTmpl, errors.New(ERR_USERNOTFOUND)
 		}
 		tc["Content"] = nus[0]
 		tc["UserProfile"] = true
@@ -73,10 +73,11 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_VIEWER)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_VIEWER)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	tags, err := getAllUserTags(wr)
 	if err != nil {
@@ -94,16 +95,16 @@ func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-
-	err := srv.CheckPerm(wr, users.OP_ADMIN)
-	if err != nil {
-		return newTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_ADMIN)
+	// if err != nil {
+	// 	return newTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	wr.R.ParseForm()
 	nus, err := getUsers(wr, wr.R.Form)
 	if len(nus) == 0 || err != nil {
-		return viewTmpl, errors.New(users.ERR_USERNOTFOUND)
+		return viewTmpl, errors.New(ERR_USERNOTFOUND)
 	}
 
 	tc["Content"] = nus[0]
@@ -112,19 +113,20 @@ func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Delete(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_ADMIN)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_ADMIN)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	wr.R.ParseForm()
 	nus, err := getUsers(wr, wr.R.Form)
 	if len(nus) == 0 || err != nil {
-		return infoTmpl, errors.New(users.ERR_USERNOTFOUND)
+		return infoTmpl, errors.New(ERR_USERNOTFOUND)
 	}
 	err = deleteUser(wr, nus[0])
 	if err != nil {
-		return infoTmpl, errors.New(users.ERR_USERNOTFOUND)
+		return infoTmpl, errors.New(ERR_USERNOTFOUND)
 	}
 
 	tc["Content"] = "Usuario borrado con éxito"
@@ -133,13 +135,13 @@ func Delete(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Update(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_ADMIN)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
-	err := srv.CheckPerm(wr, users.OP_ADMIN)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
-
-	nu := new(users.NUser)
+	nu := new(NUser)
 
 	decoder := json.NewDecoder(wr.R.Body)
 	err = decoder.Decode(nu)
@@ -158,12 +160,13 @@ func Update(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_ADMIN)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_ADMIN)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
-	nu := new(users.NUser)
+	nu := new(NUser)
 
 	decoder := json.NewDecoder(wr.R.Body)
 	err = decoder.Decode(nu)
@@ -182,10 +185,11 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Import(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	err := srv.CheckPerm(wr, users.OP_ADMIN)
-	if err != nil {
-		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	}
+	var err error
+	// err := srv.CheckPerm(wr, users.OP_ADMIN)
+	// if err != nil {
+	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	// }
 
 	file, _, err := wr.R.FormFile("importFile")
 	if err != nil {
