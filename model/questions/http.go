@@ -22,11 +22,9 @@ func Main(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var err error
-	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	// if err != nil {
-	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < users.ROLE_TEACHER {
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
 
 	wr.R.ParseForm()
 	qs, err := getQuestions(wr, wr.R.Form)
@@ -40,13 +38,11 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var err error
 	// only teacher must entry to the question throught this
 	// handler. A student or other should use test handlers
-	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	// if err != nil {
-	// 	return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < users.ROLE_TEACHER {
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
 
 	wr.R.ParseForm()
 	qs, err := getQuestions(wr, wr.R.Form)
@@ -55,8 +51,8 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 	q := qs[0]
 
+	// TODO:
 	// A question only can be viewed by and admin or by their writer
-	// TODO
 
 	tc["Content"] = q
 
@@ -65,10 +61,9 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	var err error
-	// err := srv.CheckPerm(wr, users.OP_VIEWER)
-	// if err != nil {
-	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < users.ROLE_GUEST {
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
 
 	var tags []string
 	if wr.NU.GetRole() == users.ROLE_ADMIN {
@@ -92,11 +87,9 @@ func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var err error
-	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	// if err != nil {
-	// 	return newTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < users.ROLE_TEACHER {
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
 
 	wr.R.ParseForm()
 	qs, err := getQuestions(wr, wr.R.Form)
@@ -105,9 +98,11 @@ func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 	q := qs[0]
 
+	// TODO:
 	// Chequear tambien la autoria de la pregunta
 	// solo puede actualizarla el autor
 
+	// TODO:
 	// Chequear que no haya sido añadida a examenes o ya
 	//contestada. En ese caso no se puede actualizar
 
@@ -117,16 +112,14 @@ func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var err error
-	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	// if err != nil {
-	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < users.ROLE_TEACHER {
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
 
 	var q Question
 
 	decoder := json.NewDecoder(wr.R.Body)
-	err = decoder.Decode(&q)
+	err := decoder.Decode(&q)
 	if err != nil {
 		return infoTmpl, err
 	}
@@ -142,16 +135,14 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Solve(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var err error
-	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	// if err != nil {
-	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < users.ROLE_TEACHER {
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
 
 	var a *answers.Answer
 
 	decoder := json.NewDecoder(wr.R.Body)
-	err = decoder.Decode(&a)
+	err := decoder.Decode(&a)
 	if err != nil {
 		return infoTmpl, err
 	}

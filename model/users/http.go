@@ -21,11 +21,9 @@ func Main(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var err error
-	// err := srv.CheckPerm(wr, users.OP_COMMITTER)
-	// if err != nil {
-	// 	return viewTmpl, errors.New(ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < ROLE_TEACHER {
+		return viewTmpl, errors.New(ERR_NOTOPERATIONALLOWED)
+	}
 
 	wr.R.ParseForm()
 	nus, err := getUsers(wr, wr.R.Form)
@@ -55,10 +53,9 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		}
 
 	} else {
-		// err := srv.CheckPerm(wr, users.OP_COMMITTER)
-		// if err != nil {
-		// 	return viewTmpl, errors.New(ERR_NOTOPERATIONALLOWED)
-		// }
+		if wr.NU.GetRole() < ROLE_TEACHER {
+			return viewTmpl, errors.New(ERR_NOTOPERATIONALLOWED)
+		}
 
 		wr.R.ParseForm()
 		nus, err = getUsers(wr, wr.R.Form)
@@ -73,11 +70,9 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var err error
-	// err := srv.CheckPerm(wr, users.OP_VIEWER)
-	// if err != nil {
-	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < ROLE_GUEST {
+		return viewTmpl, errors.New(ERR_NOTOPERATIONALLOWED)
+	}
 
 	tags, err := getAllUserTags(wr)
 	if err != nil {
@@ -95,11 +90,9 @@ func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var err error
-	// err := srv.CheckPerm(wr, users.OP_ADMIN)
-	// if err != nil {
-	// 	return newTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < ROLE_ADMIN {
+		return viewTmpl, errors.New(ERR_NOTOPERATIONALLOWED)
+	}
 
 	wr.R.ParseForm()
 	nus, err := getUsers(wr, wr.R.Form)
@@ -113,11 +106,9 @@ func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Delete(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var err error
-	// err := srv.CheckPerm(wr, users.OP_ADMIN)
-	// if err != nil {
-	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < ROLE_ADMIN {
+		return viewTmpl, errors.New(ERR_NOTOPERATIONALLOWED)
+	}
 
 	wr.R.ParseForm()
 	nus, err := getUsers(wr, wr.R.Form)
@@ -135,16 +126,14 @@ func Delete(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Update(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var err error
-	// err := srv.CheckPerm(wr, users.OP_ADMIN)
-	// if err != nil {
-	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < ROLE_ADMIN {
+		return viewTmpl, errors.New(ERR_NOTOPERATIONALLOWED)
+	}
 
 	nu := new(NUser)
 
 	decoder := json.NewDecoder(wr.R.Body)
-	err = decoder.Decode(nu)
+	err := decoder.Decode(nu)
 	if err != nil {
 		return infoTmpl, err
 	}
@@ -160,16 +149,14 @@ func Update(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var err error
-	// err := srv.CheckPerm(wr, users.OP_ADMIN)
-	// if err != nil {
-	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < ROLE_ADMIN {
+		return viewTmpl, errors.New(ERR_NOTOPERATIONALLOWED)
+	}
 
 	nu := new(NUser)
 
 	decoder := json.NewDecoder(wr.R.Body)
-	err = decoder.Decode(nu)
+	err := decoder.Decode(nu)
 	if err != nil {
 		return infoTmpl, err
 	}
@@ -185,18 +172,15 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func Import(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	var err error
-	// err := srv.CheckPerm(wr, users.OP_ADMIN)
-	// if err != nil {
-	// 	return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < ROLE_ADMIN {
+		return viewTmpl, errors.New(ERR_NOTOPERATIONALLOWED)
+	}
 
 	file, _, err := wr.R.FormFile("importFile")
 	if err != nil {
 		return infoTmpl, err
 	}
 
-	//var nus []users.NUser
 	nus := NewNUserBuffer()
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&nus)
@@ -204,12 +188,8 @@ func Import(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return infoTmpl, err
 	}
 
-	/*for _, nu := range nus {
-		err = nu.IsValid()
-		if err != nil {
-			return infoTmpl, err
-		}
-	}*/
+	// TODO:
+	// Check if the users are valid
 
 	for _, nu := range nus {
 		err = putUser(wr, nu)

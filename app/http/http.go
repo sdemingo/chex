@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"net/http"
 
 	"model/users"
@@ -31,19 +32,16 @@ var teacherTmpl = "app/tmpl/teacherWelcome.html"
 var helpTmpl = "app/tmpl/help.html"
 
 func Welcome(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	// err := srv.CheckPerm(wr, users.OP_VIEWER)
-	// if err != nil {
-	// 	return "", errors.New(users.ERR_NOTOPERATIONALLOWED)
-	// }
+	if wr.NU.GetRole() < users.ROLE_GUEST {
+		return "", errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
 
 	// añadir más información a tc
 
-	//if wr.NU.IsAdmin() {
 	if wr.NU.GetRole() == users.ROLE_ADMIN {
 		return adminTmpl, nil
 	}
 
-	//if wr.NU.IsTeacher() {
 	if wr.NU.GetRole() == users.ROLE_TEACHER {
 		return teacherTmpl, nil
 	}
