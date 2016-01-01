@@ -13,6 +13,7 @@ $(document).ready(function () {
 
     CHEX={
 	userTags:{},
-	questionTags:{}
+	questionTags:{},
+	testTags:{}
     }
 })

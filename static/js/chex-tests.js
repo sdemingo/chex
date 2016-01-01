@@ -79,6 +79,20 @@ var tests = (function(){
 	}
     }
 
+   // Callback after the list user tags request
+    var listTagsResponse = function(response){
+	if (response){
+	    $.each(response,function(i,e){
+		if (e.trim().length > 0){
+		    // $(settings.panel+" .tags")
+		    // 	.append("<a href=\"#\" class=\"label label-default\">"+e+"</a>")
+		    // 	.on("click",selectTag)
+		    CHEX.testTags[e]=1
+		}
+	    })
+		}
+    }
+
     var buildExerciseList = function(){
 	var exercises=[]
 	var added=questionsList.getAdded()	
@@ -135,6 +149,7 @@ var tests = (function(){
 
 
     var init = function() {
+	listTags(listTagsResponse)
 	bindFunctions()
     }
 

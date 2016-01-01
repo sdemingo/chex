@@ -281,6 +281,16 @@ $(function() {
 		    Object.keys(CHEX.questionTags), extractLast( request.term ) ) );
 	    }
 	});
+
+    // Source callback for the questions input-tags
+    $("#testEditForm input.input-tags" )
+	.autocomplete({
+	    minLength: 1,
+	    source: function( request, response ) {
+		response( $.ui.autocomplete.filter(
+		    Object.keys(CHEX.testTags), extractLast( request.term ) ) );
+	    }
+	});
 });
 
 
