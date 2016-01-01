@@ -38,7 +38,6 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if wr.NU.GetRole() < users.ROLE_TEACHER {
 		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
-
 	wr.R.ParseForm()
 
 	ts, err := getTests(wr, wr.R.Form)
@@ -63,6 +62,28 @@ func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, erro
 	}
 
 	tc["Content"] = tags
+
+	return infoTmpl, nil
+}
+
+func GetUsersList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	if wr.NU.GetRole() < users.ROLE_TEACHER {
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+	wr.R.ParseForm()
+
+	ts, err := getTests(wr, wr.R.Form)
+	if len(ts) == 0 || err != nil {
+		return viewTmpl, errors.New(ERR_TESTNOTFOUND)
+	}
+	t := ts[0]
+
+	users, err := getUsersAllowed(wr, t)
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	tc["Content"] = users
 
 	return infoTmpl, nil
 }

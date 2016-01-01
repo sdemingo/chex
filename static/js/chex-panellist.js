@@ -437,6 +437,10 @@ var usersList = (function(){
 	    }
 
 
+    var loadUserId = function(id){
+	
+    }
+
     var bindFunctions = function(){
 
 	// Show users for select them
@@ -488,7 +492,8 @@ var usersList = (function(){
     return{
 	init: init,
 	getSelected:function(){return data.selectedUsers},
-	getAdded:function(){return data.testsUsers}
+	getAdded:function(){return data.testsUsers},
+	setAdded:loadUsers
     }
 
 })()
