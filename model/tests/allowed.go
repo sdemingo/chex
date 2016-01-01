@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"model/users"
+
 	"appengine/data"
 	"appengine/srv"
 )
@@ -47,4 +49,24 @@ func addUsersAllowed(wr srv.WrapperRequest, t *Test) error {
 		}
 	}
 	return nil
+}
+
+func getUsersAllowed(wr srv.WrapperRequest, t *Test) ([]*users.NUser, error) {
+	tus := NewTestUserBuffer()
+	nus := make([]*users.NUser, 0)
+
+	q := data.NewConn(wr, "tests-users")
+	q.AddFilter("TestId=", t.Id)
+	err := q.GetMany(tus)
+
+	qu := data.NewConn(wr, "users")
+	for i := range tus {
+		tu := tus.At(i)
+		us := new(users.NUser)
+		us.SetID(tu.ID())
+		qu.Get(us)
+		nus = append(nus, us)
+	}
+
+	return nus, err
 }
