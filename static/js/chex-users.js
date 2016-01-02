@@ -39,6 +39,16 @@ var users = (function(){
 	});
     }
 
+    var getUser =  function(id,cb){
+	$.ajax({
+	    url:DOMAIN+'/users/get?id='+id,
+	    type: 'post',
+	    dataType: 'json',
+	    success: cb,
+	    error: error
+	});
+    }
+
     var editUser = function(u,cb){
 	$.ajax({
 	    url:DOMAIN+'/users/update',
@@ -214,6 +224,7 @@ var users = (function(){
 	list: listUsers,
 	tags: listTags,
 	add: addUser,
+	get: getUser,
 	del: deleteUser
     }
 })()
