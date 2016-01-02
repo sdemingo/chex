@@ -51,22 +51,29 @@ func addUsersAllowed(wr srv.WrapperRequest, t *Test) error {
 	return nil
 }
 
-func getUsersAllowed(wr srv.WrapperRequest, t *Test) ([]*users.NUser, error) {
+func getAllowed(wr srv.WrapperRequest, t *Test) error {
 	tus := NewTestUserBuffer()
-	nus := make([]*users.NUser, 0)
+	t.UList = make([]int64, 0)
 
 	q := data.NewConn(wr, "tests-users")
 	q.AddFilter("TestId=", t.Id)
-	err := q.GetMany(tus)
-
-	qu := data.NewConn(wr, "users")
+	err := q.GetMany(&tus)
 	for i := range tus {
 		tu := tus.At(i)
+		t.UList = append(t.UList, tu.ID())
+	}
+	return err
+}
+
+func getUsersAllowed(wr srv.WrapperRequest, t *Test) ([]*users.NUser, error) {
+	nus := make([]*users.NUser, 0)
+	qu := data.NewConn(wr, "users")
+	for i := range t.UList {
 		us := new(users.NUser)
-		us.SetID(tu.ID())
+		us.SetID(t.UList[i])
 		qu.Get(us)
 		nus = append(nus, us)
 	}
 
-	return nus, err
+	return nus, nil
 }

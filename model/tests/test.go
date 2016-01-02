@@ -50,6 +50,10 @@ func (t *Test) IsValid() error {
 	return nil
 }
 
+func (t *Test) GetStringTags() string {
+	return strings.Join(t.Tags, ", ")
+}
+
 func (t Test) ID() int64 {
 	return t.Id
 }
@@ -150,7 +154,7 @@ func getTestById(wr srv.WrapperRequest, authorId string) (*Test, error) {
 
 	getTestTags(wr, t)
 	getExercises(wr, t)
-	// getAllowed
+	getAllowed(wr, t)
 
 	return t, err
 }

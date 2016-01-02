@@ -18,17 +18,17 @@
       
       <div class="form-group">
 	<label>Título</label>
-	<input type="text" class="form-control" name="Title" placeholder="Título del exámen" value="">
+	<input type="text" class="form-control" name="Title" placeholder="Título del exámen" value="{{.Content.Title}}">
       </div>
 
       <div class="form-group">
 	<label>Curso</label>
-	<input type="text" class="form-control" name="Course" placeholder="Curso, módulo, ciclo, etc ..." value="">
+	<input type="text" class="form-control" name="Course" placeholder="Curso, módulo, ciclo, etc ..." value="{{.Content.Course}}">
       </div>
 
       <div class="form-group">
 	<label>Comentarios iniciales</label>
-	<textarea name="Desc" class="form-control">
+	<textarea name="Desc" class="form-control">{{.Content.Desc}}
 	</textarea>
       </div>
 
@@ -99,7 +99,7 @@
 
       <div class="form-group">
 	<label>Etiquetas</label>
-	<input type="text" class="form-control" name="Tags" placeholder="Escríbelas separadas por comas" value="{{.Content.GetStringTags}}">
+	<input type="text" class="form-control input-tags" name="Tags" placeholder="Escríbelas separadas por comas" value="{{.Content.GetStringTags}}">
       </div>
 
       <div class="form-group text-right">
@@ -131,8 +131,11 @@
 </div>
 
 <script>
- //panelList.init({addItemIcon:true,removeItemIcon:true})
- usersList.init({addItemIcon:true,removeItemIcon:true})
+ var usersToLoad
+ {{if .FromEditHandler}}
+    usersToLoad = {{.Content.UList}}
+ {{end}}
+ usersList.init({usersIdToLoad:usersToLoad,addItemIcon:true,removeItemIcon:true})
  questionsList.init({addItemIcon:true,removeItemIcon:true})
 </script>
 {{end}}

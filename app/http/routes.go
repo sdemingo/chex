@@ -49,6 +49,9 @@ func init() {
 	http.HandleFunc("/tests/new", func(w http.ResponseWriter, r *http.Request) {
 		AppHandler(w, r, tests.New)
 	})
+	http.HandleFunc("/tests/edit", func(w http.ResponseWriter, r *http.Request) {
+		AppHandler(w, r, tests.Edit)
+	})
 	http.HandleFunc("/tests/add", func(w http.ResponseWriter, r *http.Request) {
 		AppHandler(w, r, tests.Add)
 	})

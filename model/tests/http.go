@@ -92,6 +92,22 @@ func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	return newTmpl, nil
 }
 
+func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	if wr.NU.GetRole() < users.ROLE_TEACHER {
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	wr.R.ParseForm()
+	ts, err := getTests(wr, wr.R.Form)
+	if len(ts) == 0 || err != nil {
+		return viewTmpl, errors.New(ERR_TESTNOTFOUND)
+	}
+	tc["Content"] = ts[0]
+	tc["FromEditHandler"] = true
+
+	return newTmpl, nil
+}
+
 func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if wr.NU.GetRole() < users.ROLE_TEACHER {
 		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
