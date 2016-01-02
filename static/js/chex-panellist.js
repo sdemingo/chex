@@ -437,10 +437,6 @@ var usersList = (function(){
 	    }
 
 
-    var loadUserId = function(id){
-	
-    }
-
     var bindFunctions = function(){
 
 	// Show users for select them
@@ -484,6 +480,17 @@ var usersList = (function(){
     var init = function(options) {
 	settings=options
 
+	if (settings.usersIdToLoad){
+	    console.log("solicito usuarios con ids "+settings.usersIdToLoad)
+	    settings.usersIdToLoad.forEach(function(uid){
+		users.get(uid,function(u){
+		    data.usersCache[u.Id]=u
+		    data.testsUsers[u.Id]=u
+		    listTestUsers()
+		})
+	    })
+	}
+
 	$("#testSelectUserPanel").hide()
 	$("#testAddedUserPanel ul").empty()
 	bindFunctions()
@@ -492,8 +499,7 @@ var usersList = (function(){
     return{
 	init: init,
 	getSelected:function(){return data.selectedUsers},
-	getAdded:function(){return data.testsUsers},
-	setAdded:loadUsers
+	getAdded:function(){return data.testsUsers}
     }
 
 })()

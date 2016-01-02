@@ -42,7 +42,7 @@ var users = (function(){
     var getUser =  function(id,cb){
 	$.ajax({
 	    url:DOMAIN+'/users/get?id='+id,
-	    type: 'post',
+	    type: 'get',
 	    dataType: 'json',
 	    success: cb,
 	    error: error

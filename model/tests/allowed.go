@@ -59,8 +59,7 @@ func getAllowed(wr srv.WrapperRequest, t *Test) error {
 	q.AddFilter("TestId=", t.Id)
 	err := q.GetMany(&tus)
 	for i := range tus {
-		tu := tus.At(i)
-		t.UList = append(t.UList, tu.ID())
+		t.UList = append(t.UList, tus[i].UserId)
 	}
 	return err
 }
