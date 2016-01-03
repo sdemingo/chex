@@ -479,15 +479,15 @@ var usersList = (function(){
 
     var init = function(options) {
 	settings=options
-
-	if (settings.usersIdToLoad){
-	    console.log("solicito usuarios con ids "+settings.usersIdToLoad)
-	    settings.usersIdToLoad.forEach(function(uid){
-		users.get(uid,function(u){
+	
+	// load users added before
+	if (settings.test){
+	    tests.listUsers(settings.test, function(users){
+		users.forEach(function(u){
 		    data.usersCache[u.Id]=u
 		    data.testsUsers[u.Id]=u
-		    listTestUsers()
 		})
+		listTestUsers()
 	    })
 	}
 
@@ -598,61 +598,61 @@ var testsList = (function(){
 	selectItem(that,data.selectedTests)
     }
 
-/*
+    /*
     // Event handler to add users to the tests collection
     var addUserHandler = function(event){
-	event.preventDefault()
-	
-	// mark this user as selected and add all of them
-	var that = $(this).parents("li.list-group-item")
-	if (!data.selectedTests[that.attr("id")]){
-	    selectItem(that,data.selectedTests)
-	}
-	for (var id in data.selectedTests) {
-	    data.testsAdded[id]=data.testsCache[id]
-	}
-
-	// dump users selected
-	data.selectedTests={}
-
-	listTestUsers()
-	$("#testAddedUserPanel").show()
-	$("#testSelectUserPanel").hide()
+    event.preventDefault()
+    
+    // mark this user as selected and add all of them
+    var that = $(this).parents("li.list-group-item")
+    if (!data.selectedTests[that.attr("id")]){
+    selectItem(that,data.selectedTests)
     }
-*/
-/*
+    for (var id in data.selectedTests) {
+    data.testsAdded[id]=data.testsCache[id]
+    }
+
+    // dump users selected
+    data.selectedTests={}
+
+    listTestUsers()
+    $("#testAddedUserPanel").show()
+    $("#testSelectUserPanel").hide()
+    }
+    */
+    /*
     // List every users added
     var listTestUsers = function(){
-	$("#testAddedUserPanel ul").empty()
+    $("#testAddedUserPanel ul").empty()
 
-	for (var id in data.testsAdded) {
-	    u = data.testsCache[id]
-	    if (!u){
-		return
-	    }
+    for (var id in data.testsAdded) {
+    u = data.testsCache[id]
+    if (!u){
+    return
+    }
 
-	    var li = $('<li id='+u.Id+' class="list-group-item col-md-12">')
-		.append('<div class="row icons col-md-2">\
-<a href="#" class="item-select glyphicon glyphicon-ok"></a>\
-\
-</div>')
-	    
-	    li.on("dblclick",".item-select",selectAllUsersHandler)
-	    li.on("click",".item-select",selectTestHandler)
-	    if (settings && settings.removeItemIcon){
-		li.find(".icons").append('<a href="#" class="item-remove glyphicon glyphicon-remove"></a>')
-		li.on("click",".item-remove",removeUserHandler)
-	    }
-	    li.append(
-		$('<div class="col-md-10">')
-		    .append('<a href="/users/get?id='+u.Id+'" class="item-link">'+u.Name+'</a>')
-	    )
+    var li = $('<li id='+u.Id+' class="list-group-item col-md-12">')
+    .append('<div class="row icons col-md-2">\
+    <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
+    \
+    </div>')
+    
+    li.on("dblclick",".item-select",selectAllUsersHandler)
+    li.on("click",".item-select",selectTestHandler)
+    if (settings && settings.removeItemIcon){
+    li.find(".icons").append('<a href="#" class="item-remove glyphicon glyphicon-remove"></a>')
+    li.on("click",".item-remove",removeUserHandler)
+    }
+    li.append(
+    $('<div class="col-md-10">')
+    .append('<a href="/users/get?id='+u.Id+'" class="item-link">'+u.Name+'</a>')
+    )
 
-	    $("#testAddedUserPanel .results").append(li)
-	    
-	}	    
+    $("#testAddedUserPanel .results").append(li)
+    
+    }	    
     } 
-*/
+    */
 
     // Event handler to remove users selected from the test collection
     var removeTestHandler = function(event){
@@ -689,18 +689,18 @@ var testsList = (function(){
 
     var bindFunctions = function(){
 
-/*	// Show users for select them
-	$("#addMoreUsers").click(function(){
-	    $("#testAddedUserPanel").hide()
-	    $("#testSelectUserPanel").show()
-	})
+	/*	// Show users for select them
+		$("#addMoreUsers").click(function(){
+		$("#testAddedUserPanel").hide()
+		$("#testSelectUserPanel").show()
+		})
 
-	// Cancel the select users action
-	$("#cancelSelectedUser").click(function(){
-	    $("#testAddedUserPanel").show()
-	    $("#testSelectUserPanel").hide()
-	})
-*/
+		// Cancel the select users action
+		$("#cancelSelectedUser").click(function(){
+		$("#testAddedUserPanel").show()
+		$("#testSelectUserPanel").hide()
+		})
+	*/
 
 	// List Users Tags
 	$(".panel-select-tests .tags").on("click","*",function(e){

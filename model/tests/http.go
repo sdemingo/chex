@@ -114,7 +114,6 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	}
 
 	var t Test
-
 	decoder := json.NewDecoder(wr.R.Body)
 	err := decoder.Decode(&t)
 	if err != nil {

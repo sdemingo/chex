@@ -56,6 +56,16 @@ var tests = (function(){
 	})
     }
 
+    var listUsersAllowed = function(test,cb){
+	$.ajax({
+	    url:DOMAIN+'/tests/users/list?id='+test.Id,
+	    type: 'get',
+	    dataType: 'json',
+	    success: cb,
+	    error: error
+	});
+    }
+
     var deleteTest = function(test,cb){
 
     }
@@ -79,7 +89,7 @@ var tests = (function(){
 	}
     }
 
-   // Callback after the list user tags request
+    // Callback after the list user tags request
     var listTagsResponse = function(response){
 	if (response){
 	    $.each(response,function(i,e){
@@ -156,7 +166,8 @@ var tests = (function(){
     return{
 	init: init,
 	tags: listTags,
-	list: listTests
+	list: listTests,
+	listUsers: listUsersAllowed
     }
 
 })()

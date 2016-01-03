@@ -131,11 +131,11 @@
 </div>
 
 <script>
- var usersToLoad
+ var testEdited
  {{if .FromEditHandler}}
-    usersToLoad = {{.Content.UList}}
+    testEdited = {{.Content}}
  {{end}}
- usersList.init({usersIdToLoad:usersToLoad,addItemIcon:true,removeItemIcon:true})
- questionsList.init({addItemIcon:true,removeItemIcon:true})
+ usersList.init({test:testEdited,addItemIcon:true,removeItemIcon:true})
+ questionsList.init({test:testEdited,addItemIcon:true,removeItemIcon:true})
 </script>
 {{end}}
