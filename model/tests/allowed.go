@@ -39,6 +39,7 @@ func (v TestUserBuffer) Len() int {
 	return len(v)
 }
 
+// Add the users allowed in the test to the database
 func addUsersAllowed(wr srv.WrapperRequest, t *Test) error {
 	q := data.NewConn(wr, "tests-users")
 	for _, uid := range t.UList {
@@ -51,6 +52,7 @@ func addUsersAllowed(wr srv.WrapperRequest, t *Test) error {
 	return nil
 }
 
+// Fill the test UList array (allowed users ids lists)
 func getAllowed(wr srv.WrapperRequest, t *Test) error {
 	tus := NewTestUserBuffer()
 	t.UList = make([]int64, 0)
@@ -64,6 +66,7 @@ func getAllowed(wr srv.WrapperRequest, t *Test) error {
 	return err
 }
 
+// Return the users allowed for this tests
 func getUsersAllowed(wr srv.WrapperRequest, t *Test) ([]*users.NUser, error) {
 	nus := make([]*users.NUser, 0)
 	qu := data.NewConn(wr, "users")

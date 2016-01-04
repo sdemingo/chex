@@ -80,24 +80,6 @@ func (v TestBuffer) Len() int {
 	return len(v)
 }
 
-func putTest(wr srv.WrapperRequest, t *Test) error {
-	if err := t.IsValid(); err != nil {
-		return err
-	}
-
-	t.TimeStamp = time.Now()
-	t.AuthorId = wr.NU.ID()
-
-	q := data.NewConn(wr, "tests")
-	q.Put(t)
-
-	err := addExercises(wr, t)
-	err = addUsersAllowed(wr, t)
-	err = addTestTags(wr, t)
-
-	return err
-}
-
 func getTests(wr srv.WrapperRequest, filters map[string][]string) (TestBuffer, error) {
 	ts := NewTestBuffer()
 	var err error
@@ -121,6 +103,7 @@ func getTests(wr srv.WrapperRequest, filters map[string][]string) (TestBuffer, e
 	return ts, err
 }
 
+// Return all tests from authorId
 func getTestsByAuthor(wr srv.WrapperRequest, authorId string) (TestBuffer, error) {
 	ts := NewTestBuffer()
 
@@ -140,11 +123,12 @@ func getTestsByAuthor(wr srv.WrapperRequest, authorId string) (TestBuffer, error
 	return ts, nil
 }
 
-func getTestById(wr srv.WrapperRequest, authorId string) (*Test, error) {
+// Return the test with id
+func getTestById(wr srv.WrapperRequest, id string) (*Test, error) {
 	t := NewTest()
 	var err error
 
-	t.Id, err = strconv.ParseInt(authorId, 10, 64)
+	t.Id, err = strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return t, errors.New(ERR_TESTNOTFOUND)
 	}
@@ -157,4 +141,23 @@ func getTestById(wr srv.WrapperRequest, authorId string) (*Test, error) {
 	getAllowed(wr, t)
 
 	return t, err
+}
+
+// Write new test in the database
+func putTest(wr srv.WrapperRequest, t *Test) error {
+	if err := t.IsValid(); err != nil {
+		return err
+	}
+
+	t.TimeStamp = time.Now()
+	t.AuthorId = wr.NU.ID()
+
+	q := data.NewConn(wr, "tests")
+	q.Put(t)
+
+	err := addExercises(wr, t)
+	err = addUsersAllowed(wr, t)
+	err = addTestTags(wr, t)
+
+	return err
 }

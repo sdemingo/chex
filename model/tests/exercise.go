@@ -47,6 +47,7 @@ func (v ExerciseBuffer) Len() int {
 	return len(v)
 }
 
+// Add the exercises in the test to the database
 func addExercises(wr srv.WrapperRequest, t *Test) error {
 	q := data.NewConn(wr, "tests-exercises")
 	for _, ex := range t.Exercises {
@@ -59,6 +60,7 @@ func addExercises(wr srv.WrapperRequest, t *Test) error {
 	return nil
 }
 
+// Fill the exercises array in the test
 func getExercises(wr srv.WrapperRequest, t *Test) error {
 	testEx := NewExerciseBuffer()
 

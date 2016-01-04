@@ -41,6 +41,7 @@ func (v TestTagBuffer) Len() int {
 	return len(v)
 }
 
+// Add the tags in the test to the database
 func addTestTags(wr srv.WrapperRequest, t *Test) error {
 	q := data.NewConn(wr, "tests-tags")
 	for _, tag := range t.Tags {
@@ -53,6 +54,7 @@ func addTestTags(wr srv.WrapperRequest, t *Test) error {
 	return nil
 }
 
+// Fill the tags array in the test
 func getTestTags(wr srv.WrapperRequest, t *Test) error {
 	var tags []string
 	testTags := NewTestTagBuffer()
@@ -74,6 +76,7 @@ func getTestTags(wr srv.WrapperRequest, t *Test) error {
 	return nil
 }
 
+// Get all the tags from all test in the database
 func getAllTestsTags(wr srv.WrapperRequest) ([]string, error) {
 	var tagsMap = make(map[string]int, 0)
 	var tags = make([]string, 0)
@@ -93,6 +96,7 @@ func getAllTestsTags(wr srv.WrapperRequest) ([]string, error) {
 	return tags, nil
 }
 
+// Get the list of test with these tags
 func getTestsByTags(wr srv.WrapperRequest, tags []string) (TestBuffer, error) {
 	ts := NewTestBuffer()
 	ttagsAll := NewTestTagBuffer()
