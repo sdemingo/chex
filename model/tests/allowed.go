@@ -53,7 +53,7 @@ func addUsersAllowed(wr srv.WrapperRequest, t *Test) error {
 }
 
 // Fill the test UList array (allowed users ids lists)
-func getAllowed(wr srv.WrapperRequest, t *Test) error {
+func loadAllowed(wr srv.WrapperRequest, t *Test) error {
 	tus := NewTestUserBuffer()
 	t.UList = make([]int64, 0)
 

@@ -61,7 +61,7 @@ func addExercises(wr srv.WrapperRequest, t *Test) error {
 }
 
 // Fill the exercises array in the test
-func getExercises(wr srv.WrapperRequest, t *Test) error {
+func loadExercises(wr srv.WrapperRequest, t *Test) error {
 	testEx := NewExerciseBuffer()
 
 	qry := data.NewConn(wr, "tests-exercises")

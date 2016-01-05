@@ -55,7 +55,7 @@ func addTestTags(wr srv.WrapperRequest, t *Test) error {
 }
 
 // Fill the tags array in the test
-func getTestTags(wr srv.WrapperRequest, t *Test) error {
+func loadTestTags(wr srv.WrapperRequest, t *Test) error {
 	var tags []string
 	testTags := NewTestTagBuffer()
 
