@@ -40,6 +40,8 @@ func (v QuestionTagBuffer) Len() int {
 	return len(v)
 }
 
+// Return the questions that have all tags in the array. The questions
+// must be wrote by  the session user
 func getQuestByTags(wr srv.WrapperRequest, tags []string) (QuestionBuffer, error) {
 	qs := NewQuestionBuffer()
 	qTagsAll := NewQuestionTagBuffer()
@@ -78,6 +80,7 @@ func getQuestByTags(wr srv.WrapperRequest, tags []string) (QuestionBuffer, error
 	return qs, nil
 }
 
+// Add the tags of the question to the database
 func addQuestTags(wr srv.WrapperRequest, q *Question) error {
 	for _, tag := range q.Tags {
 		qry := data.NewConn(wr, "questions-tags")
@@ -90,6 +93,7 @@ func addQuestTags(wr srv.WrapperRequest, q *Question) error {
 	return nil
 }
 
+// Return the tags of the question
 func getQuestTags(wr srv.WrapperRequest, q *Question) ([]string, error) {
 	var tags []string
 	questionTags := NewQuestionTagBuffer()
@@ -110,6 +114,7 @@ func getQuestTags(wr srv.WrapperRequest, q *Question) ([]string, error) {
 
 }
 
+// Return all questions tags of all questions in the database
 func getAllQuestionsTags(wr srv.WrapperRequest) ([]string, error) {
 	var tagsMap = make(map[string]int, 0)
 	var tags = make([]string, 0)
@@ -129,6 +134,7 @@ func getAllQuestionsTags(wr srv.WrapperRequest) ([]string, error) {
 	return tags, nil
 }
 
+// Return all questions tags from all questions of the author with authorId
 func getQuestionsTagsFromUser(wr srv.WrapperRequest, authorId int64) ([]string, error) {
 	var tagsMap = make(map[string]int, 0)
 	userQuests, err := getQuestByAuthor(wr, authorId)

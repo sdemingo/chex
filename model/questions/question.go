@@ -120,6 +120,29 @@ func (v QuestionBuffer) Len() int {
 	return len(v)
 }
 
+func getQuestions(wr srv.WrapperRequest, filters map[string][]string) (QuestionBuffer, error) {
+	qs := NewQuestionBuffer()
+	var err error
+
+	if filters["id"] != nil {
+		id, err := strconv.ParseInt(filters["id"][0], 10, 64)
+		if err != nil {
+			return qs, errors.New(ERR_NOTVALIDQUEST)
+		}
+		q, err := GetQuestById(wr, id)
+		qs = append(qs, q)
+		return qs, err
+	}
+
+	if filters["tags"] != nil {
+		qs, err := getQuestByTags(wr, strings.Split(filters["tags"][0], ","))
+		return qs, err
+	}
+
+	return qs, err
+}
+
+// Return a question with the id
 func GetQuestById(wr srv.WrapperRequest, id int64) (*Question, error) {
 	q := NewQuestion()
 	var err error
@@ -143,28 +166,7 @@ func GetQuestById(wr srv.WrapperRequest, id int64) (*Question, error) {
 	return q, err
 }
 
-func getQuestions(wr srv.WrapperRequest, filters map[string][]string) (QuestionBuffer, error) {
-	qs := NewQuestionBuffer()
-	var err error
-
-	if filters["id"] != nil {
-		id, err := strconv.ParseInt(filters["id"][0], 10, 64)
-		if err != nil {
-			return qs, errors.New(ERR_NOTVALIDQUEST)
-		}
-		q, err := GetQuestById(wr, id)
-		qs = append(qs, q)
-		return qs, err
-	}
-
-	if filters["tags"] != nil {
-		qs, err := getQuestByTags(wr, strings.Split(filters["tags"][0], ","))
-		return qs, err
-	}
-
-	return qs, err
-}
-
+// Write a new question on the database
 func putQuestion(wr srv.WrapperRequest, q *Question) error {
 	if err := q.IsValid(); err != nil {
 		return err
@@ -188,6 +190,7 @@ func putQuestion(wr srv.WrapperRequest, q *Question) error {
 	return err
 }
 
+// Return a question with the checksum
 func getQuestByChecksum(wr srv.WrapperRequest, sum string) (*Question, error) {
 	qs := NewQuestionBuffer()
 	q := NewQuestion()
@@ -207,6 +210,7 @@ func getQuestByChecksum(wr srv.WrapperRequest, sum string) (*Question, error) {
 	return q, nil
 }
 
+// Return all questions of the author with authorId
 func getQuestByAuthor(wr srv.WrapperRequest, authorId int64) (QuestionBuffer, error) {
 	qs := NewQuestionBuffer()
 
