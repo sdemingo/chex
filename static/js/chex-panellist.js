@@ -9,7 +9,8 @@ var questionsList = (function(){
     var data={
 	selectedQuestions:{},
 	testsQuestions:{},
-	questionsCache:{}
+	questionsCache:{},
+	pointsCache:{}
     }
 
     var settings={}
@@ -151,12 +152,18 @@ var questionsList = (function(){
 	    if (!q){
 		return
 	    }
+
+	    var good=0,bad=0
+	    if (data.pointsCache[id]){
+		good=data.pointsCache[id].goodPoint
+		bad=data.pointsCache[id].badPoint
+	    }
 	    
 	    $("#testAddedQuestionPanel .results")
 	    var li =$('<li id='+q.Id+' class="list-group-item col-md-12">')
 		.append('<div class="icons col-md-2 text-center">\
-<input type="text" class="form-control item-input-value good-points"/>\
-<input type="text" class="form-control item-input-value bad-points"/>\
+<input type="text" class="form-control item-input-value good-points" value="'+good+'" />\
+<input type="text" class="form-control item-input-value bad-points" value="'+bad+'" />\
 <div class="icons row">\
 <a href="#" class="item-select glyphicon glyphicon-ok"></a>\
 </div>\
@@ -174,7 +181,6 @@ var questionsList = (function(){
 		    .append('<a href="/questions/get?id='+q.Id+'" class="item-link">'+resume(q.Text)+'</a>')
 	    )
 
-	    
 	    $("#testAddedQuestionPanel .results").append(li)
 
 	}
@@ -228,6 +234,24 @@ var questionsList = (function(){
 
     var init = function(options) {
 	settings=options
+
+	// load exercises questions added before
+	if (settings.test){
+	    tests.listExercises(settings.test, function(exercises){
+		exercises.forEach(function(ex){
+		    q=ex.Quest
+		    data.questionsCache[q.Id]=q
+		    data.testsQuestions[q.Id]=q
+		    data.pointsCache[q.Id]={
+			badPoint:parseFloat(ex.BadPoint).toPrecision(2),
+			goodPoint:parseFloat(ex.GoodPoint).toPrecision(2)
+		    }
+		})
+		listTestQuestions()
+	    })
+	}
+
+
 	$("#testSelectQuestionPanel").hide()
 	$("#testAddedQuestionPanel ul").empty()
 

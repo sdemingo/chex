@@ -66,6 +66,16 @@ var tests = (function(){
 	});
     }
 
+    var listExercises = function(test,cb){
+	$.ajax({
+	    url:DOMAIN+'/tests/exercises/list?id='+test.Id,
+	    type: 'get',
+	    dataType: 'json',
+	    success: cb,
+	    error: error
+	});
+    }
+
     var deleteTest = function(test,cb){
 
     }
@@ -167,7 +177,8 @@ var tests = (function(){
 	init: init,
 	tags: listTags,
 	list: listTests,
-	listUsers: listUsersAllowed
+	listUsers: listUsersAllowed,
+	listExercises: listExercises
     }
 
 })()
