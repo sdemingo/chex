@@ -236,7 +236,7 @@ var questionsList = (function(){
 	settings=options
 
 	// load exercises questions added before
-	if (settings.test){
+	if (settings && settings.test){
 	    tests.listExercises(settings.test, function(exercises){
 		exercises.forEach(function(ex){
 		    q=ex.Quest
@@ -505,7 +505,7 @@ var usersList = (function(){
 	settings=options
 	
 	// load users added before
-	if (settings.test){
+	if (settings && settings.test){
 	    tests.listUsers(settings.test, function(users){
 		users.forEach(function(u){
 		    data.usersCache[u.Id]=u
