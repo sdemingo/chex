@@ -14,7 +14,12 @@ type TestSingleBody struct {
 }
 
 func NewTestSingleAnswer(sol int) *TestSingleBody {
-	return &TestSingleBody{-1, TYPE_TESTSINGLE, sol}
+	t := new(TestSingleBody)
+	t.Id = -1
+	t.atype = TYPE_TESTSINGLE
+	t.Solution = -1
+	//return &TestSingleBody{-1, TYPE_TESTSINGLE, sol}
+	return t
 }
 
 func (a TestSingleBody) ID() int64 {

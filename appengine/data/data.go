@@ -78,9 +78,9 @@ func (op *DataConn) Get(item DataItem) error {
 		err = datastore.Get(c, key, item)
 		item.SetID(key.IntID())
 		err = op.PutCacheItem(item)
-	} else {
-		srv.Log(op.Wreq, "Item ya estaba cacheado")
-	}
+	} // else {
+	// 	srv.Log(op.Wreq, fmt.Sprintf("Item %s ya estaba cacheado", op.Entity))
+	// }
 
 	return err
 }

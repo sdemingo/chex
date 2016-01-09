@@ -238,6 +238,7 @@ func getAnswerBody(wr srv.WrapperRequest, a *Answer) error {
 	switch a.BodyType {
 	case TYPE_TESTSINGLE:
 		body := NewTestSingleAnswer(-1)
+		body.Solution = 0 // must be set to zero to unmarshall propertly in cache
 		body.Id = a.BodyId
 		err = q.Get(body)
 		a.Body = body
