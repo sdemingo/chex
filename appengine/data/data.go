@@ -48,6 +48,8 @@ func (op *DataConn) Put(obj DataItem) error {
 	key, err := datastore.Put(c, key, obj)
 	obj.SetID(key.IntID())
 
+	err = op.PutCacheItem(obj)
+
 	return err
 }
 
@@ -67,10 +69,19 @@ func (op *DataConn) GetMany(items BufferItems) error {
 }
 
 func (op *DataConn) Get(item DataItem) error {
+
 	c := op.Wreq.C
 	key := datastore.NewKey(c, op.Entity, "", item.ID(), nil)
-	err := datastore.Get(c, key, item)
-	item.SetID(key.IntID())
+
+	err := op.GetCacheItem(item)
+	if err != nil {
+		err = datastore.Get(c, key, item)
+		item.SetID(key.IntID())
+		err = op.PutCacheItem(item)
+	} else {
+		srv.Log(op.Wreq, "Item ya estaba cacheado")
+	}
+
 	return err
 }
 
