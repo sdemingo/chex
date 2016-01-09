@@ -1,7 +1,6 @@
 package users
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -123,16 +122,14 @@ func putUser(wr srv.WrapperRequest, nu *NUser) error {
 
 	_, err := getUserByMail(wr, nu.Mail)
 	if err == nil {
-		return errors.New(ERR_DUPLICATEDUSER)
+		return fmt.Errorf("%s", ERR_DUPLICATEDUSER)
 	}
 
 	q := data.NewConn(wr, "users")
-	q.Put(nu)
+	err = q.Put(nu)
+	err = addUserTags(wr, nu)
 
-	// Add a UserTags entry for each tag for this user
-	addUserTags(wr, nu)
-
-	return nil
+	return err
 }
 
 func updateUser(wr srv.WrapperRequest, nu *NUser) error {
@@ -143,7 +140,7 @@ func updateUser(wr srv.WrapperRequest, nu *NUser) error {
 
 	old, err := getUserById(wr, fmt.Sprintf("%d", nu.Id))
 	if err != nil {
-		return errors.New(ERR_USERNOTFOUND)
+		return err
 	}
 
 	// invariant fields
@@ -152,17 +149,11 @@ func updateUser(wr srv.WrapperRequest, nu *NUser) error {
 	nu.TimeStamp = old.TimeStamp
 
 	q := data.NewConn(wr, "users")
-	q.Put(nu)
-
-	// Delete all users-tags
+	err = q.Put(nu)
 	err = deleteUserTags(wr, nu)
-	if err != nil {
-		srv.Log(wr, err.Error())
-	}
-	// Add a UserTags entry for each tag for this user
-	addUserTags(wr, nu)
+	err = addUserTags(wr, nu)
 
-	return nil
+	return err
 }
 
 func deleteUser(wr srv.WrapperRequest, nu *NUser) error {
@@ -177,7 +168,8 @@ func deleteUser(wr srv.WrapperRequest, nu *NUser) error {
 	}
 
 	q := data.NewConn(wr, "users")
-	return q.Delete(nu)
+	err = q.Delete(nu)
+	return err
 }
 
 func getUserByMail(wr srv.WrapperRequest, email string) (*NUser, error) {
@@ -188,7 +180,7 @@ func getUserByMail(wr srv.WrapperRequest, email string) (*NUser, error) {
 	q.AddFilter("Mail =", email)
 	q.GetMany(&nus)
 	if len(nus) == 0 {
-		return nu, errors.New(ERR_USERNOTFOUND)
+		return nu, fmt.Errorf("%s", ERR_USERNOTFOUND)
 	}
 	nu = nus[0]
 	nu.Tags, _ = getUserTags(wr, nu)
@@ -201,13 +193,16 @@ func getUserById(wr srv.WrapperRequest, s_id string) (*NUser, error) {
 
 	id, err := strconv.ParseInt(s_id, 10, 64)
 	if err != nil {
-		return nu, errors.New(ERR_USERNOTFOUND)
+		return nu, fmt.Errorf("%v: %s", err, ERR_USERNOTFOUND)
 	}
 
 	nu.Id = id
 	q := data.NewConn(wr, "users")
-	q.Get(nu)
-	nu.Tags, _ = getUserTags(wr, nu)
+	err = q.Get(nu)
+	if err != nil {
+		return nu, fmt.Errorf("%v: %s", err, ERR_USERNOTFOUND)
+	}
+	nu.Tags, err = getUserTags(wr, nu)
 
-	return nu, nil
+	return nu, err
 }

@@ -1,7 +1,6 @@
 package users
 
 import (
-	"errors"
 	"fmt"
 
 	"appengine/data"
@@ -45,8 +44,10 @@ func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]*NUser, error) {
 	uTagsAll := NewUserTagBuffer()
 
 	q := data.NewConn(wr, "users-tags")
-	if q.GetMany(&uTagsAll) != nil {
-		return nus, errors.New(ERR_USERNOTFOUND)
+	err := q.GetMany(&uTagsAll)
+	if err != nil {
+		return nus, fmt.Errorf("%v: %s", err, ERR_USERNOTFOUND)
+
 	}
 
 	// After recover all UserTags it makes a homemade filtering
@@ -85,8 +86,9 @@ func getUserTags(wr srv.WrapperRequest, nu *NUser) ([]string, error) {
 
 	q := data.NewConn(wr, "users-tags")
 	q.AddFilter("UserId =", nu.Id)
-	if q.GetMany(&userTags) != nil {
-		return tags, errors.New(ERR_USERNOTFOUND)
+	err := q.GetMany(&userTags)
+	if err != nil {
+		return tags, fmt.Errorf("%v: %s", err, ERR_USERNOTFOUND)
 	}
 
 	tags = make([]string, 0)
