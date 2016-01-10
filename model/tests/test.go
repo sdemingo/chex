@@ -2,6 +2,7 @@ package tests
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -85,7 +86,11 @@ func getTests(wr srv.WrapperRequest, filters map[string][]string) (TestBuffer, e
 	var err error
 
 	if filters["id"] != nil {
-		t, err := getTestById(wr, filters["id"][0])
+		id, err := strconv.ParseInt(filters["id"][0], 10, 64)
+		if err != nil {
+			return ts, fmt.Errorf("%v: %s", err, ERR_TESTNOTFOUND)
+		}
+		t, err := getTestById(wr, id)
 		ts = append(ts, t)
 		return ts, err
 	}
@@ -96,7 +101,11 @@ func getTests(wr srv.WrapperRequest, filters map[string][]string) (TestBuffer, e
 	}
 
 	if filters["author"] != nil {
-		ts, err = getTestsByAuthor(wr, filters["author"][0])
+		id, err := strconv.ParseInt(filters["author"][0], 10, 64)
+		if err != nil {
+			return ts, fmt.Errorf("%v: %s", err, ERR_TESTNOTFOUND)
+		}
+		ts, err = getTestsByAuthor(wr, id)
 		return ts, err
 	}
 
@@ -104,35 +113,26 @@ func getTests(wr srv.WrapperRequest, filters map[string][]string) (TestBuffer, e
 }
 
 // Return all tests from authorId
-func getTestsByAuthor(wr srv.WrapperRequest, authorId string) (TestBuffer, error) {
+func getTestsByAuthor(wr srv.WrapperRequest, authorId int64) (TestBuffer, error) {
 	ts := NewTestBuffer()
 
-	id, err := strconv.ParseInt(authorId, 10, 64)
-	if err != nil {
-		return ts, errors.New(ERR_TESTNOTFOUND)
-	}
-
 	qry := data.NewConn(wr, "tests")
-	qry.AddFilter("AuthorId =", id)
+	qry.AddFilter("AuthorId =", authorId)
 	qry.GetMany(&ts)
 
-	// for i := range qs {
-	// 	qs[i].Tags, _ = getQuestTags(wr, qs[i])
-	// }
+	for i := range ts {
+		loadTestTags(wr, ts[i])
+	}
 
 	return ts, nil
 }
 
 // Return the test with id
-func getTestById(wr srv.WrapperRequest, id string) (*Test, error) {
+func getTestById(wr srv.WrapperRequest, id int64) (*Test, error) {
 	t := NewTest()
 	var err error
 
-	t.Id, err = strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		return t, errors.New(ERR_TESTNOTFOUND)
-	}
-
+	t.Id = id
 	qry := data.NewConn(wr, "tests")
 	qry.Get(t)
 

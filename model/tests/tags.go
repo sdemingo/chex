@@ -1,8 +1,6 @@
 package tests
 
 import (
-	"fmt"
-
 	"model/users"
 
 	"appengine/data"
@@ -96,6 +94,27 @@ func getAllTestsTags(wr srv.WrapperRequest) ([]string, error) {
 	return tags, nil
 }
 
+// Return all test tags from all test of the author with authorId
+func getTestTagsFromUser(wr srv.WrapperRequest, authorId int64) ([]string, error) {
+	var tagsMap = make(map[string]int, 0)
+	tags := make([]string, 0)
+	userTests, err := getTestsByAuthor(wr, authorId)
+	if err != nil {
+		return tags, err
+	}
+
+	for _, tst := range userTests {
+		for _, tag := range tst.Tags {
+			if _, ok := tagsMap[tag]; !ok {
+				tagsMap[tag] = 1
+				tags = append(tags, tag)
+			}
+		}
+	}
+
+	return tags, nil
+}
+
 // Get the list of test with these tags
 func getTestsByTags(wr srv.WrapperRequest, tags []string) (TestBuffer, error) {
 	ts := NewTestBuffer()
@@ -119,13 +138,12 @@ func getTestsByTags(wr srv.WrapperRequest, tags []string) (TestBuffer, error) {
 
 	for id, _ := range filtered {
 		if filtered[id] == len(tags) {
-			q, err := getTestById(wr, fmt.Sprintf("%d", id))
+			q, err := getTestById(wr, id)
 			if err != nil {
 				return ts, err
 			}
 
 			// only append the questions of the session user
-			//if wr.NU.IsAdmin() || q.AuthorId == wr.NU.Id {
 			if wr.NU.GetRole() == users.ROLE_ADMIN || q.AuthorId == wr.NU.ID() {
 				ts = append(ts, q)
 			}
