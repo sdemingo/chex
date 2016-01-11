@@ -60,6 +60,12 @@ func addExercises(wr srv.WrapperRequest, t *Test) error {
 	return nil
 }
 
+func deleteExercises(wr srv.WrapperRequest, t *Test) error {
+	// TODO
+
+	return nil
+}
+
 // Fill the exercises array in the test
 func loadExercises(wr srv.WrapperRequest, t *Test) error {
 	testEx := NewExerciseBuffer()

@@ -52,6 +52,11 @@ func addTestTags(wr srv.WrapperRequest, t *Test) error {
 	return nil
 }
 
+func deleteTestTags(wr srv.WrapperRequest, t *Test) error {
+	//TODO
+	return nil
+}
+
 // Fill the tags array in the test
 func loadTestTags(wr srv.WrapperRequest, t *Test) error {
 	var tags []string

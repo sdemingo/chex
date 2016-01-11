@@ -149,3 +149,26 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	return infoTmpl, nil
 }
+
+func Update(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	if wr.NU.GetRole() < users.ROLE_TEACHER {
+		return viewTmpl, fmt.Errorf("tests: update: %s", users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	t := new(Test)
+
+	decoder := json.NewDecoder(wr.R.Body)
+	err := decoder.Decode(&t)
+	if err != nil {
+		return infoTmpl, fmt.Errorf("tests: update: %v", err)
+	}
+
+	err = updateTest(wr, t)
+	if err != nil {
+		return infoTmpl, fmt.Errorf("users: update: %v", err)
+	}
+
+	tc["Content"] = t
+
+	return infoTmpl, nil
+}

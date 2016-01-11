@@ -167,3 +167,36 @@ func putTest(wr srv.WrapperRequest, t *Test) error {
 
 	return err
 }
+
+func updateTest(wr srv.WrapperRequest, t *Test) error {
+
+	/*if err := nu.IsValid(); err != nil {
+		return err
+	}*/
+
+	old, err := getTestById(wr, t.Id)
+	if err != nil {
+		return err
+	}
+
+	// invariant fields
+	t.Id = old.Id
+	t.TimeStamp = old.TimeStamp
+
+	q := data.NewConn(wr, "tests")
+	err = q.Put(t)
+	if err != nil {
+		return err
+	}
+
+	err = deleteExercises(wr, t)
+	err = addExercises(wr, t)
+
+	err = deleteUsersAllowed(wr, t)
+	err = addUsersAllowed(wr, t)
+
+	err = deleteTestTags(wr, t)
+	err = addTestTags(wr, t)
+
+	return err
+}

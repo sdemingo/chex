@@ -52,6 +52,11 @@ func addUsersAllowed(wr srv.WrapperRequest, t *Test) error {
 	return nil
 }
 
+func deleteUsersAllowed(wr srv.WrapperRequest, t *Test) error {
+	// TODO
+	return nil
+}
+
 // Fill the test UList array (allowed users ids lists)
 func loadAllowed(wr srv.WrapperRequest, t *Test) error {
 	tus := NewTestUserBuffer()
