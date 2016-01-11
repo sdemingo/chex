@@ -60,6 +60,10 @@ func loadAllowed(wr srv.WrapperRequest, t *Test) error {
 	q := data.NewConn(wr, "tests-users")
 	q.AddFilter("TestId=", t.Id)
 	err := q.GetMany(&tus)
+	if err != nil {
+		return err
+	}
+
 	for i := range tus {
 		t.UList = append(t.UList, tus[i].UserId)
 	}
@@ -73,7 +77,10 @@ func getUsersAllowed(wr srv.WrapperRequest, t *Test) ([]*users.NUser, error) {
 	for i := range t.UList {
 		us := new(users.NUser)
 		us.SetID(t.UList[i])
-		qu.Get(us)
+		err := qu.Get(us)
+		if err != nil {
+			continue
+		}
 		nus = append(nus, us)
 	}
 

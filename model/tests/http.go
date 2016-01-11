@@ -2,7 +2,7 @@ package tests
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"strings"
 
 	"model/users"
@@ -19,14 +19,14 @@ var infoTmpl = "model/tests/tmpl/info.html"
 
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if wr.NU.GetRole() < users.ROLE_TEACHER {
-		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+		return viewTmpl, fmt.Errorf("tests: getlist: %v", users.ERR_NOTOPERATIONALLOWED)
 	}
 
 	wr.R.ParseForm()
 
 	tests, err := getTests(wr, wr.R.Form)
 	if err != nil {
-		return infoTmpl, err
+		return infoTmpl, fmt.Errorf("tests: getlist: %v", err)
 	}
 
 	tc["Content"] = tests
@@ -36,13 +36,13 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if wr.NU.GetRole() < users.ROLE_TEACHER {
-		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+		return viewTmpl, fmt.Errorf("tests: getone: %v", users.ERR_NOTOPERATIONALLOWED)
 	}
 	wr.R.ParseForm()
 
 	ts, err := getTests(wr, wr.R.Form)
-	if len(ts) == 0 || err != nil {
-		return viewTmpl, errors.New(ERR_TESTNOTFOUND)
+	if err != nil {
+		return viewTmpl, fmt.Errorf("tests: getone: %v", err)
 	}
 	t := ts[0]
 
@@ -53,12 +53,12 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if wr.NU.GetRole() < users.ROLE_STUDENT {
-		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+		return viewTmpl, fmt.Errorf("tests: gettaglist: %v", users.ERR_NOTOPERATIONALLOWED)
 	}
 
 	tags, err := getAllTestsTags(wr)
 	if err != nil {
-		return infoTmpl, err
+		return infoTmpl, fmt.Errorf("tests: gettaglist: %v", err)
 	}
 
 	tc["Content"] = tags
@@ -68,19 +68,19 @@ func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, erro
 
 func GetUsersList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if wr.NU.GetRole() < users.ROLE_TEACHER {
-		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+		return viewTmpl, fmt.Errorf("tests: getuserlist: %v", users.ERR_NOTOPERATIONALLOWED)
 	}
 	wr.R.ParseForm()
 
 	ts, err := getTests(wr, wr.R.Form)
-	if len(ts) == 0 || err != nil {
-		return viewTmpl, errors.New(ERR_TESTNOTFOUND)
+	if err != nil {
+		return viewTmpl, fmt.Errorf("tests: getuserlist: %v", err)
 	}
 	t := ts[0]
 
 	users, err := getUsersAllowed(wr, t)
 	if err != nil {
-		return infoTmpl, err
+		return infoTmpl, fmt.Errorf("tests: getuserlist: %v", err)
 	}
 
 	tc["Content"] = users
@@ -90,13 +90,13 @@ func GetUsersList(wr srv.WrapperRequest, tc map[string]interface{}) (string, err
 
 func GetExercisesList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if wr.NU.GetRole() < users.ROLE_TEACHER {
-		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+		return viewTmpl, fmt.Errorf("tests: getexerciseslist: %v", users.ERR_NOTOPERATIONALLOWED)
 	}
 	wr.R.ParseForm()
 
 	ts, err := getTests(wr, wr.R.Form)
-	if len(ts) == 0 || err != nil {
-		return viewTmpl, errors.New(ERR_TESTNOTFOUND)
+	if err != nil {
+		return viewTmpl, fmt.Errorf("tests: getexerciseslist: %v", err)
 	}
 	t := ts[0]
 
@@ -111,13 +111,13 @@ func New(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if wr.NU.GetRole() < users.ROLE_TEACHER {
-		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+		return viewTmpl, fmt.Errorf("tests: edit: %v", users.ERR_NOTOPERATIONALLOWED)
 	}
 
 	wr.R.ParseForm()
 	ts, err := getTests(wr, wr.R.Form)
-	if len(ts) == 0 || err != nil {
-		return viewTmpl, errors.New(ERR_TESTNOTFOUND)
+	if err != nil {
+		return viewTmpl, fmt.Errorf("tests: edit: %v", err)
 	}
 	tc["Content"] = ts[0]
 	tc["FromEditHandler"] = true
@@ -127,14 +127,14 @@ func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if wr.NU.GetRole() < users.ROLE_TEACHER {
-		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+		return viewTmpl, fmt.Errorf("tests: add: %v", users.ERR_NOTOPERATIONALLOWED)
 	}
 
 	var t Test
 	decoder := json.NewDecoder(wr.R.Body)
 	err := decoder.Decode(&t)
 	if err != nil {
-		return infoTmpl, err
+		return infoTmpl, fmt.Errorf("tests: add: %v", err)
 	}
 
 	// clean fields
@@ -142,7 +142,7 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	err = putTest(wr, &t)
 	if err != nil {
-		return infoTmpl, err
+		return infoTmpl, fmt.Errorf("tests: add: %v", err)
 	}
 
 	tc["Content"] = t

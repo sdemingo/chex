@@ -118,7 +118,10 @@ func getTestsByAuthor(wr srv.WrapperRequest, authorId int64) (TestBuffer, error)
 
 	qry := data.NewConn(wr, "tests")
 	qry.AddFilter("AuthorId =", authorId)
-	qry.GetMany(&ts)
+	err := qry.GetMany(&ts)
+	if err != nil {
+		return ts, err
+	}
 
 	for i := range ts {
 		loadTestTags(wr, ts[i])
@@ -130,15 +133,16 @@ func getTestsByAuthor(wr srv.WrapperRequest, authorId int64) (TestBuffer, error)
 // Return the test with id
 func getTestById(wr srv.WrapperRequest, id int64) (*Test, error) {
 	t := NewTest()
-	var err error
 
 	t.Id = id
 	qry := data.NewConn(wr, "tests")
-	qry.Get(t)
-
-	loadTestTags(wr, t)
-	loadExercises(wr, t)
-	loadAllowed(wr, t)
+	err := qry.Get(t)
+	if err != nil {
+		return t, err
+	}
+	err = loadTestTags(wr, t)
+	err = loadExercises(wr, t)
+	err = loadAllowed(wr, t)
 
 	return t, err
 }
@@ -153,9 +157,11 @@ func putTest(wr srv.WrapperRequest, t *Test) error {
 	t.AuthorId = wr.NU.ID()
 
 	q := data.NewConn(wr, "tests")
-	q.Put(t)
-
-	err := addExercises(wr, t)
+	err := q.Put(t)
+	if err != nil {
+		return err
+	}
+	err = addExercises(wr, t)
 	err = addUsersAllowed(wr, t)
 	err = addTestTags(wr, t)
 

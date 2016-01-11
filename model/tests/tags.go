@@ -81,7 +81,10 @@ func getAllTestsTags(wr srv.WrapperRequest) ([]string, error) {
 	testTags := NewTestTagBuffer()
 
 	qry := data.NewConn(wr, "tests-tags")
-	qry.GetMany(&testTags)
+	err := qry.GetMany(&testTags)
+	if err != nil {
+		return tags, err
+	}
 
 	tags = make([]string, len(testTags))
 	for _, qtag := range testTags {
@@ -121,7 +124,10 @@ func getTestsByTags(wr srv.WrapperRequest, tags []string) (TestBuffer, error) {
 	ttagsAll := NewTestTagBuffer()
 
 	qry := data.NewConn(wr, "tests-tags")
-	qry.GetMany(&ttagsAll)
+	err := qry.GetMany(&ttagsAll)
+	if err != nil {
+		return ts, err
+	}
 
 	filtered := make(map[int64]int)
 	for _, tag := range tags {
