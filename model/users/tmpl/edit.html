@@ -33,27 +33,27 @@
       <div class="form-group">
 	<label>Rol</label>
 	<select class="form-control" id="Role" name="Role">
-          {{if .Content.IsStudent}}
-	  <option value="3" selected>Estudiante</option>
+          {{if eq .Content.GetInfo.RoleName "Estudiante"}}
+	  <option value="1" selected>Estudiante</option>
 	  {{else}}
-	  <option value="3">Estudiante</option>
+	  <option value="1">Estudiante</option>
           {{end}}
-          {{if .Content.IsTeacher}}
-	  <option value="7" selected>Profesor</option>
+          {{if eq .Content.GetInfo.RoleName "Profesor"}}
+	  <option value="2" selected>Profesor</option>
 	  {{else}}
-	  <option value="7">Profesor</option>
+	  <option value="2">Profesor</option>
           {{end}}
-	  {{if .Content.IsAdmin}}
-	  <option value="15" selected>Administrador</option>
+	  {{if eq .Content.GetInfo.RoleName "Administrador"}}
+	  <option value="3" selected>Administrador</option>
 	  {{else}}
-	  <option value="15">Administrador</option>
+	  <option value="3">Administrador</option>
           {{end}}
 	</select>
       </div>
 
       <div class="form-group">
 	<label>Etiquetas</label>
-	<input type="text" class="form-control input-tags" name="Tags" placeholder="Escríbelas separadas por comas" value="{{.Content.GetStringTags}}">
+	<input type="text" class="form-control input-tags" name="Tags" placeholder="Escríbelas separadas por comas" value="{{.Content.GetInfo.Tags}}">
       </div>
 
       <div class="form-group text-right">

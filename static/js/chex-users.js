@@ -112,7 +112,6 @@ var users = (function(){
 	    console.log(data.Error)
 	}else{
 	    showInfoMessage("Usuario editado con éxito")
-	    resetForm(settings.form)
 	}
     }
 

@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	ROLE_GUEST   = iota
-	ROLE_STUDENT = iota
-	ROLE_TEACHER = iota
-	ROLE_ADMIN   = iota
+	ROLE_GUEST   = iota //0
+	ROLE_STUDENT = iota //1
+	ROLE_TEACHER = iota //2
+	ROLE_ADMIN   = iota //3
 
 	MAXSZUSERNAME = 100
 
