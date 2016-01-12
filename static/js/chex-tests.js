@@ -31,7 +31,14 @@ var tests = (function(){
     }
 
     var editTest = function(test,cb){
-
+	$.ajax({
+	    url:DOMAIN+'/tests/update',
+	    type: 'post',
+	    dataType: 'json',
+	    data: JSON.stringify(test),
+	    success: cb,
+	    error: error
+	});
     }
 
     var listTests = function(tags,cb){
@@ -88,7 +95,7 @@ var tests = (function(){
     */
 
 
-    // Callback after the add user request
+    // Callback after the add test request
     var addTestResponse = function(response){
 	if (response.Error){
 	    showErrorMessage("Error al crear test")
@@ -96,6 +103,16 @@ var tests = (function(){
 	}else{
 	    showInfoMessage("Test creado con éxito")
 	    resetForm(settings.form)
+	}
+    }
+
+    // Callback after the edit test request
+    var editTestResponse = function(response){
+	if (response.Error){
+	    showErrorMessage("Error al editar test")
+	    console.log(response.Error)
+	}else{
+	    showInfoMessage("Test editado con éxito")
 	}
     }
 
@@ -147,7 +164,6 @@ var tests = (function(){
 	tst.Tags.clean("")
 	tst.State = 1
 	tst.Exercises = buildExerciseList()
-
 	tst.Ulist = Object.keys(usersList.getAdded()).map(function(x){
 	    return parseInt(x,10)
 	})
@@ -164,6 +180,15 @@ var tests = (function(){
 		return
 	    }
 	    addTest(tst,addTestResponse)
+	})
+
+	// Update test button
+	$("#testUpdateSubmit").click(function(){
+	    var tst = readForm()
+	    if (!tst) {
+		return
+	    }
+	    editTest(tst,editTestResponse)
 	})
     }
 

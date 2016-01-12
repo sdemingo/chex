@@ -169,8 +169,8 @@ func updateTest(wr srv.WrapperRequest, t *Test) error {
 	}
 
 	// invariant fields
-	t.Id = old.Id
 	t.TimeStamp = old.TimeStamp
+	t.AuthorId = old.AuthorId
 
 	q := data.NewConn(wr, "tests")
 	err = q.Put(t)

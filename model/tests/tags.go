@@ -59,7 +59,17 @@ func deleteTestTags(wr srv.WrapperRequest, t *Test, err error) error {
 	if err != nil {
 		return err
 	}
-	//TODO
+	testsTags := NewTestTagBuffer()
+	q := data.NewConn(wr, "tests-tags")
+	q.AddFilter("TestId =", t.Id)
+	q.GetMany(&testsTags)
+
+	for _, ttag := range testsTags {
+		err := q.Delete(ttag)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

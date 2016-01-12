@@ -134,7 +134,7 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	decoder := json.NewDecoder(wr.R.Body)
 	err := decoder.Decode(&t)
 	if err != nil {
-		return infoTmpl, fmt.Errorf("tests: add: %v", err)
+		return infoTmpl, fmt.Errorf("tests: add: decode: %v", err)
 	}
 
 	// clean fields
@@ -155,17 +155,20 @@ func Update(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return viewTmpl, fmt.Errorf("tests: update: %s", users.ERR_NOTOPERATIONALLOWED)
 	}
 
-	t := new(Test)
+	var t Test
 
 	decoder := json.NewDecoder(wr.R.Body)
 	err := decoder.Decode(&t)
 	if err != nil {
-		return infoTmpl, fmt.Errorf("tests: update: %v", err)
+		return infoTmpl, fmt.Errorf("tests: update: decode: %v", err)
 	}
 
-	err = updateTest(wr, t)
+	// clean fields
+	t.Desc = strings.Trim(t.Desc, " \t\n")
+
+	err = updateTest(wr, &t)
 	if err != nil {
-		return infoTmpl, fmt.Errorf("users: update: %v", err)
+		return infoTmpl, fmt.Errorf("tests: update: %v", err)
 	}
 
 	tc["Content"] = t

@@ -16,6 +16,10 @@
   <div class="form-group col-md-8 col-md-offset-2">
     <form id="testEditForm" method="post">
       
+     {{if .Content}}
+      <input type="hidden" name="Id" value="{{.Content.Id}}">
+      {{end}}
+
       <div class="form-group">
 	<label>Título</label>
 	<input type="text" class="form-control" name="Title" placeholder="Título del exámen" value="{{.Content.Title}}">
@@ -103,7 +107,11 @@
       </div>
 
       <div class="form-group text-right">
+       {{if .Content}} 
+	<button type="button" id="testUpdateSubmit" class="btn btn-default">Editar</button>
+      {{else}}
 	<button type="button" id="testNewSubmit" class="btn btn-default">Crear</button>
+      {{end}}
       </div>
     </form>
     <div id="testEditAlert" class="alert" role="alert">...</div>
