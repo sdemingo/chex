@@ -40,7 +40,10 @@ func (v TestUserBuffer) Len() int {
 }
 
 // Add the users allowed in the test to the database
-func addUsersAllowed(wr srv.WrapperRequest, t *Test) error {
+func addUsersAllowed(wr srv.WrapperRequest, t *Test, err error) error {
+	if err != nil {
+		return err
+	}
 	q := data.NewConn(wr, "tests-users")
 	for _, uid := range t.UList {
 		tu := &TestUser{Id: 0, TestId: t.Id, UserId: uid}
@@ -52,19 +55,25 @@ func addUsersAllowed(wr srv.WrapperRequest, t *Test) error {
 	return nil
 }
 
-func deleteUsersAllowed(wr srv.WrapperRequest, t *Test) error {
+func deleteUsersAllowed(wr srv.WrapperRequest, t *Test, err error) error {
+	if err != nil {
+		return err
+	}
 	// TODO
 	return nil
 }
 
 // Fill the test UList array (allowed users ids lists)
-func loadAllowed(wr srv.WrapperRequest, t *Test) error {
+func loadAllowed(wr srv.WrapperRequest, t *Test, err error) error {
+	if err != nil {
+		return err
+	}
 	tus := NewTestUserBuffer()
 	t.UList = make([]int64, 0)
 
 	q := data.NewConn(wr, "tests-users")
 	q.AddFilter("TestId=", t.Id)
-	err := q.GetMany(&tus)
+	err = q.GetMany(&tus)
 	if err != nil {
 		return err
 	}

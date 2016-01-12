@@ -48,7 +48,10 @@ func (v ExerciseBuffer) Len() int {
 }
 
 // Add the exercises in the test to the database
-func addExercises(wr srv.WrapperRequest, t *Test) error {
+func addExercises(wr srv.WrapperRequest, t *Test, err error) error {
+	if err != nil {
+		return err
+	}
 	q := data.NewConn(wr, "tests-exercises")
 	for _, ex := range t.Exercises {
 		ex.TestId = t.Id
@@ -60,19 +63,26 @@ func addExercises(wr srv.WrapperRequest, t *Test) error {
 	return nil
 }
 
-func deleteExercises(wr srv.WrapperRequest, t *Test) error {
+func deleteExercises(wr srv.WrapperRequest, t *Test, err error) error {
+	if err != nil {
+		return err
+	}
+
 	// TODO
 
 	return nil
 }
 
 // Fill the exercises array in the test
-func loadExercises(wr srv.WrapperRequest, t *Test) error {
+func loadExercises(wr srv.WrapperRequest, t *Test, err error) error {
+	if err != nil {
+		return err
+	}
 	testEx := NewExerciseBuffer()
 
 	qry := data.NewConn(wr, "tests-exercises")
 	qry.AddFilter("TestId =", t.Id)
-	err := qry.GetMany(&testEx)
+	err = qry.GetMany(&testEx)
 	if err != nil {
 		return err
 	}

@@ -40,7 +40,10 @@ func (v TestTagBuffer) Len() int {
 }
 
 // Add the tags in the test to the database
-func addTestTags(wr srv.WrapperRequest, t *Test) error {
+func addTestTags(wr srv.WrapperRequest, t *Test, err error) error {
+	if err != nil {
+		return err
+	}
 	q := data.NewConn(wr, "tests-tags")
 	for _, tag := range t.Tags {
 		tt := &TestTag{TestId: t.Id, Tag: tag}
@@ -52,19 +55,25 @@ func addTestTags(wr srv.WrapperRequest, t *Test) error {
 	return nil
 }
 
-func deleteTestTags(wr srv.WrapperRequest, t *Test) error {
+func deleteTestTags(wr srv.WrapperRequest, t *Test, err error) error {
+	if err != nil {
+		return err
+	}
 	//TODO
 	return nil
 }
 
 // Fill the tags array in the test
-func loadTestTags(wr srv.WrapperRequest, t *Test) error {
+func loadTestTags(wr srv.WrapperRequest, t *Test, err error) error {
+	if err != nil {
+		return err
+	}
 	var tags []string
 	testTags := NewTestTagBuffer()
 
 	qry := data.NewConn(wr, "tests-tags")
 	qry.AddFilter("TestId =", t.Id)
-	err := qry.GetMany(&testTags)
+	err = qry.GetMany(&testTags)
 	if err != nil {
 		return err
 	}

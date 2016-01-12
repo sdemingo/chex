@@ -119,15 +119,12 @@ func getTestsByAuthor(wr srv.WrapperRequest, authorId int64) (TestBuffer, error)
 	qry := data.NewConn(wr, "tests")
 	qry.AddFilter("AuthorId =", authorId)
 	err := qry.GetMany(&ts)
-	if err != nil {
-		return ts, err
-	}
 
 	for i := range ts {
-		loadTestTags(wr, ts[i])
+		loadTestTags(wr, ts[i], err)
 	}
 
-	return ts, nil
+	return ts, err
 }
 
 // Return the test with id
@@ -137,12 +134,10 @@ func getTestById(wr srv.WrapperRequest, id int64) (*Test, error) {
 	t.Id = id
 	qry := data.NewConn(wr, "tests")
 	err := qry.Get(t)
-	if err != nil {
-		return t, err
-	}
-	err = loadTestTags(wr, t)
-	err = loadExercises(wr, t)
-	err = loadAllowed(wr, t)
+
+	err = loadTestTags(wr, t, err)
+	err = loadExercises(wr, t, err)
+	err = loadAllowed(wr, t, err)
 
 	return t, err
 }
@@ -158,21 +153,15 @@ func putTest(wr srv.WrapperRequest, t *Test) error {
 
 	q := data.NewConn(wr, "tests")
 	err := q.Put(t)
-	if err != nil {
-		return err
-	}
-	err = addExercises(wr, t)
-	err = addUsersAllowed(wr, t)
-	err = addTestTags(wr, t)
+
+	err = addExercises(wr, t, err)
+	err = addUsersAllowed(wr, t, err)
+	err = addTestTags(wr, t, err)
 
 	return err
 }
 
 func updateTest(wr srv.WrapperRequest, t *Test) error {
-
-	/*if err := nu.IsValid(); err != nil {
-		return err
-	}*/
 
 	old, err := getTestById(wr, t.Id)
 	if err != nil {
@@ -185,18 +174,12 @@ func updateTest(wr srv.WrapperRequest, t *Test) error {
 
 	q := data.NewConn(wr, "tests")
 	err = q.Put(t)
-	if err != nil {
-		return err
-	}
-
-	err = deleteExercises(wr, t)
-	err = addExercises(wr, t)
-
-	err = deleteUsersAllowed(wr, t)
-	err = addUsersAllowed(wr, t)
-
-	err = deleteTestTags(wr, t)
-	err = addTestTags(wr, t)
+	err = deleteExercises(wr, t, err)
+	err = addExercises(wr, t, err)
+	err = deleteUsersAllowed(wr, t, err)
+	err = addUsersAllowed(wr, t, err)
+	err = deleteTestTags(wr, t, err)
+	err = addTestTags(wr, t, err)
 
 	return err
 }
