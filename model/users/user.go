@@ -91,8 +91,12 @@ func (v NUserBuffer) Len() int {
 func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []*NUser, err error) {
 
 	if filters["id"] != nil {
-		nu, err := getUserById(wr, filters["id"][0])
 		nus := make([]*NUser, 1)
+		id, err := strconv.ParseInt(filters["id"][0], 10, 64)
+		if err != nil {
+			return nus, fmt.Errorf("%v: %s", err, ERR_USERNOTFOUND)
+		}
+		nu, err := getUserById(wr, id)
 		nus[0] = nu
 		return nus, err
 	}
@@ -114,33 +118,25 @@ func getUsers(wr srv.WrapperRequest, filters map[string][]string) (nus []*NUser,
 
 func putUser(wr srv.WrapperRequest, nu *NUser) error {
 
-	/*if err := nu.IsValid(); err != nil {
-		return err
-	}*/
-
 	nu.TimeStamp = time.Now()
 
 	_, err := getUserByMail(wr, nu.Mail)
 	if err == nil {
-		return fmt.Errorf("%s", ERR_DUPLICATEDUSER)
+		return fmt.Errorf("putuser: %s", ERR_DUPLICATEDUSER)
 	}
 
 	q := data.NewConn(wr, "users")
 	err = q.Put(nu)
-	err = addUserTags(wr, nu)
+	err = addUserTags(wr, nu, err)
 
-	return err
+	return fmt.Errorf("putuser: %v", err)
 }
 
 func updateUser(wr srv.WrapperRequest, nu *NUser) error {
 
-	/*if err := nu.IsValid(); err != nil {
-		return err
-	}*/
-
-	old, err := getUserById(wr, fmt.Sprintf("%d", nu.Id))
+	old, err := getUserById(wr, nu.Id)
 	if err != nil {
-		return err
+		return fmt.Errorf("updateuser: %v", err)
 	}
 
 	// invariant fields
@@ -150,26 +146,19 @@ func updateUser(wr srv.WrapperRequest, nu *NUser) error {
 
 	q := data.NewConn(wr, "users")
 	err = q.Put(nu)
-	err = deleteUserTags(wr, nu)
-	err = addUserTags(wr, nu)
+	err = deleteUserTags(wr, nu, err)
+	err = addUserTags(wr, nu, err)
 
-	return err
+	return fmt.Errorf("updateuser: %v", err)
 }
 
 func deleteUser(wr srv.WrapperRequest, nu *NUser) error {
-	/*if err := nu.IsValid(); err != nil {
-		return err
-	}*/
-
-	// Delete all users-tags
-	err := deleteUserTags(wr, nu)
-	if err != nil {
-		return err
-	}
 
 	q := data.NewConn(wr, "users")
-	err = q.Delete(nu)
-	return err
+	err := q.Delete(nu)
+	err = deleteUserTags(wr, nu, err)
+
+	return fmt.Errorf("deleteuser: %v", err)
 }
 
 func getUserByMail(wr srv.WrapperRequest, email string) (*NUser, error) {
@@ -188,21 +177,15 @@ func getUserByMail(wr srv.WrapperRequest, email string) (*NUser, error) {
 	return nu, nil
 }
 
-func getUserById(wr srv.WrapperRequest, s_id string) (*NUser, error) {
+func getUserById(wr srv.WrapperRequest, id int64) (*NUser, error) {
 	nu := new(NUser)
-
-	id, err := strconv.ParseInt(s_id, 10, 64)
-	if err != nil {
-		return nu, fmt.Errorf("%v: %s", err, ERR_USERNOTFOUND)
-	}
-
 	nu.Id = id
 	q := data.NewConn(wr, "users")
-	err = q.Get(nu)
+	err := q.Get(nu)
 	if err != nil {
-		return nu, fmt.Errorf("%v: %s", err, ERR_USERNOTFOUND)
+		return nu, fmt.Errorf("getuserbyid: %v: %s", err, ERR_USERNOTFOUND)
 	}
 	nu.Tags, err = getUserTags(wr, nu)
 
-	return nu, err
+	return nu, fmt.Errorf("getuserbyid: %v", err)
 }

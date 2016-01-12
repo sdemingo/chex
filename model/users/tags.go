@@ -39,6 +39,40 @@ func (v UserTagBuffer) Len() int {
 	return len(v)
 }
 
+func addUserTags(wr srv.WrapperRequest, nu *NUser, err error) error {
+	if err != nil {
+		return err
+	}
+	q := data.NewConn(wr, "users-tags")
+	for _, tag := range nu.Tags {
+		ut := &UserTag{UserId: nu.Id, Tag: tag}
+		err := q.Put(ut)
+		if err != nil {
+			return fmt.Errorf("addusertags: %v", err)
+		}
+	}
+	return nil
+}
+
+func deleteUserTags(wr srv.WrapperRequest, nu *NUser, err error) error {
+	if err != nil {
+		return err
+	}
+	userTags := NewUserTagBuffer()
+
+	q := data.NewConn(wr, "users-tags")
+	q.AddFilter("UserId =", nu.Id)
+	q.GetMany(&userTags)
+
+	for _, utag := range userTags {
+		err := q.Delete(utag)
+		if err != nil {
+			return fmt.Errorf("deleteusertags: %v", err)
+		}
+	}
+	return nil
+}
+
 func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]*NUser, error) {
 	nus := NewNUserBuffer()
 	uTagsAll := NewUserTagBuffer()
@@ -46,7 +80,7 @@ func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]*NUser, error) {
 	q := data.NewConn(wr, "users-tags")
 	err := q.GetMany(&uTagsAll)
 	if err != nil {
-		return nus, fmt.Errorf("%v: %s", err, ERR_USERNOTFOUND)
+		return nus, fmt.Errorf("getusersbytags: %v: %s", err, ERR_USERNOTFOUND)
 
 	}
 
@@ -69,9 +103,9 @@ func getUsersByTags(wr srv.WrapperRequest, tags []string) ([]*NUser, error) {
 
 	for id, _ := range filtered {
 		if filtered[id] == len(tags) {
-			nu, err := getUserById(wr, fmt.Sprintf("%d", id))
+			nu, err := getUserById(wr, id)
 			if err != nil {
-				return nus, err
+				return nus, fmt.Errorf("getusersbytags: %v", err)
 			}
 			nus = append(nus, nu)
 		}
@@ -100,34 +134,6 @@ func getUserTags(wr srv.WrapperRequest, nu *NUser) ([]string, error) {
 
 }
 
-func addUserTags(wr srv.WrapperRequest, nu *NUser) error {
-	q := data.NewConn(wr, "users-tags")
-	for _, tag := range nu.Tags {
-		ut := &UserTag{UserId: nu.Id, Tag: tag}
-		err := q.Put(ut)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func deleteUserTags(wr srv.WrapperRequest, nu *NUser) error {
-	userTags := NewUserTagBuffer()
-
-	q := data.NewConn(wr, "users-tags")
-	q.AddFilter("UserId =", nu.Id)
-	q.GetMany(&userTags)
-
-	for _, utag := range userTags {
-		err := q.Delete(utag)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func getAllUserTags(wr srv.WrapperRequest) ([]string, error) {
 	tagsMap := make(map[string]int, 0)
 	userTags := NewUserTagBuffer()
@@ -136,7 +142,7 @@ func getAllUserTags(wr srv.WrapperRequest) ([]string, error) {
 	q := data.NewConn(wr, "users-tags")
 	err := q.GetMany(&userTags)
 	if err != nil {
-		return tags, err
+		return tags, fmt.Errorf("getalluserstags: %v", err)
 	}
 
 	tags = make([]string, len(userTags))
