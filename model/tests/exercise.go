@@ -63,12 +63,23 @@ func addExercises(wr srv.WrapperRequest, t *Test, err error) error {
 	return nil
 }
 
+// Delete the exercises list of the test
 func deleteExercises(wr srv.WrapperRequest, t *Test, err error) error {
 	if err != nil {
 		return err
 	}
 
-	// TODO
+	ex := NewExerciseBuffer()
+	q := data.NewConn(wr, "tests-exercises")
+	q.AddFilter("TestId =", t.Id)
+	q.GetMany(&ex)
+
+	for _, e := range ex {
+		err := q.Delete(e)
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

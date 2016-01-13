@@ -55,11 +55,24 @@ func addUsersAllowed(wr srv.WrapperRequest, t *Test, err error) error {
 	return nil
 }
 
+// Delete allowed users of the test
 func deleteUsersAllowed(wr srv.WrapperRequest, t *Test, err error) error {
 	if err != nil {
 		return err
 	}
-	// TODO
+
+	us := NewTestUserBuffer()
+	q := data.NewConn(wr, "tests-users")
+	q.AddFilter("TestId =", t.Id)
+	q.GetMany(&us)
+
+	for _, u := range us {
+		err := q.Delete(u)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 

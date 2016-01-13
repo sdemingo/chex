@@ -55,6 +55,7 @@ func addTestTags(wr srv.WrapperRequest, t *Test, err error) error {
 	return nil
 }
 
+// Delete the tags of the test
 func deleteTestTags(wr srv.WrapperRequest, t *Test, err error) error {
 	if err != nil {
 		return err
