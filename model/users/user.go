@@ -129,7 +129,10 @@ func putUser(wr srv.WrapperRequest, nu *NUser) error {
 	err = q.Put(nu)
 	err = addUserTags(wr, nu, err)
 
-	return fmt.Errorf("putuser: %v", err)
+	if err != nil {
+		return fmt.Errorf("putuser: %v", err)
+	}
+	return nil
 }
 
 func updateUser(wr srv.WrapperRequest, nu *NUser) error {
@@ -149,7 +152,10 @@ func updateUser(wr srv.WrapperRequest, nu *NUser) error {
 	err = deleteUserTags(wr, nu, err)
 	err = addUserTags(wr, nu, err)
 
-	return fmt.Errorf("updateuser: %v", err)
+	if err != nil {
+		return fmt.Errorf("updateuser: %v", err)
+	}
+	return nil
 }
 
 func deleteUser(wr srv.WrapperRequest, nu *NUser) error {
@@ -158,7 +164,10 @@ func deleteUser(wr srv.WrapperRequest, nu *NUser) error {
 	err := q.Delete(nu)
 	err = deleteUserTags(wr, nu, err)
 
-	return fmt.Errorf("deleteuser: %v", err)
+	if err != nil {
+		return fmt.Errorf("deleteuser: %v", err)
+	}
+	return nil
 }
 
 func getUserByMail(wr srv.WrapperRequest, email string) (*NUser, error) {
@@ -187,5 +196,8 @@ func getUserById(wr srv.WrapperRequest, id int64) (*NUser, error) {
 	}
 	nu.Tags, err = getUserTags(wr, nu)
 
-	return nu, fmt.Errorf("getuserbyid: %v", err)
+	if err != nil {
+		return nu, fmt.Errorf("getuserbyid: %v", err)
+	}
+	return nu, nil
 }
