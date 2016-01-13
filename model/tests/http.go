@@ -134,7 +134,7 @@ func Add(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	decoder := json.NewDecoder(wr.R.Body)
 	err := decoder.Decode(&t)
 	if err != nil {
-		return infoTmpl, fmt.Errorf("tests: add: decode: %v", err)
+		return infoTmpl, fmt.Errorf("tests: add: %v", err)
 	}
 
 	// clean fields
@@ -160,7 +160,7 @@ func Update(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	decoder := json.NewDecoder(wr.R.Body)
 	err := decoder.Decode(&t)
 	if err != nil {
-		return infoTmpl, fmt.Errorf("tests: update: decode: %v", err)
+		return infoTmpl, fmt.Errorf("tests: update: %v", err)
 	}
 
 	// clean fields

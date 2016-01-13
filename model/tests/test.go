@@ -124,7 +124,11 @@ func getTestsByAuthor(wr srv.WrapperRequest, authorId int64) (TestBuffer, error)
 		loadTestTags(wr, ts[i], err)
 	}
 
-	return ts, err
+	if err != nil {
+		return ts, fmt.Errorf("gettestbyauthor: %v", err)
+	}
+
+	return ts, nil
 }
 
 // Return the test with id
@@ -139,14 +143,15 @@ func getTestById(wr srv.WrapperRequest, id int64) (*Test, error) {
 	err = loadExercises(wr, t, err)
 	err = loadAllowed(wr, t, err)
 
-	return t, err
+	if err != nil {
+		return nil, fmt.Errorf("gettestbyid: %v", err)
+	}
+
+	return t, nil
 }
 
 // Write new test in the database
 func putTest(wr srv.WrapperRequest, t *Test) error {
-	if err := t.IsValid(); err != nil {
-		return err
-	}
 
 	t.TimeStamp = time.Now()
 	t.AuthorId = wr.NU.ID()
@@ -158,14 +163,18 @@ func putTest(wr srv.WrapperRequest, t *Test) error {
 	err = addUsersAllowed(wr, t, err)
 	err = addTestTags(wr, t, err)
 
-	return err
+	if err != nil {
+		return fmt.Errorf("puttest: %v", err)
+	}
+
+	return nil
 }
 
 func updateTest(wr srv.WrapperRequest, t *Test) error {
 
 	old, err := getTestById(wr, t.Id)
 	if err != nil {
-		return err
+		return fmt.Errorf("updatetest: %v", err)
 	}
 
 	// invariant fields
@@ -181,5 +190,9 @@ func updateTest(wr srv.WrapperRequest, t *Test) error {
 	err = deleteTestTags(wr, t, err)
 	err = addTestTags(wr, t, err)
 
-	return err
+	if err != nil {
+		return fmt.Errorf("updatetest: %v", err)
+	}
+
+	return nil
 }
