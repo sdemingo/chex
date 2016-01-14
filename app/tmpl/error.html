@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
 
- 
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/chexapi.js"></script>
@@ -42,10 +42,26 @@
 
 
     <div class="container" id="content">
-      <h1>Error</h1>
-      <p>{{.}}</p>
+
+
+      <div class="panel col-md-12">
+	<div class="row col-md-6 col-md-offset-3">
+	  <h1 class="text-center"><strong>Error</strong></h1>
+	  <br>
+	  <h2 class="text-center">Estas cosas a veces pasan :(</h2>
+	  <br>
+	  <p class="well">{{.}}</p>
+	</div>
+      </div>
+
+
     </div>
 
 
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted text-center"><small>Chex software. Beta version</small></p>
+      </div>
+    </footer>
   </body>
 </html>
