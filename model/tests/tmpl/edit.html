@@ -3,7 +3,11 @@
 <div class="form-group col-md-12">
   <div class="row col-md-12 ">
     <ul class="nav nav-pills text-right">
+     {{if .Content}}
       <li role="presentation" class="active"><a href="/tests/get?id={{.Content.Id}}" >Volver</a></li>
+    {{else}}
+      <li role="presentation" class="active"><a href="/welcome" >Volver</a></li>
+    {{end}}
     </ul>
   </div>
 </div>

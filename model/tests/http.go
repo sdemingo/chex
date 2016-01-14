@@ -45,6 +45,9 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return viewTmpl, fmt.Errorf("tests: getone: %v", err)
 	}
 	t := ts[0]
+	if wr.NU.ID() != t.AuthorId {
+		return viewTmpl, fmt.Errorf("tests: getone: %s", users.ERR_NOTOPERATIONALLOWED)
+	}
 
 	tc["Content"] = t
 
@@ -187,7 +190,12 @@ func Delete(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return infoTmpl, fmt.Errorf("tests: delete: %v", err)
 	}
 
-	err = deleteTest(wr, ts[0])
+	t := ts[0]
+	if wr.NU.ID() != t.AuthorId {
+		return viewTmpl, fmt.Errorf("tests: delete: %s", users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	err = deleteTest(wr, t)
 	if err != nil {
 		return infoTmpl, fmt.Errorf("tests: delete: %v", err)
 	}
