@@ -103,7 +103,7 @@ var questionsList = (function(){
 	// check if questions are solutioned
 	for (var id in data.selectedQuestions) {
 	    var q = data.questionsCache[id]
-	    if (q.SolutionId<0){
+	    if (q.Solution.BodyId < 0){
 		showErrorMessage("Han sido seleccionadas preguntas sin solucionar. Estas no pueden ser añadidas a un test")
 		return false
 	    }

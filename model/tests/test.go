@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -17,8 +16,8 @@ const (
 	ST_TESTOPEN   = iota + 1
 	ST_TESTCLOSED = iota + 1
 
-	ERR_NOTVALIDTEST = "Test no valido"
-	ERR_TESTNOTFOUND = "Test no encontrado"
+	ERR_TESTNOTFOUND          = "Test no encontrado"
+	ERR_TESTEXERCISESNOTVALID = "Un Test no puede contener ejercicicios sin solucionar. Eliminelos para poder guardar"
 )
 
 type Test struct {
@@ -42,13 +41,6 @@ func NewTest() *Test {
 	t.UList = make([]int64, 0)
 	t.Tags = make([]string, 0)
 	return t
-}
-
-func (t *Test) IsValid() error {
-	if t != nil && t.Title == "" {
-		return errors.New(ERR_NOTVALIDTEST)
-	}
-	return nil
 }
 
 func (t *Test) GetStringTags() string {
@@ -159,6 +151,7 @@ func putTest(wr srv.WrapperRequest, t *Test) error {
 	q := data.NewConn(wr, "tests")
 	err := q.Put(t)
 
+	err = checkExercises(wr, t, err)
 	err = addExercises(wr, t, err)
 	err = addUsersAllowed(wr, t, err)
 	err = addTestTags(wr, t, err)
@@ -183,6 +176,7 @@ func updateTest(wr srv.WrapperRequest, t *Test) error {
 
 	q := data.NewConn(wr, "tests")
 	err = q.Put(t)
+	err = checkExercises(wr, t, err)
 	err = deleteExercises(wr, t, err)
 	err = addExercises(wr, t, err)
 	err = deleteUsersAllowed(wr, t, err)

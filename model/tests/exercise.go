@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"fmt"
 	"model/questions"
 
 	"appengine/data"
@@ -81,6 +82,21 @@ func deleteExercises(wr srv.WrapperRequest, t *Test, err error) error {
 		}
 	}
 
+	return nil
+}
+
+// Check if the exercises are valid to be in the test. If not, return
+// an error to avoid commit them in the database
+func checkExercises(wr srv.WrapperRequest, t *Test, err error) error {
+	if err != nil {
+		return err
+	}
+	for i := range t.Exercises {
+		q, _ := questions.GetQuestById(wr, t.Exercises[i].QuestId)
+		if q.Solution.Body.IsUnsolved() {
+			return fmt.Errorf("%s", ERR_TESTEXERCISESNOTVALID)
+		}
+	}
 	return nil
 }
 
