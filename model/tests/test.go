@@ -190,3 +190,17 @@ func updateTest(wr srv.WrapperRequest, t *Test) error {
 
 	return nil
 }
+
+func deleteTest(wr srv.WrapperRequest, t *Test) error {
+
+	q := data.NewConn(wr, "tests")
+	err := q.Delete(t)
+	err = deleteExercises(wr, t, err)
+	err = deleteUsersAllowed(wr, t, err)
+	err = deleteTestTags(wr, t, err)
+
+	if err != nil {
+		return fmt.Errorf("deletetest: %v", err)
+	}
+	return nil
+}

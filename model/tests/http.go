@@ -175,3 +175,24 @@ func Update(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	return infoTmpl, nil
 }
+
+func Delete(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	if wr.NU.GetRole() < users.ROLE_TEACHER {
+		return viewTmpl, fmt.Errorf("tests: delete: %s", users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	wr.R.ParseForm()
+	ts, err := getTests(wr, wr.R.Form)
+	if err != nil {
+		return infoTmpl, fmt.Errorf("tests: delete: %v", err)
+	}
+
+	err = deleteTest(wr, ts[0])
+	if err != nil {
+		return infoTmpl, fmt.Errorf("tests: delete: %v", err)
+	}
+
+	tc["Content"] = "Test borrado con éxito"
+
+	return infoTmpl, nil
+}
