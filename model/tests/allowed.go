@@ -113,3 +113,26 @@ func getUsersAllowed(wr srv.WrapperRequest, t *Test) ([]*users.NUser, error) {
 
 	return nus, nil
 }
+
+// Return all tests allowed for a user
+func getTestAllowedForUser(wr srv.WrapperRequest, userId int64) ([]*Test, error) {
+	tus := NewTestUserBuffer()
+	tst := make([]*Test, 0)
+
+	q := data.NewConn(wr, "tests-users")
+	q.AddFilter("UserId=", userId)
+	err := q.GetMany(&tus)
+	if err != nil {
+		return tst, err
+	}
+
+	for i := range tus {
+		t, err := getTestById(wr, tus[i].TestId)
+		if err != nil {
+			continue
+		}
+		tst = append(tst, t)
+	}
+
+	return tst, nil
+}
