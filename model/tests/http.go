@@ -59,7 +59,14 @@ func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, erro
 		return viewTmpl, fmt.Errorf("tests: gettaglist: %v", users.ERR_NOTOPERATIONALLOWED)
 	}
 
-	tags, err := getAllTestsTags(wr)
+	var tags []string
+	var err error
+	if wr.NU.GetRole() == users.ROLE_ADMIN {
+		tags, err = getAllTestsTags(wr)
+	} else {
+		tags, err = getTestTagsFromUser(wr, wr.NU.ID())
+	}
+
 	if err != nil {
 		return infoTmpl, fmt.Errorf("tests: gettaglist: %v", err)
 	}
@@ -80,6 +87,9 @@ func GetUsersList(wr srv.WrapperRequest, tc map[string]interface{}) (string, err
 		return viewTmpl, fmt.Errorf("tests: getuserlist: %v", err)
 	}
 	t := ts[0]
+	if wr.NU.ID() != t.AuthorId {
+		return viewTmpl, fmt.Errorf("tests: getuserlist: %s", users.ERR_NOTOPERATIONALLOWED)
+	}
 
 	users, err := getUsersAllowed(wr, t)
 	if err != nil {
@@ -101,7 +111,11 @@ func GetExercisesList(wr srv.WrapperRequest, tc map[string]interface{}) (string,
 	if err != nil {
 		return viewTmpl, fmt.Errorf("tests: getexerciseslist: %v", err)
 	}
+
 	t := ts[0]
+	if wr.NU.ID() != t.AuthorId {
+		return viewTmpl, fmt.Errorf("tests: getexerciseslist: %s", users.ERR_NOTOPERATIONALLOWED)
+	}
 
 	tc["Content"] = t.Exercises
 
@@ -122,7 +136,13 @@ func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if err != nil {
 		return viewTmpl, fmt.Errorf("tests: edit: %v", err)
 	}
-	tc["Content"] = ts[0]
+
+	t := ts[0]
+	if wr.NU.ID() != t.AuthorId {
+		return viewTmpl, fmt.Errorf("tests: edit: %s", users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	tc["Content"] = t
 	tc["FromEditHandler"] = true
 
 	return newTmpl, nil

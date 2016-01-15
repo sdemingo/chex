@@ -170,6 +170,10 @@ func updateTest(wr srv.WrapperRequest, t *Test) error {
 		return fmt.Errorf("updatetest: %v", err)
 	}
 
+	if wr.NU.ID() != old.AuthorId {
+		return fmt.Errorf("updatetest: %s", users.ERR_NOTOPERATIONALLOWED)
+	}
+
 	// invariant fields
 	t.TimeStamp = old.TimeStamp
 	t.AuthorId = old.AuthorId
