@@ -46,6 +46,9 @@ var questions = (function(){
     }
 
     var listTags = function(cb){
+	if (!cb){
+	    cb=listTagsResponse
+	}
 	$.ajax({
 	    url:DOMAIN+'/questions/tags/list',
 	    type: 'get',
@@ -199,7 +202,7 @@ var questions = (function(){
 
 
     var init = function() {
-	listTags(listTagsResponse)
+	//listTags(listTagsResponse)
 	bindFunctions()
     }
 

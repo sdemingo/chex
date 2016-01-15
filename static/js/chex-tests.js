@@ -54,6 +54,9 @@ var tests = (function(){
 
 
     var listTags = function(cb){
+	if (!cb){
+	    cb=listTagsResponse
+	}
 	$.ajax({
 	    url:DOMAIN+'/tests/tags/list',
 	    type: 'get',
@@ -194,7 +197,7 @@ var tests = (function(){
 
 
     var init = function() {
-	listTags(listTagsResponse)
+	//listTags(listTagsResponse)
 	bindFunctions()
     }
 

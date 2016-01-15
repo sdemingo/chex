@@ -61,6 +61,9 @@ var users = (function(){
     }
 
     var listTags = function(cb){
+	if (!cb){
+	    cb=listTagsResponse
+	}
 	$.ajax({
 	    url:DOMAIN+'/users/tags/list',
 	    type: 'get',
@@ -213,7 +216,7 @@ var users = (function(){
 
 
     var init = function() {
-	listTags(listTagsResponse)
+	//listTags(listTagsResponse)
 	bindFunctions()
 	$(".alert").css("visibility", "hidden")
     }
