@@ -18,7 +18,7 @@ var viewTmpl = "model/tests/tmpl/view.html"
 var infoTmpl = "model/tests/tmpl/info.html"
 
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	if wr.NU.GetRole() < users.ROLE_TEACHER {
+	if wr.NU.GetRole() < users.ROLE_STUDENT {
 		return viewTmpl, fmt.Errorf("tests: getlist: %v", users.ERR_NOTOPERATIONALLOWED)
 	}
 

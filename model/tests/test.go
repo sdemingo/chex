@@ -92,6 +92,15 @@ func getTests(wr srv.WrapperRequest, filters map[string][]string) (TestBuffer, e
 		return ts, err
 	}
 
+	if filters["foruser"] != nil {
+		id, err := strconv.ParseInt(filters["foruser"][0], 10, 64)
+		if err != nil {
+			return ts, fmt.Errorf("%v: %s", err, ERR_TESTNOTFOUND)
+		}
+		ts, err = GetTestAllowedForUser(wr, id)
+		return ts, err
+	}
+
 	if filters["author"] != nil {
 		id, err := strconv.ParseInt(filters["author"][0], 10, 64)
 		if err != nil {

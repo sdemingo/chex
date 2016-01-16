@@ -52,6 +52,17 @@ var tests = (function(){
 	});
     }
 
+    var listTestsForUser = function(id,cb){
+	$.ajax({
+	    url:DOMAIN+'/tests/list',
+	    type: 'get',
+	    dataType: 'json',
+	    data: {foruser:id},
+	    success: cb,
+	    error: error
+	});
+    }
+
 
     var listTags = function(cb){
 	if (!cb){
@@ -205,6 +216,7 @@ var tests = (function(){
 	init: init,
 	tags: listTags,
 	list: listTests,
+	listFor: listTestsForUser,
 	listUsers: listUsersAllowed,
 	listExercises: listExercises
     }

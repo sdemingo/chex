@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"model/tests"
 	"model/users"
 
 	"appengine/srv"
@@ -45,6 +46,9 @@ func Welcome(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if wr.NU.GetRole() == users.ROLE_TEACHER {
 		return teacherTmpl, nil
 	}
+
+	tst, _ := tests.GetTestAllowedForUser(wr, wr.NU.ID())
+	tc["Content"] = tst
 
 	return studentTmpl, nil
 }
