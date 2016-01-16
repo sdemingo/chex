@@ -9,7 +9,7 @@
     <div class="panel-body ">
       <div class="list-group">
 	{{range .Content}}
-	<a href="/tests/get?=id{{.Id}}" class="list-group-item">{{.Title}} - <small>{{.Course}}</small></a>
+	<a href="/tests/do?id={{.Id}}" class="list-group-item">{{.Title}} - <small>{{.Course}}</small></a>
 	{{end}}
       </div>
     </div>

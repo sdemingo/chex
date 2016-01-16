@@ -1,0 +1,48 @@
+
+{{define "content"}}
+
+<div class="form-group col-md-12">
+  <div class="row col-md-12 ">
+    <ul class="nav nav-pills text-right">
+      <li role="presentation" class="active"><a href="/welcome" >Volver</a></li>
+    </ul>
+  </div>
+</div>
+
+<div class="row col-md-8 col-md-offset-2">
+
+  <div class="page-header text-center">
+    <h1>{{.Content.Title}}<br><small>{{.Content.Course}}</small></h1>
+  </div>
+
+  <!-- Etiquetas -->
+  <div class="panel label-panel">
+  {{range .Content.Tags}}
+    <span class="label label-default">{{.}}</span>
+  {{end}}
+  </div> 
+
+  <!-- Descripción -->
+
+  {{if ne .Content.Desc ""}}
+  <div class="well">
+    {{.Content.Desc}}
+  </div>
+  {{end}}
+
+
+  <div class="row col-md-12 text-center">
+    <button class="btn btn-default">Iniciar</button>
+  </div>
+
+
+  <div id="exercisesPanel">
+    <!-- En este panel se irán cargando los ejercicios para que se vayan respondiendo -->
+  </div>
+
+  
+</div>
+
+</div>
+
+{{end}}

@@ -67,6 +67,9 @@ func init() {
 	http.HandleFunc("/tests/get", func(w http.ResponseWriter, r *http.Request) {
 		AppHandler(w, r, tests.GetOne)
 	})
+	http.HandleFunc("/tests/do", func(w http.ResponseWriter, r *http.Request) {
+		AppHandler(w, r, tests.DoOne)
+	})
 	http.HandleFunc("/tests/users/list", func(w http.ResponseWriter, r *http.Request) {
 		AppHandler(w, r, tests.GetUsersList)
 	})

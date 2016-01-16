@@ -15,6 +15,7 @@ import (
 //var listTmpl = "appengine/tests/tmpl/list.html"
 var newTmpl = "model/tests/tmpl/edit.html"
 var viewTmpl = "model/tests/tmpl/view.html"
+var doTmpl = "model/tests/tmpl/do.html"
 var infoTmpl = "model/tests/tmpl/info.html"
 
 func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
@@ -52,6 +53,24 @@ func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	tc["Content"] = t
 
 	return viewTmpl, nil
+}
+
+func DoOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	if wr.NU.GetRole() < users.ROLE_STUDENT {
+		return viewTmpl, fmt.Errorf("tests: doone: %v", users.ERR_NOTOPERATIONALLOWED)
+	}
+	wr.R.ParseForm()
+
+	ts, err := getTests(wr, wr.R.Form)
+	if err != nil {
+		return viewTmpl, fmt.Errorf("tests: dotone: %v", err)
+	}
+	t := ts[0]
+	// check if the users is allowed for this exam
+
+	tc["Content"] = t
+
+	return doTmpl, nil
 }
 
 func GetTagsList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
