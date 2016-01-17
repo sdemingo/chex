@@ -166,6 +166,18 @@ func GetQuestById(wr srv.WrapperRequest, id int64) (*Question, error) {
 	return q, err
 }
 
+func GetQuestByIdWithoutSol(wr srv.WrapperRequest, id int64) (*Question, error) {
+	q := NewQuestion()
+	var err error
+
+	q.Id = id
+	qry := data.NewConn(wr, "questions")
+	qry.Get(q)
+	q.Tags, _ = getQuestTags(wr, q)
+	q.Solution, err = answers.NewAnswerWithBody(-1, -1, q.AType)
+	return q, err
+}
+
 // Write a new question on the database
 func putQuestion(wr srv.WrapperRequest, q *Question) error {
 	if err := q.IsValid(); err != nil {

@@ -40,6 +40,16 @@ var questions = (function(){
 	});
     }
 
+    var doQuest =  function(id,cb){
+	$.ajax({
+	    url:DOMAIN+'/questions/do?id='+id,
+	    type: 'post',
+	    dataType: 'json',
+	    success: cb,
+	    error: error
+	});
+    }
+
 
     var editQuest = function(q,cb){
 
