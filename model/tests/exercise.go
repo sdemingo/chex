@@ -2,7 +2,9 @@ package tests
 
 import (
 	"fmt"
+
 	"model/questions"
+	"model/users"
 
 	"appengine/data"
 	"appengine/srv"
@@ -116,9 +118,20 @@ func loadExercises(wr srv.WrapperRequest, t *Test, err error) error {
 
 	t.Exercises = testEx
 
+	// check if the test will be loaded for a student, in this case
+	// do not read the solutions of the questions
+	withSolution := true
+	if wr.NU.GetRole() < users.ROLE_TEACHER {
+		withSolution = false
+	}
 	// now, load the questions struct for each exercise
 	for i := range t.Exercises {
-		q, _ := questions.GetQuestById(wr, t.Exercises[i].QuestId)
+		var q *questions.Question
+		if withSolution {
+			q, _ = questions.GetQuestById(wr, t.Exercises[i].QuestId)
+		} else {
+			q, _ = questions.GetQuestByIdWithoutSol(wr, t.Exercises[i].QuestId)
+		}
 		t.Exercises[i].Quest = q
 	}
 

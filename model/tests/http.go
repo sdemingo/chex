@@ -63,9 +63,11 @@ func DoOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	ts, err := getTests(wr, wr.R.Form)
 	if err != nil {
-		return viewTmpl, fmt.Errorf("tests: dotone: %v", err)
+		return viewTmpl, fmt.Errorf("tests: doone: %v", err)
 	}
 	t := ts[0]
+
+	// TODO:
 	// check if the users is allowed for this exam
 
 	tc["Content"] = t
