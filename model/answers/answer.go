@@ -129,7 +129,7 @@ func (v AnswerBuffer) Len() int {
 }
 
 // Get the answers for a question with questId from an author with authorId
-func GetSolutionAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*Answer, error) {
+func GetAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*Answer, error) {
 	as := NewAnswerBuffer()
 	a := new(Answer)
 
@@ -152,12 +152,12 @@ func GetSolutionAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*A
 }
 
 // Create or update an solution answer
-func PutSolutionAnswer(wr srv.WrapperRequest, a *Answer) error {
+func PutAnswer(wr srv.WrapperRequest, a *Answer) error {
 	if a.BodyType < 0 {
 		return errors.New(ERR_ANSWERWITHOUTBODY)
 	}
 
-	a2, err := GetSolutionAnswer(wr, a.AuthorId, a.QuestId)
+	a2, err := GetAnswer(wr, a.AuthorId, a.QuestId)
 	qry := data.NewConn(wr, "answers")
 
 	if err != nil { // New

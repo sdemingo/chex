@@ -160,7 +160,7 @@ func Solve(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 		return infoTmpl, errors.New(answers.ERR_AUTHORID)
 	}
 
-	err = answers.PutSolutionAnswer(wr, a)
+	err = answers.PutAnswer(wr, a)
 	if err != nil {
 		return infoTmpl, err
 	}
