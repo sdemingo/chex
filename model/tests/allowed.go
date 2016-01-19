@@ -62,6 +62,10 @@ func GetTestAllowedForUser(wr srv.WrapperRequest, userId int64) ([]*Test, error)
 	return tst, nil
 }
 
+func IsTestAllowedUser(wr srv.WrapperRequest, testsId int64, userId int64) bool {
+	return true
+}
+
 // Add the users allowed in the test to the database
 func addUsersAllowed(wr srv.WrapperRequest, t *Test, err error) error {
 	if err != nil {

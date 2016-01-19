@@ -38,8 +38,6 @@ func GetList(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 }
 
 func GetOne(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
-	// only teacher must entry to the question throught this
-	// handler. A student or other should use test handlers
 	if wr.NU.GetRole() < users.ROLE_TEACHER {
 		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
@@ -104,7 +102,7 @@ func Edit(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 
 	// TODO:
 	// Chequear que no haya sido añadida a examenes o ya
-	//contestada. En ese caso no se puede actualizar
+	// contestada. En ese caso no se puede actualizar
 
 	tc["Content"] = q
 

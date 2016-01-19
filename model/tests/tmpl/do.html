@@ -31,15 +31,23 @@
   {{end}}
 
 
-  <div class="row col-md-12 text-center">
-    <button class="btn btn-default">Iniciar</button>
+  {{range .Content.Exercises}}
+  <div class="panel">
+    {{.Quest.GetHTMLText}}
+    <div ><!-- answered panel -->
+      <form class="form-group" method="post">
+	<input type="hidden" name="QuestId" value="{{ .Quest.Id }}">
+	<input type="hidden" name="ExerciseId" value="{{ .Id }}">
+	<input type="hidden" name="BodyType" value="{{ .Quest.AType }}">
+
+        {{.Quest.GetHTMLAnswer}}
+
+	<input type="button" class="btn btn-default pull-right" value="Contestar" />
+      </form>
+    </div>
+
   </div>
-
-
-  <div id="exercisesPanel">
-    <!-- En este panel se irán cargando los ejercicios para que se vayan respondiendo -->
-  </div>
-
+  {{end}}
   
 </div>
 

@@ -2,9 +2,12 @@ package tests
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 
+	"model/answers"
+	"model/questions"
 	"model/users"
 
 	"appengine/srv"
@@ -140,6 +143,42 @@ func GetExercisesList(wr srv.WrapperRequest, tc map[string]interface{}) (string,
 
 	tc["Content"] = t.Exercises
 
+	return infoTmpl, nil
+}
+
+func DoExercise(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	if wr.NU.GetRole() < users.ROLE_STUDENT {
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	var a *answers.Answer
+
+	decoder := json.NewDecoder(wr.R.Body)
+	err := decoder.Decode(&a)
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	// Check if the a.AuthorId is an allowed user for
+	ex, err := getExerciseById(wr, a.ExerciseId)
+	if ok := IsTestAllowedUser(wr, ex.TestId, a.AuthorId); !ok {
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	a.BuildBody()
+	a.AuthorId = wr.NU.ID()
+
+	_, err = questions.GetQuestById(wr, a.QuestId)
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	err = answers.PutAnswer(wr, a)
+	if err != nil {
+		return infoTmpl, err
+	}
+
+	tc["Content"] = a
 	return infoTmpl, nil
 }
 

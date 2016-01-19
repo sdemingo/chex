@@ -137,3 +137,7 @@ func loadExercises(wr srv.WrapperRequest, t *Test, err error) error {
 
 	return nil
 }
+
+func getExerciseById(wr srv.WrapperRequest, ExerciseId int64) (*Exercise, error) {
+	return nil, nil
+}
