@@ -56,9 +56,14 @@ func AppHandler(w http.ResponseWriter, r *http.Request, whandler WrapperHandler)
 
 	} else {
 		// HTML Response
-		tmpl := template.Must(template.ParseFiles("app/tmpl/base.html",
-			tmplName))
+		// Template funcions
+		funcMap := template.FuncMap{
+			"inc": func(i int) int {
+				return i + 1
+			},
+		}
 
+		tmpl := template.Must(template.New("base.html").Funcs(funcMap).ParseFiles("app/tmpl/base.html", tmplName))
 		if err := tmpl.Execute(w, rdata); err != nil {
 			errorResponse(wr, w, err)
 			return

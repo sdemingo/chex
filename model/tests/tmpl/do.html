@@ -31,26 +31,33 @@
   {{end}}
 
 
-  {{range .Content.Exercises}}
-  <div class="panel">
+  {{range $i, $ex := .Content.Exercises}}
+  <div class="panel panel-default">
+    <div class = "panel-heading">
+      Ejercicio {{inc $i}}
+    </div>
+    <div class = "panel-body">
     {{.Quest.GetHTMLText}}
-    <div ><!-- answered panel -->
-      <form class="form-group" method="post">
-	<input type="hidden" name="QuestId" value="{{ .Quest.Id }}">
-	<input type="hidden" name="ExerciseId" value="{{ .Id }}">
-	<input type="hidden" name="BodyType" value="{{ .Quest.AType }}">
+      <div ><!-- answered panel -->
+	<form class="form-group" method="post">
+	  <input type="hidden" name="QuestId" value="{{ .Quest.Id }}">
+	  <input type="hidden" name="ExerciseId" value="{{ .Id }}">
+	  <input type="hidden" name="BodyType" value="{{ .Quest.AType }}">
 
         {{.Quest.GetHTMLAnswer}}
 
-	<input type="button" class="btn btn-default pull-right" value="Contestar" />
-      </form>
+	  <input type="button" class="btn btn-default pull-right submit-answer" value="Contestar" />
+	</form>
+      </div>
     </div>
-
-  </div>
+  </div><!-- exercise panel -->
   {{end}}
   
 </div>
 
 </div>
 
+<script>
+ testmaker.init()
+</script>
 {{end}}
