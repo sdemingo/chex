@@ -32,7 +32,7 @@
 
 
   {{range $i, $ex := .Content.Exercises}}
-  <div class="panel panel-default">
+  <div class="panel panel-default exercise-panel">
     <div class = "panel-heading">
       Ejercicio {{inc $i}}
     </div>
@@ -46,7 +46,7 @@
 
         {{.Quest.GetHTMLAnswer}}
 
-	  <input type="button" class="btn btn-default pull-right submit-answer" value="Contestar" />
+	  <input type="button"  class="btn btn-default pull-right submit-answer" value="Contestar" />
 	</form>
       </div>
     </div>

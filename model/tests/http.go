@@ -161,8 +161,11 @@ func DoExercise(wr srv.WrapperRequest, tc map[string]interface{}) (string, error
 
 	// Check if the a.AuthorId is an allowed user for
 	ex, err := getExerciseById(wr, a.ExerciseId)
+	if err != nil {
+		return infoTmpl, err
+	}
 	if ok := IsTestAllowedUser(wr, ex.TestId, a.AuthorId); !ok {
-		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+		return infoTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
 	}
 
 	a.BuildBody()

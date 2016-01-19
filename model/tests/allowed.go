@@ -63,6 +63,7 @@ func GetTestAllowedForUser(wr srv.WrapperRequest, userId int64) ([]*Test, error)
 }
 
 func IsTestAllowedUser(wr srv.WrapperRequest, testsId int64, userId int64) bool {
+	// TODO
 	return true
 }
 

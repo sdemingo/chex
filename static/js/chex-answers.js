@@ -23,7 +23,7 @@ var answers = (function(){
 
     var addAnswer =  function(a,cb){
 	$.ajax({
-	    url:DOMAIN+'/exercises/solve',
+	    url:DOMAIN+'/tests/exercises/do',
 	    type: 'post',
 	    dataType: 'json',
 	    data: JSON.stringify(a),
@@ -109,10 +109,8 @@ var answers = (function(){
 	    var a = readForm()
 	    if (!a) {
 		return
-	    }
-	    
+	    }  
 	    addSolutionAnswer(a,addAnswerResponse)
-
 	})
     }
 
@@ -122,7 +120,8 @@ var answers = (function(){
     }
 
     return{
-	init: init,	
+	init: init,
+	add: addAnswer
     }
 
 })()

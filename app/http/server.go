@@ -56,7 +56,6 @@ func AppHandler(w http.ResponseWriter, r *http.Request, whandler WrapperHandler)
 
 	} else {
 		// HTML Response
-		// Template funcions
 		funcMap := template.FuncMap{
 			"inc": func(i int) int {
 				return i + 1

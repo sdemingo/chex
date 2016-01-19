@@ -139,5 +139,14 @@ func loadExercises(wr srv.WrapperRequest, t *Test, err error) error {
 }
 
 func getExerciseById(wr srv.WrapperRequest, ExerciseId int64) (*Exercise, error) {
-	return nil, nil
+	ex := new(Exercise)
+	qry := data.NewConn(wr, "tests-exercises")
+	ex.Id = ExerciseId
+
+	err := qry.Get(ex)
+	if err != nil {
+		return nil, fmt.Errorf("getexercisebyid: %v", err)
+	}
+
+	return ex, nil
 }
