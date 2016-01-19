@@ -17,7 +17,7 @@ func NewTestSingleAnswer(sol int) *TestSingleBody {
 	t := new(TestSingleBody)
 	t.Id = -1
 	t.atype = TYPE_TESTSINGLE
-	t.Solution = -1
+	t.Solution = sol
 	//return &TestSingleBody{-1, TYPE_TESTSINGLE, sol}
 	return t
 }
