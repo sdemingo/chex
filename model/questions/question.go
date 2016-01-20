@@ -154,14 +154,17 @@ func GetQuestById(wr srv.WrapperRequest, id int64) (*Question, error) {
 
 	q.Tags, _ = getQuestTags(wr, q)
 
-	// search the solution. A solution answer for this quest from
-	// the same author. If not exits we create a dummy answer body of
+	// Search the solution: A solution answer for a quest has always
+	// the same author of the quest and it has not any exerciseId.
+	// If not exits we create a dummy answer body of
 	// questions Atype. A dummy answer body always must return false
-	// in its UnSolved method
+	// in its UnSolved method.
 
-	q.Solution, _ = answers.GetAnswer(wr, q.AuthorId, q.Id)
-	if q.Solution == nil {
+	all, err := answers.GetAnswers(wr, q.AuthorId, q.Id, 0)
+	if err != nil {
 		q.Solution, err = answers.NewAnswerWithBody(-1, -1, q.AType)
+	} else {
+		q.Solution = all[0]
 	}
 
 	return q, err

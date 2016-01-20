@@ -129,26 +129,27 @@ func (v AnswerBuffer) Len() int {
 }
 
 // Get the answers for a question with questId from an author with authorId
-func GetAnswer(wr srv.WrapperRequest, authorId int64, questId int64) (*Answer, error) {
+func GetAnswers(wr srv.WrapperRequest, authorId int64, questId int64, exerciseId int64) ([]*Answer, error) {
 	as := NewAnswerBuffer()
-	a := new(Answer)
 
 	q := data.NewConn(wr, "answers")
-	q.AddFilter("QuestId =", questId)
 	q.AddFilter("AuthorId =", authorId)
+	if questId > 0 {
+		q.AddFilter("QuestId =", questId)
+	}
+	if exerciseId > 0 {
+		q.AddFilter("ExerciseId =", exerciseId)
+	}
 	err := q.GetMany(&as)
 	if err != nil || len(as) == 0 {
 		return nil, errors.New(ERR_ANSWERNOTFOUND)
 	}
 
-	a = as[0]
-
-	err = getAnswerBody(wr, a)
-	if err != nil {
-		return nil, errors.New(ERR_ANSWERNOTFOUND)
+	for i := range as {
+		getAnswerBody(wr, as[i])
 	}
 
-	return a, err
+	return as, err
 }
 
 // Create or update an solution answer
@@ -157,7 +158,12 @@ func PutAnswer(wr srv.WrapperRequest, a *Answer) error {
 		return errors.New(ERR_ANSWERWITHOUTBODY)
 	}
 
-	a2, err := GetAnswer(wr, a.AuthorId, a.QuestId)
+	all, err := GetAnswers(wr, a.AuthorId, a.QuestId, a.ExerciseId)
+	if err != nil {
+		return err
+	}
+
+	a2 := all[0]
 	qry := data.NewConn(wr, "answers")
 
 	if err != nil { // New
