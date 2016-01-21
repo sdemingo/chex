@@ -35,25 +35,17 @@
   
   <div id="answerPanel" class="row col-md-11 col-md-offset-1">
 
-    {{ if not .Content.Solution.Body.IsUnsolved }}
-    <div id="solvedPanel">
-       {{.Content.GetHTMLSolution}}
-      <input type="button" class="btn btn-default pull-right" id="answerUpdateButton" value="Actualizar" />
-    </div>
-    {{end}}
-
-    <div id="unSolvedPanel">
       <form id="answerEditForm" class="form-group" method="post" action="/answers/solve">
 	<input type="hidden" name="AuthorId" value="{{ .User.Id }}">
 	<input type="hidden" name="QuestId" value="{{ .Content.Id }}">
 	<input type="hidden" name="BodyType" value="{{ .Content.AType }}">
-        {{.Content.GetHTMLAnswer}}
+	{{ if not .Content.Solution.Body.IsUnsolved }}
+           {{.Content.GetHTMLSolution}}
+	{{else}}
+           {{.Content.GetHTMLAnswer}}
+	{{end}}
 	<input type="button" class="btn btn-default pull-right" id="answerNewSubmit" value="Contestar" />
-        {{ if not .UnSolvedQuestion }}
-	<input type="button" class="btn btn-default pull-right" id="answerNewCancel" value="Cancelar" />
-        {{end}}
       </form>
-    </div>
 
   </div>
 </div>

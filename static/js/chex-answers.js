@@ -16,7 +16,7 @@ var answers = (function(){
     var TYPE_TESTSINGLE   = 1
     var TYPE_TESTMULTIPLE = 2
     
-
+    var changeSolution=false
 
     /*
 
@@ -102,29 +102,25 @@ var answers = (function(){
     }
     
     var bindFunctions = function(){
-	// si existe la solución  la mostramos primeramente
-	if ($(settings.panel+" #solvedPanel").length){
-	    $(settings.panel+" #unSolvedPanel").hide()
-	}
 
-	// ocultar la solución y mostrar el formulario para editar
-	$(settings.panel+" #answerUpdateButton").on("click",function(){
-	    $(settings.panel+" #solvedPanel").hide()
-	    $(settings.panel+" #unSolvedPanel").show()
-	})
-
-	// ocultar el formulario de respuesta y mostrar la solución
-	$(settings.panel+" #answerNewCancel").on("click",function(){
-	    $(settings.panel+" #unSolvedPanel").hide()
-	    $(settings.panel+" #solvedPanel").show()
+	$(settings.panel+" form").on( "change", function() {
+	    changeSolution=true
 	})
 
 	// crea una nueva respuesta o actualiza la existente
 	$(settings.panel+" #answerNewSubmit").on("click",function(){
+	    
 	    var a = readForm()
 	    if (!a) {
 		return
 	    }  
+
+	    if (changeSolution){
+		var msg="La solución ha cambiado. ¿Desea introducir la nueva repuesta?"
+		showConfirmMessage(msg,function(){
+		    addSolutionAnswer(a,addAnswerResponse)
+		})
+	    }
 	    addSolutionAnswer(a,addAnswerResponse)
 	})
     }

@@ -42,13 +42,23 @@ func (a TestSingleBody) GetHTML(options []string) (template.HTML, template.HTML,
         <li><input type="radio" name="RawBody" value="{{$index}}" /><label>{{ $item }}</label></li>
         {{end}}</ul>
 `
+	/*
+	   	solvedTmpl := `
+	           <ul class="list-group">{{range $index, $item := .}}
+	           {{if eq $index ` + fmt.Sprintf("%d", a.Solution) + `}}
+	           <li class="list-group-item list-group-item-success">{{ $item }}</li>
+	           {{else}}
+	           <li class="list-group-item">{{ $item }}</li>
+	           {{end}}
+	           {{end}}</ul>
+	   `*/
 
 	solvedTmpl := `
-        <ul class="list-group">{{range $index, $item := .}}
+        <ul>{{range $index, $item := .}}
         {{if eq $index ` + fmt.Sprintf("%d", a.Solution) + `}}
-        <li class="list-group-item list-group-item-success">{{ $item }}</li>
+        <li><input type="radio" name="RawBody" value="{{$index}}" checked="checked" /><label>{{ $item }}</label></li>
         {{else}}
-        <li class="list-group-item">{{ $item }}</li>
+        <li><input type="radio" name="RawBody" value="{{$index}}" /><label>{{ $item }}</label></li>
         {{end}}
         {{end}}</ul>
 `
