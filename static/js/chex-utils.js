@@ -119,6 +119,22 @@ function showErrorMessage(text) {
     $("#errorDialog").modal("show")
 }
 
+function showConfirmMessage(text,actionButtonAnyHandler) {
+    var modalData={
+	id:"confirmDialog",
+	type:"info",
+	titleText:"Confirmación",
+	bodyText:text,
+	actionButton:{
+	    text:"Ok",
+	    handler: actionButtonAnyHandler
+	} 
+    }
+
+    modal.init(modalData)
+    $("#confirmDialog").modal("show")
+}
+
 
 $.fn.serializeObject = function()
 {
@@ -216,8 +232,8 @@ var modal = {
 	// insert action button
 	if (data.actionButton){
 	    $(".modal .modal-footer").append(
-		$('<button type="button" class="btn btn-primary">'+data.actionButton.text+'</button>')
-	    )
+		$('<button type="button" class="btn btn-primary" data-dismiss="modal">'+data.actionButton.text+'</button>')
+	    ).click(data.actionButton.handler)
 	}
     }
 }
