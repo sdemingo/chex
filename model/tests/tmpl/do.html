@@ -39,12 +39,12 @@
     <div class = "panel-body">
     {{.Quest.GetHTMLText}}
       <div ><!-- answered panel -->
-	<form class="form-group" method="post">
+	<form class="form-group answer-panel" method="post">
 	  <input type="hidden" name="QuestId" value="{{ .Quest.Id }}">
 	  <input type="hidden" name="ExerciseId" value="{{ .Id }}">
 	  <input type="hidden" name="BodyType" value="{{ .Quest.AType }}">
 
-        {{.Quest.GetHTMLAnswer}}
+          {{.Quest.GetHTMLAnswer}}
 
 	  <input type="button"  class="btn btn-default pull-right submit-answer" value="Contestar" />
 	</form>

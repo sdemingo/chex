@@ -13,6 +13,10 @@ var answers = (function(){
 	panel:"#answerPanel"
     }
 
+    var TYPE_TESTSINGLE   = 1
+    var TYPE_TESTMULTIPLE = 2
+    
+
 
     /*
 
@@ -43,13 +47,14 @@ var answers = (function(){
 	});
     }
 
-    var editAnswer = function(u){
-
-    }
-
-
-    var listAnswers = function(){
-
+    var listAnswers = function(ex,quest,cb){
+	$.ajax({
+	    url:DOMAIN+'/answers/list?exercise='+ex+'&quest='+quest,
+	    type: 'get',
+	    dataType: 'json',
+	    success: cb,
+	    error: error
+	});
     }
 
     var deleteAnswer = function(){
@@ -74,8 +79,6 @@ var answers = (function(){
 	}
     }
 
-
-    
     var readForm = function(){
 	var a = $(settings.form).serializeObject()
 
@@ -84,6 +87,18 @@ var answers = (function(){
 	    a.RawSolution = a.RawBody.toString()
 	}
 	return a
+    }
+
+    var renderAnswer = function(form, a){
+	console.log("Rendeamos la solución para el ejercicio "+a.ExerciseId)
+
+	if (a.BodyType == TYPE_TESTSINGLE){
+	    console.log(a.Body.Solution)
+	    var c=$(form)
+		.find("[name=RawBody][value="+a.Body.Solution+"]")
+		.first().prop("checked","true")
+	}
+	
     }
     
     var bindFunctions = function(){
@@ -121,7 +136,9 @@ var answers = (function(){
 
     return{
 	init: init,
-	add: addAnswer
+	add: addAnswer,
+	list: listAnswers,
+	render: renderAnswer
     }
 
 })()
