@@ -79,8 +79,13 @@ var answers = (function(){
 	}
     }
 
-    var readForm = function(){
-	var a = $(settings.form).serializeObject()
+    var readForm = function(form){
+	var a
+	if (!form){
+	    a = $(settings.form).serializeObject()
+	}else{
+	    a = $(form).serializeObject()
+	}
 
 	// RawSolution must be marshall into a simple string always
 	if (Array.isArray(a.RawBody)){
@@ -90,7 +95,6 @@ var answers = (function(){
     }
 
     var renderAnswer = function(form, a){
-	console.log("Rendeamos la solución para el ejercicio "+a.ExerciseId)
 
 	if (a.BodyType == TYPE_TESTSINGLE){
 	    console.log(a.Body.Solution)
@@ -100,17 +104,35 @@ var answers = (function(){
 	}
 	
     }
-    
+  
+  
     var bindFunctions = function(){
 
-	$(settings.panel+" form").on( "change", function() {
+	// preload answered in the database
+	$(".answer-panel").each(function(){
+	    var answerForm=$(this)
+	    var a = readForm(answerForm)
+	    if (a) {
+		answers.list(a.ExerciseId,a.QuestId,function(response){
+		    var answer 
+		    if (Array.isArray(response) && response.length>0){
+			answer=response[0]
+			answers.render(answerForm,answer)
+		    }
+		})
+	    }
+	})
+
+
+	$(".answer-panel").on( "change", function() {
 	    changeSolution=true
 	})
 
 	// crea una nueva respuesta o actualiza la existente
-	$(settings.panel+" #answerNewSubmit").on("click",function(){
+	$(".answer-panel .submit").on("click",function(){
 	    
-	    var a = readForm()
+	    var form = $(this).parent("form")
+	    var a = readForm(form)
 	    if (!a) {
 		return
 	    }  

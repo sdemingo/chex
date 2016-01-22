@@ -30,7 +30,6 @@
   </div>
   {{end}}
 
-
   {{range $i, $ex := .Content.Exercises}}
   <div class="panel panel-default exercise-panel">
     <div class = "panel-heading">
@@ -38,13 +37,17 @@
     </div>
     <div class = "panel-body">
     {{.Quest.GetHTMLText}}
-      <div ><!-- answered panel -->
+      <div id="answerPanel">
 	<form class="form-group answer-panel" method="post">
 	  <input type="hidden" name="QuestId" value="{{ .Quest.Id }}">
 	  <input type="hidden" name="ExerciseId" value="{{ .Id }}">
 	  <input type="hidden" name="BodyType" value="{{ .Quest.AType }}">
 
-          {{.Quest.GetHTMLAnswer}}
+        {{ if not .Quest.Solution.Body.IsUnsolved }}
+           {{.Quest.GetHTMLSolution}}
+	{{else}}
+           {{.Quest.GetHTMLAnswer}}
+	{{end}}
 
 	  <input type="button"  class="btn btn-default pull-right submit-answer" value="Contestar" />
 	</form>

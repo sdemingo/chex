@@ -33,21 +33,18 @@
   {{.Content.GetHTMLText}}
   <hr>
   
-  <div id="answerPanel" class="row col-md-11 col-md-offset-1">
-
-      <form id="answerEditForm" class="form-group" method="post" action="/answers/solve">
+  <div class="row col-md-11 col-md-offset-1">
+      <form class="answer-panel form-group" method="post">
 	<input type="hidden" name="AuthorId" value="{{ .User.Id }}">
 	<input type="hidden" name="QuestId" value="{{ .Content.Id }}">
+	<input type="hidden" name="ExerciseId" value="0">
 	<input type="hidden" name="BodyType" value="{{ .Content.AType }}">
-	{{ if not .Content.Solution.Body.IsUnsolved }}
-           {{.Content.GetHTMLSolution}}
-	{{else}}
-           {{.Content.GetHTMLAnswer}}
-	{{end}}
-	<input type="button" class="btn btn-default pull-right" id="answerNewSubmit" value="Contestar" />
-      </form>
 
+        {{.Content.GetHTMLAnswer}}
+	<input type="button" class="btn btn-default pull-right submit" id="answerNewSubmit" value="Contestar" />
+      </form>
   </div>
+
 </div>
 
 {{end}}

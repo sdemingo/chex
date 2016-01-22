@@ -32,18 +32,29 @@
   </div>
   {{end}}
 
-  
-  {{range .Content.Exercises}}
-  <div class="panel">
-    {{.Quest.GetHTMLText}}
-    <div id="solvedPanel" class="row">
-      {{.Quest.GetHTMLSolution}}
+  {{range  $i, $ex := .Content.Exercises}}
+  <div class="panel panel-default exercise-panel">
+    <div class = "panel-heading">
+      Ejercicio {{inc $i}}
     </div>
-  </div>
+    <div class = "panel-body">
+    {{.Quest.GetHTMLText}} 
+      <div id="answerPanel">
+	<form id="answerEditForm" class="form-group answer-panel" method="post">
+	  <input type="hidden" name="QuestId" value="{{ .Quest.Id }}">
+	  <input type="hidden" name="ExerciseId" value="0">
+	  <input type="hidden" name="BodyType" value="{{ .Quest.AType }}">
+
+           {{.Quest.GetHTMLAnswer}}
+
+	  <!-- 
+	  <input type="button" class="btn btn-default pull-right" id="answerNewSubmit" value="Contestar" />
+	   -->
+	</form>
+      </div>
+    </div>
+  </div><!-- exercise panel -->
   {{end}}
-
-</div>
-
 </div>
 
 {{end}}

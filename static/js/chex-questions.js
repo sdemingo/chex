@@ -169,6 +169,7 @@ var questions = (function(){
     
 
     var bindFunctions = function(){
+
 	// Edit Quest form
 	$(settings.form+" .btn-add").on("click",function(){
 	    $(settings.form+" .question-options")
