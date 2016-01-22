@@ -128,7 +128,8 @@ func (v AnswerBuffer) Len() int {
 	return len(v)
 }
 
-// Get the answers for a question with questId from an author with authorId
+// Get the answers for a question with questId, for a exercise with
+// exerciseId from an author with authorId
 func GetAnswers(wr srv.WrapperRequest, authorId int64, questId int64, exerciseId int64) ([]*Answer, error) {
 	as := NewAnswerBuffer()
 

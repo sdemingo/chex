@@ -146,6 +146,28 @@ func GetExercisesList(wr srv.WrapperRequest, tc map[string]interface{}) (string,
 	return infoTmpl, nil
 }
 
+func GetExercisesAnswers(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
+	if wr.NU.GetRole() < users.ROLE_STUDENT {
+		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)
+	}
+
+	ts, err := getTests(wr, wr.R.Form)
+	if err != nil {
+		return viewTmpl, fmt.Errorf("tests: getexercisesanwsers: %v", err)
+	}
+	t := ts[0]
+
+	authorId := wr.NU.ID()
+	as, err := getExerciseAnswered(wr, t, authorId)
+	if err != nil {
+		return viewTmpl, fmt.Errorf("tests: getexercisesanwsers: %v", err)
+	}
+
+	tc["Content"] = as
+	return infoTmpl, nil
+
+}
+
 func DoExercise(wr srv.WrapperRequest, tc map[string]interface{}) (string, error) {
 	if wr.NU.GetRole() < users.ROLE_STUDENT {
 		return viewTmpl, errors.New(users.ERR_NOTOPERATIONALLOWED)

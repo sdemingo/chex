@@ -3,6 +3,7 @@ package tests
 import (
 	"fmt"
 
+	"model/answers"
 	"model/questions"
 	"model/users"
 
@@ -149,4 +150,20 @@ func getExerciseById(wr srv.WrapperRequest, ExerciseId int64) (*Exercise, error)
 	}
 
 	return ex, nil
+}
+
+// Return all answers of the request user for the test t
+func getExerciseAnswered(wr srv.WrapperRequest, t *Test, authorId int64) ([]*answers.Answer, error) {
+
+	as := answers.NewAnswerBuffer()
+
+	for _, ex := range t.Exercises {
+		asAux, err := answers.GetAnswers(wr, authorId, ex.QuestId, ex.Id)
+		if len(asAux) < 1 || err != nil {
+			return nil, fmt.Errorf("getexerciseanswered: %v", err)
+		}
+		as = append(as, asAux[0])
+	}
+
+	return as, nil
 }
