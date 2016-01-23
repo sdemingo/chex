@@ -1,0 +1,6 @@
+
+
+form.solution-panel .marked + label{
+    color:green;
+    font-weight:bold;
+}

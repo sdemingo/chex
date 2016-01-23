@@ -94,22 +94,23 @@ var answers = (function(){
 	return a
     }
 
-    var renderAnswer = function(form, a){
+    var markAnswer = function(form, a){
 
 	if (a.BodyType == TYPE_TESTSINGLE){
 	    console.log(a.Body.Solution)
 	    var c=$(form)
 		.find("[name=RawBody][value="+a.Body.Solution+"]")
-		.first().prop("checked","true")
+		.first().prop("checked","true").addClass("marked")
 	}
 	
+	form.addClass("marked")
     }
   
   
     var bindFunctions = function(){
 
 	// preload answered in the database
-	$(".answer-panel").each(function(){
+	$(".answer-panel").not(".marked").each(function(){
 	    var answerForm=$(this)
 	    var a = readForm(answerForm)
 	    if (a) {
@@ -117,14 +118,14 @@ var answers = (function(){
 		    var answer 
 		    if (Array.isArray(response) && response.length>0){
 			answer=response[0]
-			answers.render(answerForm,answer)
+			markAnswer(answerForm,answer)
 		    }
 		})
 	    }
 	})
 
 
-	$(".answer-panel").on( "change", function() {
+	$(".answer-panel .marked").on( "change", function() {
 	    changeSolution=true
 	})
 
@@ -138,7 +139,7 @@ var answers = (function(){
 	    }  
 
 	    if (changeSolution){
-		var msg="La solución ha cambiado. ¿Desea introducir la nueva repuesta?"
+		var msg="Este ejercicio ya tenía una solución anterior. ¿Desea introducir la nueva repuesta?"
 		showConfirmMessage(msg,function(){
 		    addSolutionAnswer(a,addAnswerResponse)
 		})
@@ -155,8 +156,7 @@ var answers = (function(){
     return{
 	init: init,
 	add: addAnswer,
-	list: listAnswers,
-	render: renderAnswer
+	list: listAnswers
     }
 
 })()

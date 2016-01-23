@@ -79,7 +79,12 @@ function resetForm(form){
 
 
 function error (data){
-    console.log("Internal server error: "+data)
+    var msg = data.Error
+    if ((!data) || (!data.Error)){
+	msg="Se ha producido un error desconocido. El servidor no ha enviado información"
+	showErrorMessage(msg)
+    }
+    console.log("Internal server error: "+msg)
 }
 
 

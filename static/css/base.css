@@ -223,8 +223,3 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
      border-top-left-radius: 5px;
      border-top-right-radius: 5px;
 }
-
-form.solution-panel .marked + label{
-    color:green;
-    font-weight:bold;
-}
