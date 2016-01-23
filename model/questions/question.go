@@ -86,17 +86,9 @@ func (q *Question) GetHTMLText() template.HTML {
 	return template.HTML(string(blackfriday.MarkdownBasic(in)))
 }
 
-func (q *Question) GetHTMLSolution() template.HTML {
-	if q.Solution != nil {
-		_, solved, _ := q.Solution.Body.GetHTML(q.Options)
-		return solved
-	}
-	return template.HTML("")
-}
-
 func (q *Question) GetHTMLAnswer() template.HTML {
 	if q.Solution != nil {
-		unSolved, _, _ := q.Solution.Body.GetHTML(q.Options)
+		unSolved, _ := q.Solution.Body.GetHTML(q.Options)
 		return unSolved
 	}
 	return template.HTML("")
