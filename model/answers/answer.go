@@ -160,11 +160,6 @@ func PutAnswer(wr srv.WrapperRequest, a *Answer) error {
 	}
 
 	all, err := GetAnswers(wr, a.AuthorId, a.QuestId, a.ExerciseId)
-	if err != nil {
-		return err
-	}
-
-	a2 := all[0]
 	qry := data.NewConn(wr, "answers")
 
 	if err != nil { // New
@@ -181,6 +176,7 @@ func PutAnswer(wr srv.WrapperRequest, a *Answer) error {
 
 	} else { // Updated
 
+		a2 := all[0]
 		a2.TimeStamp = time.Now()
 		a2.BodyType = a.BodyType
 		a2.Body = a.Body
