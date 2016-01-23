@@ -238,7 +238,8 @@ var modal = {
 	if (data.actionButton){
 	    $(".modal .modal-footer").append(
 		$('<button type="button" class="btn btn-primary" data-dismiss="modal">'+data.actionButton.text+'</button>')
-	    ).click(data.actionButton.handler)
+		    .click(data.actionButton.handler)
+	    )
 	}
     }
 }
