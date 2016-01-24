@@ -43,11 +43,7 @@
 	  <input type="hidden" name="ExerciseId" value="{{ .Id }}">
 	  <input type="hidden" name="BodyType" value="{{ .Quest.AType }}">
 
-        {{ if not .Quest.Solution.Body.IsUnsolved }}
-           {{.Quest.GetHTMLSolution}}
-	{{else}}
            {{.Quest.GetHTMLAnswer}}
-	{{end}}
 
 	  <input type="button"  class="btn btn-default pull-right submit-answer" value="Contestar" />
 	</form>

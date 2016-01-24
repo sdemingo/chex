@@ -40,7 +40,7 @@
     <div class = "panel-body">
     {{.Quest.GetHTMLText}} 
       <div id="answerPanel">
-	<form id="answerEditForm" class="form-group answer-panel disabled" method="post">
+	<form id="answerEditForm" class="form-group answer-panel solution-panel disabled" method="post">
 	  <input type="hidden" name="QuestId" value="{{ .Quest.Id }}">
 	  <input type="hidden" name="ExerciseId" value="0">
 	  <input type="hidden" name="BodyType" value="{{ .Quest.AType }}">

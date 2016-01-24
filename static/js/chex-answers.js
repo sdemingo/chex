@@ -94,13 +94,17 @@ var answers = (function(){
 	return a
     }
 
-    var markAnswer = function(form, a){
+    var markAnswer = function(form, a, isSolution){
 
 	if (a.BodyType == TYPE_TESTSINGLE){
 	    console.log(a.Body.Solution)
 	    var c=$(form)
 		.find("[name=RawBody][value="+a.Body.Solution+"]")
 		.first().prop("checked","true").addClass("marked")
+
+	    if (isSolution){
+		c.addClass("correct")
+	    }
 	}
 	
 	form.addClass("marked")
@@ -109,29 +113,55 @@ var answers = (function(){
   
     var bindFunctions = function(){
 
-	// preload answered in the database
 	$(".answer-panel").not(".marked").each(function(){
 	    var answerForm=$(this)
 	    var a = readForm(answerForm)
 	    if (a) {
-		answers.list(a.ExerciseId,a.QuestId,function(response){
+		listAnswers(a.ExerciseId,a.QuestId,function(response){
+		    // if the exercise.Id in the request is 0 means that
+		    // it has been request the teacher solution of the quest
 		    var answer 
+		    var isSolution = (a.ExerciseId == 0)
 		    if (Array.isArray(response) && response.length>0){
-			answer=response[0]
-			markAnswer(answerForm,answer)
+			answer=response[0]   
+			markAnswer(answerForm,answer,isSolution)
 		    }
 		})
 	    }
 	})
 
+	// TODO:
+	// request all teachers solution to the answer and remark the exercise
+	// to compare with the student answer. Only in check-panels from check view 
+	// of tests
 
-	$(".answer-panel .marked").on( "change", function() {
-	    changeSolution=true
+	/*
+	$(".check-panel.marked").each(function(){
+
+	    var answerForm=$(this)
+	    var a = readForm(answerForm)
+	    if (a) {
+		listAnswers(0,a.QuestId,function(response){
+		    var answer 
+		    var isSolution = true
+		    if (Array.isArray(response) && response.length>0){
+			answer=response[0]   
+			markAnswer(answerForm,answer,isSolution)
+		    }
+		})
+
+	})
+	*/
+
+
+	$(".answer-panel").on("change", function() {
+	    if ($(this).hasClass("marked")){
+		changeSolution=true
+	    }
 	})
 
 	// crea una nueva respuesta o actualiza la existente
 	$(".answer-panel .submit").on("click",function(){
-	    
 	    var form = $(this).parent("form")
 	    var a = readForm(form)
 	    if (!a) {
@@ -143,8 +173,9 @@ var answers = (function(){
 		showConfirmMessage(msg,function(){
 		    addSolutionAnswer(a,addAnswerResponse)
 		})
+	    }else{
+		addSolutionAnswer(a,addAnswerResponse)
 	    }
-	    addSolutionAnswer(a,addAnswerResponse)
 	})
     }
 
