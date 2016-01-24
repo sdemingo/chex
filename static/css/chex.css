@@ -82,7 +82,9 @@ body {
     color:#990000;
 }
 
-
+.panel-list-btn + .panel-list{
+    margin-top:20px;
+}
 
 
 textarea.form-control  {

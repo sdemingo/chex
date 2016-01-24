@@ -6,29 +6,21 @@
   <div class="panel panel-default">
     <div class="panel-heading panel-title">Preguntas</div>
     <div class="panel-body">
-
-      <div class="row col-md-7">
-	<div id="QuestionsPanel" class="panel-list panel-select-questions">
-	  <div class="panel panel-default panel-list-main">
-	    <ul class="list-group results">
-	    </ul>
-	  </div>
-	  <div class="panel label-panel tags">
-	  </div>
+      <div class="btn-group panel-list-btn" role="group" aria-label="...">
+	<button type="button" class="btn btn-default">Añadir</button>
+	<button type="button" class="btn btn-default">Borrar</button>
+      </div>
+      <div id="QuestionsPanel" class="panel-list panel-select-questions">
+	<div class="panel panel-default panel-list-main">
+	  <ul class="list-group results">
+	  </ul>
+	</div>
+	<div class="panel label-panel tags">
 	</div>
       </div>
+      
 
-
-      <div class="row col-md-5 pull-right">
-	<ul class="list-group">
-	  <li class="list-group-item"><span class="badge">0</span>Preguntas creadas</li>
-	</ul>
-
-	<div class="btn-group" role="group" aria-label="...">
-	  <a href="/questions/new" class="btn btn-default">Nueva</a>
-	  <button type="button" id="deleteQuestions" class="btn btn-default">Borrar</button>
-	</div>
-      </div>
+      
     </div>
   </div>
 
@@ -40,17 +32,20 @@
   <div class="panel panel-default">
     <div class="panel-heading panel-title">Exámenes</div>
     <div class="panel-body">
+      <div class="btn-group panel-list-btn" role="group" aria-label="...">
+	<button type="button" class="btn btn-default">Añadir</button>
+	<button type="button" class="btn btn-default">Borrar</button>
+      </div>
 
-      <div class="row col-md-7">
-	<div id="TestsPanel" class="panel-list panel-select-tests">
-	  <div class="panel panel-default panel-list-main">
-	    <ul class="list-group results">
-	    </ul>
-	  </div>
-	  <div class="panel label-panel tags">
-	  </div>
+      <div id="TestsPanel" class="panel-list panel-select-tests">
+	<div class="panel panel-default panel-list-main">
+	  <ul class="list-group results">
+	  </ul>
+	</div>
+	<div class="panel label-panel tags">
 	</div>
       </div>
+
 
     </div>
   </div>
@@ -74,12 +69,12 @@
 
 <script>
  
-questionsList.init()
-testsList.init()
+ questionsList.init()
+ testsList.init()
 
-$("#deleteQuestions").on("click",function(){
-  console.log(questionsList.getSelected()) 
-})
+ $("#deleteQuestions").on("click",function(){
+   console.log(questionsList.getSelected()) 
+ })
 
 </script>
 {{end}}
